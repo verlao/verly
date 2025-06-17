@@ -1,0 +1,13 @@
+# robots.txt para Verly Vidros
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /img/
+Allow: /css/
+Allow: /js/
+
+# Sitemap
+Sitemap: https://verlyvidros.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 10 

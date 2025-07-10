@@ -104,6 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       console.log('Lead captured successfully:', data);
+      // Redireciona para página de obrigado
+      window.location.href = 'obrigado.html';
     })
     .catch(error => {
       hideLoading();

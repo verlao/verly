@@ -82,11 +82,13 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       body: JSON.stringify(formData)
     })
-    .then(response => {
+    .then(async response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      return response.json();
+      // Tenta ler o JSON só se houver conteúdo
+      const text = await response.text();
+      return text ? JSON.parse(text) : {};
     })
     .then(data => {
       hideLoading();

@@ -27,7 +27,7 @@ function submitForm(event) {
 
     
   // Send the POST request with the message body using fetch()
-  fetch('https://verly-service-production.up.railway.app/verly-service/lead', {
+  fetch('https://verly-service-production.up.railway.app/verly-service/leads', {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(postData)

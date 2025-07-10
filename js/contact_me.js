@@ -1,54 +1,122 @@
-function submitForm(event) {
-  event.preventDefault(); // Prevent the default form submission
+// Simple form submission
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('contact-form');
+  const submitButton = document.getElementById('sendButton');
+  const buttonText = document.getElementById('buttonText');
+  const buttonLoading = document.getElementById('buttonLoading');
+  const alertSuccessMsg = document.getElementById('alertSuccessMsg');
+  const alertErrorMsg = document.getElementById('alertErrorMsg');
 
-  // Get the form data
-  const name = document.querySelector("#name").value
-  const phone = document.querySelector("#phone").value
-  const email = document.querySelector("#email").value
-  const neighborhood = document.querySelector("#neighborhood").value
-  const city = document.querySelector("#city").value
-  const userAgent = navigator.userAgent;
-  const screenWidth = window.screen.width;
-  const screenHeight = window.screen.height; 
-  const alarmsDiv = document.querySelector('#alarms');
+  // Phone number formatting
+  const phoneInput = document.getElementById('phone');
+  phoneInput.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 0) {
+      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+      value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+    }
+    e.target.value = value;
+  });
 
+  // Show loading state
+  function showLoading() {
+    submitButton.disabled = true;
+    buttonText.style.display = 'none';
+    buttonLoading.style.display = 'inline';
+  }
 
-  const headers = {
-  'Content-Type': 'application/json'
-  };
-  // Set the object with the data to send
-  const postData = {
+  // Hide loading state
+  function hideLoading() {
+    submitButton.disabled = false;
+    buttonText.style.display = 'inline';
+    buttonLoading.style.display = 'none';
+  }
+
+  // Show success message
+  function showSuccess() {
+    alertSuccessMsg.style.display = 'block';
+    setTimeout(() => {
+      alertSuccessMsg.style.display = 'none';
+    }, 5000);
+  }
+
+  // Show error message
+  function showError() {
+    alertErrorMsg.style.display = 'block';
+    setTimeout(() => {
+      alertErrorMsg.style.display = 'none';
+    }, 5000);
+  }
+
+  // Form submission
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Basic validation
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.replace(/\D/g, '');
+    const neighborhood = document.getElementById('neighborhood').value;
+
+    if (!name || phone.length < 10 || !neighborhood) {
+      showError();
+      return;
+    }
+
+    showLoading();
+
+    // Get form data
+    const formData = {
       name: name,
-      phone: phone.replace('(','').replace(')','').replace('-',''),
-      email: email,
+      phone: phone,
+      email: document.getElementById('email').value.trim(),
       neighborhood: neighborhood,
-      city: city
+      city: document.getElementById('city').value,
+      service: document.getElementById('service').value.trim()
     };
 
-    
-  // Send the POST request with the message body using fetch()
-  fetch('https://verly-service-production.up.railway.app/verly-service/leads', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(postData)
-  })
-  .then(response => {
-    alertSuccessMsg.style.display = "block";
-    setTimeout(function(){
-      alertSuccessMsg.style.display = "none";
-   }, 5000);
-    // Handle the server response
-    document.getElementById("contact-form").reset()
-    alarmsDiv.focus()
-    console.log('Post created successfully!');
-  })
-  // .catch(error => {
-  //   alertErrorMsg.style.display = "block";
-  //   alarmsDiv.focus()
-  //   setTimeout(function(){
-  //     alertErrorMsg.style.display = "none";
-  //  }, 5000);
-  //   // Handle the errors that occurred during the request
-  //   console.error('Error creating post:', error);
-  // });
+    // Send request
+    fetch('https://verly-service-production.up.railway.app/verly-service/leads', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      hideLoading();
+      showSuccess();
+      
+      // Reset form
+      form.reset();
+      
+      // Track conversion (if Google Analytics is available)
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'form_submit', {
+          'event_category': 'lead_generation',
+          'event_label': 'contact_form'
+        });
+      }
+
+      console.log('Lead captured successfully:', data);
+    })
+    .catch(error => {
+      hideLoading();
+      showError();
+      console.error('Error submitting form:', error);
+    });
+  });
+});
+
+// Legacy function for backward compatibility
+function submitForm(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  document.getElementById('contact-form').dispatchEvent(new Event('submit'));
 }

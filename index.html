@@ -92,6 +92,87 @@
   <!-- Theme CSS -->
   <link href="css/freelancer.min.css" rel="stylesheet">
 
+  <!-- Custom CSS for landing page -->
+  <style>
+    /* Minimal form styling */
+    .contact-form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .form-control {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 16px; /* Prevents zoom on iOS */
+      transition: border-color 0.2s ease;
+      line-height: 1.5;
+      height: auto;
+      min-height: 48px;
+      box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+      outline: none;
+    }
+    
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    
+    .btn-lg {
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-lg:hover {
+      transform: translateY(-1px);
+    }
+    
+    /* Simple alerts */
+    .alert {
+      border-radius: 8px;
+      border: none;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .contact-form {
+        padding: 0 16px;
+      }
+      
+      .form-control {
+        font-size: 16px; /* Prevents zoom */
+        padding: 14px 16px;
+        min-height: 52px;
+      }
+      
+      .btn-lg {
+        width: 100%;
+        padding: 16px;
+      }
+    }
+    
+    /* Loading animation */
+    .fa-spinner {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -300,121 +381,126 @@
   <!-- Contact Section -->
   <section class="page-section" id="contact">
     <div class="container">
-
       <!-- Contact Section Heading -->
-      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-5">PEÇA SEU ORÇAMENTO</h2>
-
-      <div id="alerts" align = "center">
-        <div class="container mt-3">
-          <!-- Add the alert component -->
-          <div class="alert alert-danger" role="alert" style="display:none;" id="alertErrorMsg">
-            Desculpe, não foi possível enviar o orçamento agora. Verifique sua conexão e tente novamente mais tarde ou entre em contato para obter ajuda.
-          </div>
-          <div class="alert alert-success" role="alert" style="display:none;" id="alertSuccessMsg">
-            Ótimo! O seu orçamento foi enviado com sucesso. Em breve entraremos em contato. Obrigado!
-          </div>
-       </div>
-      <form id="contact-form">
-        <fieldset>
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="control-label text-left" for="name">Nome</label>  
-          <div class="col-md-4">
-          <input id="name" name="name" type="text" placeholder="João Silva" class="form-control input-md " required="">
-          </div>
-        </div>
-        
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="email">Email</label>  
-          <div class="col-md-4">
-          <input id="email" name="email" type="text" placeholder="joao.silva@gmail.com" class="form-control input-md">
-            
-          </div>
-        </div>
-        
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="phone">Telefone</label>  
-          <div class="col-md-4">
-          <input id="phone" name="phone" type="text" placeholder="(21) 98765-4321" class="form-control input-md" required>
-            
-          </div>
-        </div>
-        
-        <!-- Textarea -->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="service">Serviço</label>
-          <div class="col-md-4">                     
-            <textarea class="form-control" id="service" name="service" placeholder="Escreva aqui o serviço ou produto que você precisa."></textarea>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="neighborhood">Bairro</label>
-          <div class="col-md-4">                     
-            <select class="form-control" id="neighborhood" name="neighborhood" placeholder="Realengo">
-              <option value="Barra da Tijuca">Barra da Tijuca</option>
-              <option value="Recreio dos Bandeirantes">Recreio dos Bandeirantes</option>
-              <option value="Vargem Grande">Vargem Grande</option>
-              <option value="Vargem Pequena">Vargem Pequena</option>
-              <option value="Jacarepaguá">Jacarepaguá</option>
-              <option value="Anil">Anil</option>
-              <option value="Freguesia de Jacarepaguá">Freguesia de Jacarepaguá</option>
-              <option value="Gardênia Azul">Gardênia Azul</option>
-              <option value="Pechincha">Pechincha</option>
-              <option value="Taquara">Taquara</option>
-              <option value="Praça Seca">Praça Seca</option>
-              <option value="Tanque">Tanque</option>
-              <option value="Cidade de Deus">Cidade de Deus</option>
-              <option value="Curicica">Curicica</option>
-              <option value="Itanhangá">Itanhangá</option>
-              <option value="Joá">Joá</option>
-              <option value="Realengo" selected>Realengo</option>
-              <option value="Bangu">Bangu</option>
-              <option value="Padre Miguel">Padre Miguel</option>
-              <option value="Campo Grande">Campo Grande</option>
-              <option value="Santíssimo">Santíssimo</option>
-              <option value="Cosmos">Cosmos</option>
-              <option value="Paciência">Paciência</option>
-              <option value="Santa Cruz">Santa Cruz</option>
-              <option value="Sepetiba">Sepetiba</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="city">Cidade</label>
-          <div class="col-md-4">                     
-            <select class="form-control" id="city" name="city" disabled="true">
-              <option value="Rio de Janeiro" selected>Rio de Janeiro</option>
-            </select>
-          </div>
-        </div>
-        
-        <!-- Button -->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="sendButton"></label>
-          <div class="col-md-4">
-            <button onclick=submitForm(event) id="sendButton" name="sendButton" class="btn btn-primary">Enviar</button>
-          </div>
-        </div>
-        
-        
-        </fieldset>
-        </form>
+      <h2 class="page-section-heading text-center text-uppercase text-secondary mb-4">PEÇA SEU ORÇAMENTO GRATUITO</h2>
+      
+      <!-- Simple CTA -->
+      <div class="text-center mb-4">
+        <p class="lead text-muted">Orçamento gratuito e sem compromisso. Resposta em até 24h.</p>
       </div>
-      <!-- Icon Divider -->
-      <div class="divider-custom">
-        <div class="divider-custom-line"></div>
-        <div class="divider-custom-icon">
-          <i class="fas fa-star"></i>
+
+      <!-- Success/Error Messages -->
+      <div id="alerts" class="mb-4">
+        <div class="alert alert-danger" role="alert" id="alertErrorMsg" style="display:none;">
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          Não foi possível enviar seu orçamento. Tente novamente ou entre em contato pelo WhatsApp.
         </div>
-        <div class="divider-custom-line"></div>
+        <div class="alert alert-success" role="alert" id="alertSuccessMsg" style="display:none;">
+          <i class="fas fa-check-circle mr-2"></i>
+          Orçamento enviado com sucesso! Entraremos em contato em até 24h.
+        </div>
       </div>
-      <p class="h4" align = "center">Clique no botão flutuante do Whatsapp para falar com um representante!</p>
 
+      <!-- Form Container -->
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+          <form id="contact-form" class="contact-form">
+            <div class="row">
+              <!-- Nome -->
+              <div class="col-12 mb-3">
+                <label for="name" class="form-label">Nome completo *</label>
+                <input id="name" name="name" type="text" placeholder="Digite seu nome" 
+                       class="form-control" required>
+              </div>
+              
+              <!-- Telefone -->
+              <div class="col-12 mb-3">
+                <label for="phone" class="form-label">WhatsApp *</label>
+                <input id="phone" name="phone" type="tel" placeholder="(21) 98765-4321" 
+                       class="form-control" required>
+              </div>
+            </div>
 
+            <div class="row">
+              <!-- Email -->
+              <div class="col-12 mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="email" placeholder="seu@email.com" 
+                       class="form-control">
+              </div>
+              
+              <!-- Bairro -->
+              <div class="col-12 mb-3">
+                <label for="neighborhood" class="form-label">Bairro *</label>
+                <select class="form-control" id="neighborhood" name="neighborhood" required>
+                  <option value="">Selecione seu bairro</option>
+                  <option value="Barra da Tijuca">Barra da Tijuca</option>
+                  <option value="Recreio dos Bandeirantes">Recreio dos Bandeirantes</option>
+                  <option value="Vargem Grande">Vargem Grande</option>
+                  <option value="Vargem Pequena">Vargem Pequena</option>
+                  <option value="Jacarepaguá">Jacarepaguá</option>
+                  <option value="Anil">Anil</option>
+                  <option value="Freguesia de Jacarepaguá">Freguesia de Jacarepaguá</option>
+                  <option value="Gardênia Azul">Gardênia Azul</option>
+                  <option value="Pechincha">Pechincha</option>
+                  <option value="Taquara">Taquara</option>
+                  <option value="Praça Seca">Praça Seca</option>
+                  <option value="Tanque">Tanque</option>
+                  <option value="Cidade de Deus">Cidade de Deus</option>
+                  <option value="Curicica">Curicica</option>
+                  <option value="Itanhangá">Itanhangá</option>
+                  <option value="Joá">Joá</option>
+                  <option value="Realengo">Realengo</option>
+                  <option value="Bangu">Bangu</option>
+                  <option value="Padre Miguel">Padre Miguel</option>
+                  <option value="Campo Grande">Campo Grande</option>
+                  <option value="Santíssimo">Santíssimo</option>
+                  <option value="Cosmos">Cosmos</option>
+                  <option value="Paciência">Paciência</option>
+                  <option value="Santa Cruz">Santa Cruz</option>
+                  <option value="Sepetiba">Sepetiba</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Serviço -->
+            <div class="mb-4">
+              <label for="service" class="form-label">Que serviço você precisa?</label>
+              <textarea class="form-control" id="service" name="service" rows="3" 
+                        placeholder="Ex: Box blindex, cortina de vidro, guarda corpo..."></textarea>
+            </div>
+
+            <!-- Cidade (hidden) -->
+            <input type="hidden" id="city" name="city" value="Rio de Janeiro">
+
+            <!-- Submit Button -->
+            <div class="text-center">
+              <button type="submit" id="sendButton" class="btn btn-primary btn-lg w-100">
+                <span id="buttonText">Solicitar Orçamento</span>
+                <span id="buttonLoading" style="display:none;">
+                  <i class="fas fa-spinner fa-spin mr-2"></i>Enviando...
+                </span>
+              </button>
+            </div>
+
+            <!-- Trust Indicators -->
+            <div class="text-center mt-3">
+              <small class="text-muted">
+                ✓ Dados seguros • ✓ Resposta em 24h • ✓ Sem compromisso
+              </small>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- WhatsApp CTA -->
+      <div class="text-center mt-4">
+        <p class="text-muted">
+          <i class="fas fa-whatsapp mr-1"></i>
+          Precisa de atendimento imediato? Use o WhatsApp!
+        </p>
+      </div>
+    </div>
   </section>
 
   <!-- Footer -->

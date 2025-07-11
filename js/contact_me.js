@@ -18,6 +18,35 @@ document.addEventListener('DOMContentLoaded', function() {
     e.target.value = value;
   });
 
+  // Preencher campos ocultos com dados do navegador
+  document.getElementById('screen_height').value = window.screen.height;
+  document.getElementById('screen_width').value = window.screen.width;
+  document.getElementById('user_agent').value = navigator.userAgent;
+  document.getElementById('referrer').value = document.referrer;
+  document.getElementById('submission_date').value = new Date().toISOString();
+  // Detectar tipo de dispositivo
+  function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/mobile/i.test(ua)) return 'mobile';
+    if (/tablet/i.test(ua)) return 'tablet';
+    return 'desktop';
+  }
+  document.getElementById('device_type').value = getDeviceType();
+  // Preencher UTM se houver na URL
+  function getUrlParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param) || '';
+  }
+  document.getElementById('utm_source').value = getUrlParam('utm_source');
+  document.getElementById('utm_medium').value = getUrlParam('utm_medium');
+  document.getElementById('utm_campaign').value = getUrlParam('utm_campaign');
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      document.getElementById('latitude').value = position.coords.latitude;
+      document.getElementById('longitude').value = position.coords.longitude;
+    });
+  }
+
   // Show loading state
   function showLoading() {
     submitButton.disabled = true;
@@ -71,7 +100,19 @@ document.addEventListener('DOMContentLoaded', function() {
       email: document.getElementById('email').value.trim(),
       neighborhood: neighborhood,
       city: document.getElementById('city').value,
-      service: document.getElementById('service').value.trim()
+      description: document.getElementById('description').value.trim(),
+      latitude: document.getElementById('latitude').value,
+      longitude: document.getElementById('longitude').value,
+      screen_height: document.getElementById('screen_height').value,
+      screen_width: document.getElementById('screen_width').value,
+      user_agent: document.getElementById('user_agent').value,
+      utm_source: document.getElementById('utm_source').value,
+      utm_medium: document.getElementById('utm_medium').value,
+      utm_campaign: document.getElementById('utm_campaign').value,
+      referrer: document.getElementById('referrer').value,
+      submission_date: document.getElementById('submission_date').value,
+      device_type: document.getElementById('device_type').value,
+      consent: document.getElementById('consent').checked
     };
 
     // Send request

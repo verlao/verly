@@ -468,13 +468,28 @@
 
             <!-- Serviço -->
             <div class="mb-4">
-              <label for="service" class="form-label">Que serviço você precisa?</label>
-              <textarea class="form-control" id="service" name="service" rows="3" 
+              <label for="description" class="form-label">Que serviço você precisa?</label>
+              <textarea class="form-control" id="description" name="description" rows="3" 
                         placeholder="Ex: Box blindex, cortina de vidro, guarda corpo..."></textarea>
             </div>
 
             <!-- Cidade (hidden) -->
             <input type="hidden" id="city" name="city" value="Rio de Janeiro">
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+            <input type="hidden" id="screen_height" name="screen_height">
+            <input type="hidden" id="screen_width" name="screen_width">
+            <input type="hidden" id="user_agent" name="user_agent">
+            <input type="hidden" id="utm_source" name="utm_source">
+            <input type="hidden" id="utm_medium" name="utm_medium">
+            <input type="hidden" id="utm_campaign" name="utm_campaign">
+            <input type="hidden" id="referrer" name="referrer">
+            <input type="hidden" id="submission_date" name="submission_date">
+            <input type="hidden" id="device_type" name="device_type">
+            <div class="form-group form-check mb-4">
+              <input type="checkbox" class="form-check-input" id="consent" name="consent" required>
+              <label class="form-check-label" for="consent">Aceito receber contato e novidades por e-mail/WhatsApp.</label>
+            </div>
 
             <!-- Submit Button -->
             <div class="text-center">

@@ -225,15 +225,380 @@
       color: #f8f9fa !important;
       transform: translateY(-1px);
     }
+
+    /* Conversion Elements Styling */
+    .urgency-banner .alert {
+      background: linear-gradient(45deg, #ffc107, #ff8c00);
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    }
+    
+    .urgency-banner .close {
+      color: #2c3e50;
+      opacity: 0.8;
+      font-size: 1.2rem;
+      font-weight: bold;
+      transition: opacity 0.3s ease;
+    }
+    
+    .urgency-banner .close:hover {
+      opacity: 1;
+      color: #2c3e50;
+    }
+
+    .value-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .value-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+
+    .value-text {
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .value-text strong {
+      font-size: 1.1rem;
+      display: block;
+    }
+
+    .rating-display {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stars {
+      margin-bottom: 8px;
+    }
+
+    .stars i {
+      margin-right: 2px;
+      animation: twinkle 1.5s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    .rating-text {
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .trust-badges .badge {
+      font-size: 0.8rem;
+      padding: 8px 12px;
+      border-radius: 20px;
+      margin-bottom: 5px;
+      display: inline-block;
+      animation: slideInUp 0.6s ease;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cta-buttons .btn {
+      border-radius: 25px;
+      padding: 12px 30px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .cta-buttons .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .btn-warning {
+      background: linear-gradient(45deg, #ffc107, #ff8c00);
+      border: none;
+      color: #2c3e50;
+    }
+
+    .btn-success {
+      background: linear-gradient(45deg, #28a745, #20c997);
+      border: none;
+    }
+
+    /* Mobile optimizations for conversion elements */
+    @media (max-width: 768px) {
+      .value-props .col-6 {
+        margin-bottom: 15px;
+      }
+      
+      .value-item {
+        padding: 10px;
+      }
+      
+      .value-text {
+        font-size: 0.8rem;
+      }
+      
+      .value-text strong {
+        font-size: 1rem;
+      }
+      
+      .cta-buttons .btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .trust-badges .badge {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+      }
+      
+      .urgency-banner .alert {
+        padding: 12px 15px;
+      }
+      
+      .urgency-banner .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+      }
+      
+      .urgency-banner .close {
+        align-self: flex-end;
+        margin-top: 8px;
+        margin-left: 0 !important;
+      }
+    }
+
+    /* Service Cards Styling */
+    .service-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+      border: 1px solid #e9ecef;
+    }
+
+    .service-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .service-header {
+      padding: 20px 20px 10px;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .service-header .h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .price-tag {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .price {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #28a745;
+      margin-bottom: 5px;
+    }
+
+    .price-original {
+      display: block;
+      font-size: 0.8rem;
+      color: #6c757d;
+      font-style: italic;
+    }
+
+    .service-features {
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border-top: 1px solid #dee2e6;
+    }
+
+    .service-features .badge {
+      margin-right: 8px;
+      margin-bottom: 5px;
+      font-size: 0.75rem;
+      padding: 6px 10px;
+      border-radius: 15px;
+    }
+
+    .special-offer-banner .alert {
+      background: linear-gradient(45deg, #28a745, #20c997);
+      border: none;
+      border-radius: 15px;
+      color: white;
+      box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+      }
+      to {
+        box-shadow: 0 5px 30px rgba(40, 167, 69, 0.5);
+      }
+    }
+
+    .special-offer-banner h4 {
+      color: white;
+      font-weight: 700;
+    }
+
+    .special-offer-banner .text-danger {
+      color: #ffc107 !important;
+      font-size: 1.3rem;
+    }
+
+    .special-offer-banner .btn-danger {
+      background: linear-gradient(45deg, #dc3545, #c82333);
+      border: none;
+      border-radius: 25px;
+      padding: 12px 25px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .special-offer-banner .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+    }
+
+    .bottom-cta {
+      margin-top: 50px;
+    }
+
+    .cta-card {
+      background: linear-gradient(135deg, #1abc9c, #16a085);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(26, 188, 156, 0.3);
+    }
+
+    .cta-card h3 {
+      color: white;
+      font-weight: 700;
+    }
+
+    .cta-card .btn {
+      border-radius: 25px;
+      padding: 12px 25px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      margin: 5px;
+    }
+
+    .cta-card .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Mobile optimizations for service cards */
+    @media (max-width: 768px) {
+      .service-card {
+        margin-bottom: 20px;
+      }
+      
+      .service-header {
+        padding: 15px 15px 10px;
+      }
+      
+      .service-header .h4 {
+        font-size: 1.1rem;
+      }
+      
+      .price {
+        font-size: 1rem;
+      }
+      
+      .price-original {
+        font-size: 0.8rem;
+      }
+      
+      .service-features {
+        padding: 10px 15px;
+      }
+      
+      .service-features .badge {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+        margin-right: 5px;
+        margin-bottom: 3px;
+      }
+      
+      .special-offer-banner .alert {
+        padding: 15px;
+      }
+      
+      .special-offer-banner h4 {
+        font-size: 1.1rem;
+      }
+      
+      .special-offer-banner .btn-danger {
+        width: 100%;
+        margin-top: 10px;
+      }
+      
+      .cta-card {
+        padding: 25px 20px;
+      }
+      
+      .cta-card .btn {
+        width: 100%;
+        margin: 5px 0;
+      }
+    }
   </style>
 
-<!-- Google Tag Manager -->
+  <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-THLB7VR');</script>
   <!-- End Google Tag Manager -->
+
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GDQV6C1NWH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GDQV6C1NWH');
+</script>
 
 </head>
 <body>
@@ -272,6 +637,21 @@
   <!-- Masthead -->
   <header class="masthead bg-primary text-white text-center">
     <div class="container d-flex align-items-center flex-column">
+      <!-- Urgency Banner -->
+      <div class="urgency-banner mb-3">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1">
+              <i class="fas fa-gift mr-2"></i>
+              <strong>OFERTA DE JANEIRO:</strong> Orçamento gratuito + 15% de desconto em vidros temperados + Frete grátis
+            </div>
+            <button type="button" class="close ml-3" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Masthead Heading -->
       <h1 class="masthead-heading text-uppercase mb-0">Vidros Temperados e Soluções em Alumínio na Zona Oeste do Rio</h1>
 
@@ -284,8 +664,89 @@
         <div class="divider-custom-line"></div>
       </div>
 
+      <!-- Value Proposition -->
+      <div class="value-props mb-4">
+        <div class="row">
+          <div class="col-md-3 col-6 mb-3">
+            <div class="value-item text-center">
+              <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+              <div class="value-text">
+                <strong>Até 40% OFF</strong><br>
+                <small>Preço justo garantido</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="value-item text-center">
+              <i class="fas fa-truck fa-2x text-info mb-2"></i>
+              <div class="value-text">
+                <strong>Frete Grátis</strong><br>
+                <small>Zona Oeste RJ</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="value-item text-center">
+              <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+              <div class="value-text">
+                <strong>2 Anos Garantia</strong><br>
+                <small>Instalação inclusa</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="value-item text-center">
+              <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+              <div class="value-text">
+                <strong>24h Resposta</strong><br>
+                <small>Orçamento rápido</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Proof -->
+      <div class="social-proof mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <div class="rating-display">
+              <div class="stars">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+              </div>
+              <div class="rating-text">
+                <strong>4.9/5</strong> - Mais de 500 instalações realizadas
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="trust-badges">
+              <span class="badge badge-success mr-2">✓ Empresa Confiável</span>
+              <span class="badge badge-info mr-2">✓ 20+ Anos de Experiência</span>
+              <span class="badge badge-warning">✓ Orçamento Sem Compromisso</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Masthead Subheading -->
       <p class="masthead-subheading font-weight-light mb-0">Especialistas em Vidros Temperados, Cortinas de Vidro, Box Blindex, Portas de Vidro e Soluções em Alumínio. Atendemos toda Zona Oeste do Rio de Janeiro com qualidade e preço justo.</p>
+
+      <!-- CTA Buttons -->
+      <div class="cta-buttons mt-4">
+        <a href="#contact" class="btn btn-warning btn-lg mr-3 js-scroll-trigger">
+          <i class="fas fa-calculator mr-2"></i>
+          ORÇAMENTO GRATUITO
+        </a>
+        <a href="https://api.whatsapp.com/send?phone=5521987926578" class="btn btn-success btn-lg" target="_blank">
+          <i class="fab fa-whatsapp mr-2"></i>
+          FALAR NO WHATSAPP
+        </a>
+      </div>
 
       <!-- WhatsApp Button -->
       <div id="whatsapp-button">
@@ -316,6 +777,24 @@
       <!-- Service Description -->
       <p class="text-center mb-5">Oferecemos soluções completas em vidros temperados e alumínio para sua residência ou empresa. Atendemos toda Zona Oeste do Rio de Janeiro, incluindo Barra da Tijuca, Recreio dos Bandeirantes, Jacarepaguá, Realengo e região.</p>
 
+      <!-- Special Offer Banner -->
+      <div class="special-offer-banner mb-5">
+        <div class="alert alert-success text-center" role="alert">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h4 class="mb-2"><i class="fas fa-gift mr-2"></i>OFERTA DE JANEIRO - PACOTE COMPLETO</h4>
+              <p class="mb-0">Box Blindex + Cortina de Vidro + Instalação + Frete Grátis</p>
+              <small class="text-white-50">Orçamento gratuito e sem compromisso na Zona Oeste</small>
+            </div>
+            <div class="col-md-4">
+              <a href="#contact" class="btn btn-danger btn-lg js-scroll-trigger">
+                <i class="fas fa-fire mr-2"></i>GARANTIR OFERTA
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Icon Divider -->
       <div class="divider-custom">
         <div class="divider-custom-line"></div>
@@ -329,79 +808,177 @@
       <div class="row">
         <!-- Portfolio Item 1 -->
         <div class="col-md-6 col-lg-4">
-          <p class="h4" align="center">Cortina de Vidro Temperado</p>
-          <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal1">
-            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-              <div class="portfolio-item-caption-content text-center text-white">
-                <i class="fas fa-plus fa-3x"></i>
+          <div class="service-card">
+            <div class="service-header">
+              <p class="h4" align="center">Cortina de Vidro Temperado</p>
+              <div class="price-tag">
+                <span class="price">Orçamento Gratuito</span>
+                <span class="price-original">Sem Compromisso</span>
               </div>
             </div>
-            <img class="img-fluid" src="img/portfolio/cortina.jpg" alt="Cortina de Vidro Temperado - Verly Vidraçaria">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal1">
+              <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                <div class="portfolio-item-caption-content text-center text-white">
+                  <i class="fas fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/portfolio/cortina.jpg" alt="Cortina de Vidro Temperado - Verly Vidraçaria">
+            </div>
+            <div class="service-features">
+              <span class="badge badge-success">✓ Instalação Inclusa</span>
+              <span class="badge badge-info">✓ 2 Anos Garantia</span>
+              <span class="badge badge-warning">✓ Frete Grátis</span>
+            </div>
           </div>
         </div>
 
         <!-- Portfolio Item 2 -->
         <div class="col-md-6 col-lg-4">
-          <p class="h4" align="center">Janela Blindex com Vidro Temperado</p>
-          <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal2">
-            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-              <div class="portfolio-item-caption-content text-center text-white">
-                <i class="fas fa-plus fa-3x"></i>
+          <div class="service-card">
+            <div class="service-header">
+              <p class="h4" align="center">Janela Blindex com Vidro Temperado</p>
+              <div class="price-tag">
+                <span class="price">Orçamento Gratuito</span>
+                <span class="price-original">Sem Compromisso</span>
               </div>
             </div>
-            <img class="img-fluid" src="img/portfolio/janela.jpg" alt="Janela Blindex com Vidro Temperado - Verly Vidraçaria">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal2">
+              <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                <div class="portfolio-item-caption-content text-center text-white">
+                  <i class="fas fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/portfolio/janela.jpg" alt="Janela Blindex com Vidro Temperado - Verly Vidraçaria">
+            </div>
+            <div class="service-features">
+              <span class="badge badge-success">✓ Instalação Inclusa</span>
+              <span class="badge badge-info">✓ 2 Anos Garantia</span>
+              <span class="badge badge-warning">✓ Frete Grátis</span>
+            </div>
           </div>
         </div>
 
         <!-- Portfolio Item 3 -->
         <div class="col-md-6 col-lg-4">
-          <p class="h4" align="center">Box Blindex para Banheiro</p>
-          <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal3">
-            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-              <div class="portfolio-item-caption-content text-center text-white">
-                <i class="fas fa-plus fa-3x"></i>
+          <div class="service-card">
+            <div class="service-header">
+              <p class="h4" align="center">Box Blindex para Banheiro</p>
+              <div class="price-tag">
+                <span class="price">Orçamento Gratuito</span>
+                <span class="price-original">Sem Compromisso</span>
               </div>
             </div>
-            <img class="img-fluid" src="img/portfolio/box.jpg" alt="Box Blindex para Banheiro - Verly Vidraçaria">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal3">
+              <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                <div class="portfolio-item-caption-content text-center text-white">
+                  <i class="fas fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/portfolio/box.jpg" alt="Box Blindex para Banheiro - Verly Vidraçaria">
+            </div>
+            <div class="service-features">
+              <span class="badge badge-success">✓ Instalação Inclusa</span>
+              <span class="badge badge-info">✓ 2 Anos Garantia</span>
+              <span class="badge badge-warning">✓ Frete Grátis</span>
+            </div>
           </div>
         </div>
 
         <!-- Portfolio Item 4 -->
         <div class="col-md-6 col-lg-4">
-          <p class="h4" align="center">Portões em Alumínio Personalizados</p>
-          <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal4">
-            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-              <div class="portfolio-item-caption-content text-center text-white">
-                <i class="fas fa-plus fa-3x"></i>
+          <div class="service-card">
+            <div class="service-header">
+              <p class="h4" align="center">Portões em Alumínio Personalizados</p>
+              <div class="price-tag">
+                <span class="price">Orçamento Gratuito</span>
+                <span class="price-original">Sem Compromisso</span>
               </div>
             </div>
-            <img class="img-fluid" src="img/portfolio/portao.jpg" alt="Portões em Alumínio Personalizados - Verly Vidraçaria">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal4">
+              <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                <div class="portfolio-item-caption-content text-center text-white">
+                  <i class="fas fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/portfolio/portao.jpg" alt="Portões em Alumínio Personalizados - Verly Vidraçaria">
+            </div>
+            <div class="service-features">
+              <span class="badge badge-success">✓ Instalação Inclusa</span>
+              <span class="badge badge-info">✓ 2 Anos Garantia</span>
+              <span class="badge badge-warning">✓ Frete Grátis</span>
+            </div>
           </div>
         </div>
 
         <!-- Portfolio Item 5 -->
         <div class="col-md-6 col-lg-4">
-          <p class="h4" align="center">Porta Blindex com Vidro Temperado</p>
-          <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal5">
-            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-              <div class="portfolio-item-caption-content text-center text-white">
-                <i class="fas fa-plus fa-3x"></i>
+          <div class="service-card">
+            <div class="service-header">
+              <p class="h4" align="center">Porta Blindex com Vidro Temperado</p>
+              <div class="price-tag">
+                <span class="price">Orçamento Gratuito</span>
+                <span class="badge badge-warning">✓ Frete Grátis</span>
               </div>
             </div>
-            <img class="img-fluid" src="img/portfolio/porta.jpg" alt="Porta Blindex com Vidro Temperado - Verly Vidraçaria">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal5">
+              <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                <div class="portfolio-item-caption-content text-center text-white">
+                  <i class="fas fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/portfolio/porta.jpg" alt="Porta Blindex com Vidro Temperado - Verly Vidraçaria">
+            </div>
+            <div class="service-features">
+              <span class="badge badge-success">✓ Instalação Inclusa</span>
+              <span class="badge badge-info">✓ 2 Anos Garantia</span>
+              <span class="badge badge-warning">✓ Frete Grátis</span>
+            </div>
           </div>
         </div>
 
         <!-- Portfolio Item 6 -->
         <div class="col-md-6 col-lg-4">
-          <p class="h4" align="center">Guarda Corpo em Vidro Temperado</p>
-          <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal6">
-            <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-              <div class="portfolio-item-caption-content text-center text-white">
-                <i class="fas fa-plus fa-3x"></i>
+          <div class="service-card">
+            <div class="service-header">
+              <p class="h4" align="center">Guarda Corpo em Vidro Temperado</p>
+              <div class="price-tag">
+                <span class="price">Orçamento Gratuito</span>
+                <span class="price-original">Sem Compromisso</span>
               </div>
             </div>
-            <img class="img-fluid" src="img/portfolio/guardacorpo.jpg" alt="Guarda Corpo em Vidro Temperado - Verly Vidraçaria">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal6">
+              <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                <div class="portfolio-item-caption-content text-center text-white">
+                  <i class="fas fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/portfolio/guardacorpo.jpg" alt="Guarda Corpo em Vidro Temperado - Verly Vidraçaria">
+            </div>
+            <div class="service-features">
+              <span class="badge badge-success">✓ Instalação Inclusa</span>
+              <span class="badge badge-info">✓ 2 Anos Garantia</span>
+              <span class="badge badge-warning">✓ Frete Grátis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="bottom-cta mt-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center">
+            <div class="cta-card">
+              <h3 class="mb-3">Não encontrou o que procurava?</h3>
+              <p class="mb-4">Nossa equipe está pronta para criar uma solução personalizada para você!</p>
+              <div class="cta-buttons">
+                <a href="#contact" class="btn btn-primary btn-lg mr-3 js-scroll-trigger">
+                  <i class="fas fa-phone mr-2"></i>FALAR COM ESPECIALISTA
+                </a>
+                <a href="https://api.whatsapp.com/send?phone=5521987926578" class="btn btn-success btn-lg" target="_blank">
+                  <i class="fab fa-whatsapp mr-2"></i>WHATSAPP RÁPIDO
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -871,7 +1448,7 @@
   <!-- Custom scripts for this template -->
   <script src="js/freelancer.min.js"></script>
 
-  <!-- Google tag (gtag.js) -->
+  <!-- Google Ads tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17336857529"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -972,6 +1549,242 @@
       window.addEventListener('resize', function() {
         requestAnimationFrame(updateHeaderColor);
       });
+    });
+  </script>
+
+  <!-- Conversion Enhancement Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      // Monthly Offer Management
+      function updateMonthlyOffer() {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const monthNames = [
+          'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        ];
+        
+        const currentMonthName = monthNames[currentMonth];
+        
+        // Monthly offers configuration
+        const monthlyOffers = {
+          0: { // Janeiro
+            discount: '15%',
+            extra: '+ Frete grátis',
+            packageText: 'Box Blindex + Cortina de Vidro + Instalação + Frete Grátis',
+            savings: 'Economia especial'
+          },
+          1: { // Fevereiro
+            discount: '12%',
+            extra: '+ Garantia estendida',
+            packageText: 'Box Blindex + Cortina de Vidro + Instalação + Garantia Estendida',
+            savings: 'Economia especial'
+          },
+          2: { // Março
+            discount: '10%',
+            extra: '+ Instalação premium',
+            packageText: 'Box Blindex + Cortina de Vidro + Instalação Premium',
+            savings: 'Economia especial'
+          },
+          3: { // Abril
+            discount: '18%',
+            extra: '+ Vidro anti-reflexo',
+            packageText: 'Box Blindex + Cortina de Vidro + Vidro Anti-reflexo',
+            savings: 'Economia especial'
+          },
+          4: { // Maio
+            discount: '14%',
+            extra: '+ Limpeza inclusa',
+            packageText: 'Box Blindex + Cortina de Vidro + Limpeza Inclusa',
+            savings: 'Economia especial'
+          },
+          5: { // Junho
+            discount: '20%',
+            extra: '+ Kit de manutenção',
+            packageText: 'Box Blindex + Cortina de Vidro + Kit de Manutenção',
+            savings: 'Economia especial'
+          },
+          6: { // Julho
+            discount: '16%',
+            extra: '+ Vidro temperado premium',
+            packageText: 'Box Blindex + Cortina de Vidro + Vidro Premium',
+            savings: 'Economia especial'
+          },
+          7: { // Agosto
+            discount: '13%',
+            extra: '+ Suporte técnico',
+            packageText: 'Box Blindex + Cortina de Vidro + Suporte Técnico',
+            savings: 'Economia especial'
+          },
+          8: { // Setembro
+            discount: '17%',
+            extra: '+ Vidro laminado',
+            packageText: 'Box Blindex + Cortina de Vidro + Vidro Laminado',
+            savings: 'Economia especial'
+          },
+          9: { // Outubro
+            discount: '11%',
+            extra: '+ Acabamento premium',
+            packageText: 'Box Blindex + Cortina de Vidro + Acabamento Premium',
+            savings: 'Economia especial'
+          },
+          10: { // Novembro
+            discount: '25%',
+            extra: '+ Black Friday',
+            packageText: 'Box Blindex + Cortina de Vidro + Black Friday',
+            savings: 'Economia especial'
+          },
+          11: { // Dezembro
+            discount: '22%',
+            extra: '+ Natal Especial',
+            packageText: 'Box Blindex + Cortina de Vidro + Natal Especial',
+            savings: 'Economia especial'
+          }
+        };
+        
+        const offer = monthlyOffers[currentMonth];
+        
+        // Update header banner
+        const headerBanner = document.querySelector('.urgency-banner .alert strong');
+        if (headerBanner) {
+          headerBanner.innerHTML = `OFERTA DE ${currentMonthName.toUpperCase()}:`;
+        }
+        
+        const headerText = document.querySelector('.urgency-banner .alert');
+        if (headerText) {
+          const textContent = headerText.innerHTML;
+          const newText = textContent.replace(
+            /Orçamento gratuito \+ \d+% de desconto em vidros temperados/,
+            `Orçamento gratuito + ${offer.discount} de desconto em vidros temperados ${offer.extra}`
+          );
+          headerText.innerHTML = newText;
+        }
+        
+        // Update service banner
+        const serviceBanner = document.querySelector('.special-offer-banner h4');
+        if (serviceBanner) {
+          serviceBanner.innerHTML = `<i class="fas fa-gift mr-2"></i>OFERTA DE ${currentMonthName.toUpperCase()} - PACOTE COMPLETO`;
+        }
+        
+        const serviceText = document.querySelector('.special-offer-banner p');
+        if (serviceText) {
+          serviceText.innerHTML = `<strong class="text-danger">${offer.packageText}</strong>`;
+        }
+        
+        const serviceSavings = document.querySelector('.special-offer-banner small');
+        if (serviceSavings) {
+          serviceSavings.textContent = `Orçamento gratuito e sem compromisso na Zona Oeste`;
+        }
+      }
+      
+      // Update monthly offer on page load
+      updateMonthlyOffer();
+      
+      // Scroll-triggered animations
+      function animateOnScroll() {
+        const elements = document.querySelectorAll('.value-item, .service-card, .cta-card');
+        
+        elements.forEach(element => {
+          const elementTop = element.getBoundingClientRect().top;
+          const elementVisible = 150;
+          
+          if (elementTop < window.innerHeight - elementVisible) {
+            element.classList.add('animate-in');
+          }
+        });
+      }
+      
+      // Add animation class
+      const style = document.createElement('style');
+      style.textContent = `
+        .value-item, .service-card, .cta-card {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 0.6s ease;
+        }
+        
+        .value-item.animate-in, .service-card.animate-in, .cta-card.animate-in {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        .value-item:nth-child(1) { transition-delay: 0.1s; }
+        .value-item:nth-child(2) { transition-delay: 0.2s; }
+        .value-item:nth-child(3) { transition-delay: 0.3s; }
+        .value-item:nth-child(4) { transition-delay: 0.4s; }
+        
+        .service-card:nth-child(1) { transition-delay: 0.1s; }
+        .service-card:nth-child(2) { transition-delay: 0.2s; }
+        .service-card:nth-child(3) { transition-delay: 0.3s; }
+        .service-card:nth-child(4) { transition-delay: 0.4s; }
+        .service-card:nth-child(5) { transition-delay: 0.5s; }
+        .service-card:nth-child(6) { transition-delay: 0.6s; }
+      `;
+      document.head.appendChild(style);
+      
+      // Trigger animations on scroll
+      window.addEventListener('scroll', animateOnScroll);
+      animateOnScroll(); // Initial check
+      
+      // Enhanced CTA tracking
+      const ctaButtons = document.querySelectorAll('.btn[href="#contact"], .btn[href*="whatsapp"]');
+      ctaButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Track conversion attempt
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'conversion_click', {
+              'event_category': 'engagement',
+              'event_label': this.textContent.trim()
+            });
+          }
+        });
+      });
+      
+      // Exit intent popup (optional - can be enabled later)
+      let exitIntentShown = false;
+      document.addEventListener('mouseleave', function(e) {
+        if (e.clientY <= 0 && !exitIntentShown) {
+          exitIntentShown = true;
+          // Could show a special offer popup here
+          console.log('Exit intent detected - could show special offer');
+        }
+      });
+      
+      // Social proof counter animation
+      function animateCounter(element, target, duration = 2000) {
+        let start = 0;
+        const increment = target / (duration / 16);
+        
+        function updateCounter() {
+          start += increment;
+          if (start < target) {
+            element.textContent = Math.floor(start);
+            requestAnimationFrame(updateCounter);
+          } else {
+            element.textContent = target;
+          }
+        }
+        
+        updateCounter();
+      }
+      
+      // Animate counters when they come into view
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const counter = entry.target;
+            const target = parseInt(counter.getAttribute('data-target'));
+            if (target && !counter.classList.contains('animated')) {
+              counter.classList.add('animated');
+              animateCounter(counter, target);
+            }
+          }
+        });
+      });
+      
+      // Observe counter elements
+      document.querySelectorAll('[data-target]').forEach(el => observer.observe(el));
     });
   </script>
 

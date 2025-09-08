@@ -10,6 +10,334 @@
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <link href="css/freelancer.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .masthead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .masthead::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+        
+        .masthead-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .masthead h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .masthead .lead {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--secondary-color), #5dade2);
+            border: none;
+        }
+        
+        .btn-outline-success {
+            border: 2px solid var(--success-color);
+            color: var(--success-color);
+            background: transparent;
+        }
+        
+        .btn-outline-success:hover {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .section-heading {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+        
+        .portfolio-item {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .portfolio-item img {
+            transition: transform 0.3s ease;
+        }
+        
+        .portfolio-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .floating-label-form-group label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+        
+        .nav-link {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--secondary-color) !important;
+        }
+        
+        .footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 3rem 0;
+        }
+        
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+        
+        .social-btn:hover {
+             transform: translateY(-3px);
+             box-shadow: var(--shadow-hover);
+         }
+         
+         .navbar-scrolled {
+             background: rgba(255, 255, 255, 0.98) !important;
+             box-shadow: 0 2px 25px rgba(0,0,0,0.15);
+         }
+         
+         .btn-loading {
+             position: relative;
+             pointer-events: none;
+         }
+         
+         .btn-loading::after {
+             content: '';
+             position: absolute;
+             width: 16px;
+             height: 16px;
+             margin: auto;
+             border: 2px solid transparent;
+             border-top-color: #ffffff;
+             border-radius: 50%;
+             animation: spin 1s linear infinite;
+             top: 0;
+             left: 0;
+             bottom: 0;
+             right: 0;
+         }
+         
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
+         
+         @keyframes fadeInUp {
+             from {
+                 opacity: 0;
+                 transform: translateY(30px);
+             }
+             to {
+                 opacity: 1;
+                 transform: translateY(0);
+             }
+         }
+         
+         @keyframes slideInLeft {
+             from {
+                 opacity: 0;
+                 transform: translateX(-30px);
+             }
+             to {
+                 opacity: 1;
+                 transform: translateX(0);
+             }
+         }
+         
+         @keyframes slideInRight {
+             from {
+                 opacity: 0;
+                 transform: translateX(30px);
+             }
+             to {
+                 opacity: 1;
+                 transform: translateX(0);
+             }
+         }
+         
+         .fade-in-up {
+             animation: fadeInUp 0.8s ease-out;
+         }
+         
+         .slide-in-left {
+             animation: slideInLeft 0.8s ease-out;
+         }
+         
+         .slide-in-right {
+             animation: slideInRight 0.8s ease-out;
+         }
+         
+         .alert {
+             border-radius: 10px;
+             border: none;
+             box-shadow: var(--shadow);
+         }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .masthead h1 {
+                font-size: 2.5rem;
+            }
+            
+            .masthead .lead {
+                font-size: 1.1rem;
+            }
+            
+            .section-heading {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 0.9rem;
+            }
+            
+            .portfolio-item {
+                margin-bottom: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .masthead h1 {
+                font-size: 2rem;
+            }
+            
+            .section-heading {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+        }
+    </style>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17336857529"></script>
     <script>
@@ -96,13 +424,13 @@
 
     <!-- Masthead -->
     <header class="masthead bg-primary text-white text-center">
-        <div class="container d-flex align-items-center flex-column">
+        <div class="container d-flex align-items-center flex-column masthead-content">
             <!-- Masthead Avatar Image -->
-            <img class="masthead-avatar mb-5" src="img/logo-verly.png" alt="Verly Vidraçaria Logo">
+            <img class="masthead-avatar mb-5 fade-in-up" src="img/logo-verly.png" alt="Verly Vidraçaria Logo">
             <!-- Masthead Heading -->
-            <h1 class="masthead-heading text-uppercase mb-0">Verly Vidraçaria</h1>
+            <h1 class="masthead-heading text-uppercase mb-0 fade-in-up" style="animation-delay: 0.2s;">Verly Vidraçaria</h1>
             <!-- Icon Divider -->
-            <div class="divider-custom divider-light">
+            <div class="divider-custom divider-light fade-in-up" style="animation-delay: 0.4s;">
                 <div class="divider-custom-line"></div>
                 <div class="divider-custom-icon">
                     <i class="fas fa-star"></i>
@@ -110,7 +438,13 @@
                 <div class="divider-custom-line"></div>
             </div>
             <!-- Masthead Subheading -->
-            <p class="masthead-subheading font-weight-light mb-0">Especialista em Vidros Temperados, Box Blindex e Soluções em Alumínio na Zona Oeste</p>
+            <p class="masthead-subheading font-weight-light mb-4 lead fade-in-up" style="animation-delay: 0.6s;">Especialista em Vidros Temperados, Box Blindex e Soluções em Alumínio na Zona Oeste</p>
+            
+            <!-- Call to Action Buttons -->
+            <div class="fade-in-up" style="animation-delay: 0.8s;">
+                <a class="btn btn-primary btn-xl mr-3 mb-3" href="#contact">Solicitar Orçamento</a>
+                <a class="btn btn-outline-light btn-xl mb-3" href="#portfolio">Ver Nossos Trabalhos</a>
+            </div>
         </div>
     </header>
 
@@ -118,7 +452,7 @@
     <section class="page-section portfolio" id="portfolio">
         <div class="container">
             <!-- Portfolio Section Heading -->
-            <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Nossos Serviços</h2>
+            <h2 class="page-section-heading section-heading text-center text-uppercase text-secondary mb-0">Nossos Serviços</h2>
             <!-- Icon Divider -->
             <div class="divider-custom">
                 <div class="divider-custom-line"></div>
@@ -205,22 +539,71 @@
                 <div class="divider-custom-line"></div>
             </div>
             <!-- Contact Section Form -->
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="text-center">
-                        <h4 class="mb-4">Solicite seu orçamento gratuito!</h4>
-                        <p class="lead mb-4">Entre em contato conosco pelo WhatsApp ou telefone para receber um orçamento personalizado.</p>
-                        <a class="btn btn-xl btn-outline-success" href="https://wa.me/5521999999999" target="_blank">
-                            <i class="fab fa-whatsapp mr-2"></i>
-                            WhatsApp
-                        </a>
-                        <p class="mt-4">
-                            <i class="fas fa-phone mr-2"></i>
-                            (21) 99999-9999
-                        </p>
-                    </div>
-                </div>
-            </div>
+             <div class="row">
+                 <div class="col-lg-8 mx-auto">
+                     <!-- Contact Form -->
+                     <form id="contactForm" name="sentMessage" novalidate="novalidate">
+                         <div class="control-group">
+                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                 <label>Nome Completo</label>
+                                 <input class="form-control" id="name" type="text" placeholder="Nome Completo" required="required" data-validation-required-message="Por favor, digite seu nome.">
+                                 <p class="help-block text-danger"></p>
+                             </div>
+                         </div>
+                         <div class="control-group">
+                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                 <label>Telefone</label>
+                                 <input class="form-control" id="phone" type="tel" placeholder="(21) 99999-9999" required="required" data-validation-required-message="Por favor, digite seu telefone.">
+                                 <p class="help-block text-danger"></p>
+                             </div>
+                         </div>
+                         <div class="control-group">
+                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                 <label>Email</label>
+                                 <input class="form-control" id="email" type="email" placeholder="Email" required="required" data-validation-required-message="Por favor, digite um email válido.">
+                                 <p class="help-block text-danger"></p>
+                             </div>
+                         </div>
+                         <div class="control-group">
+                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                 <label>Tipo de Serviço</label>
+                                 <select class="form-control" id="service" required="required" data-validation-required-message="Por favor, selecione um serviço.">
+                                     <option value="">Selecione o serviço desejado</option>
+                                     <option value="box-banheiro">Box para Banheiro</option>
+                                     <option value="vidro-temperado">Vidro Temperado</option>
+                                     <option value="cortina-vidro">Cortina de Vidro</option>
+                                     <option value="guarda-corpo">Guarda-corpo</option>
+                                     <option value="janela-aluminio">Janela de Alumínio</option>
+                                     <option value="porta-aluminio">Porta de Alumínio</option>
+                                     <option value="outros">Outros</option>
+                                 </select>
+                                 <p class="help-block text-danger"></p>
+                             </div>
+                         </div>
+                         <div class="control-group">
+                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                 <label>Mensagem</label>
+                                 <textarea class="form-control" id="message" rows="5" placeholder="Descreva seu projeto ou dúvida" required="required" data-validation-required-message="Por favor, digite uma mensagem."></textarea>
+                                 <p class="help-block text-danger"></p>
+                             </div>
+                         </div>
+                         <br>
+                         <div id="success"></div>
+                         <div class="form-group text-center">
+                             <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit">Solicitar Orçamento</button>
+                         </div>
+                     </form>
+                     
+                     <!-- WhatsApp Button -->
+                     <div class="text-center mt-4">
+                         <p class="lead mb-3">Ou entre em contato diretamente:</p>
+                         <a class="btn btn-xl btn-outline-success mb-3" href="https://wa.me/5521987926578" target="_blank">
+                             <i class="fab fa-whatsapp mr-2"></i>
+                             WhatsApp: (21) 98792-6578
+                         </a>
+                     </div>
+                 </div>
+             </div>
         </div>
     </section>
 
@@ -276,6 +659,121 @@
 
     <!-- Custom scripts for this template -->
     <script src="js/freelancer.min.js"></script>
+    
+    <!-- Contact Form JavaScript -->
+    <script>
+    $(document).ready(function() {
+        // Smooth scrolling for navigation links
+        $('a[href^="#"]').on('click', function(e) {
+            e.preventDefault();
+            var target = $(this.getAttribute('href'));
+            if (target.length) {
+                $('html, body').stop().animate({
+                    scrollTop: target.offset().top - 70
+                }, 1000, 'easeInOutExpo');
+            }
+        });
+        
+        // Scroll animations
+        function animateOnScroll() {
+            $('.portfolio-item, .card').each(function() {
+                var elementTop = $(this).offset().top;
+                var elementBottom = elementTop + $(this).outerHeight();
+                var viewportTop = $(window).scrollTop();
+                var viewportBottom = viewportTop + $(window).height();
+                
+                if (elementBottom > viewportTop && elementTop < viewportBottom) {
+                    $(this).addClass('fade-in-up');
+                }
+            });
+        }
+        
+        // Trigger animation on scroll
+        $(window).on('scroll', animateOnScroll);
+        animateOnScroll(); // Initial check
+        
+        // Navbar background change on scroll
+        $(window).scroll(function() {
+            if ($(window).scrollTop() > 100) {
+                $('.navbar').addClass('navbar-scrolled');
+            } else {
+                $('.navbar').removeClass('navbar-scrolled');
+            }
+        });
+        
+        // Contact form handling
+        $('#contactForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            var name = $('#name').val();
+            var phone = $('#phone').val();
+            var email = $('#email').val();
+            var service = $('#service').val();
+            var message = $('#message').val();
+            
+            // Validate required fields
+            if (!name || !phone || !email || !service || !message) {
+                $('#success').html('<div class="alert alert-danger"><strong>Erro!</strong> Por favor, preencha todos os campos obrigatórios.</div>');
+                return;
+            }
+            
+            // Create WhatsApp message
+            var whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +
+                `*Nome:* ${name}\n` +
+                `*Telefone:* ${phone}\n` +
+                `*Email:* ${email}\n` +
+                `*Serviço:* ${service}\n` +
+                `*Mensagem:* ${message}\n\n` +
+                `Enviado através do site verlyvidracaria.com`;
+            
+            // Encode message for URL
+            var encodedMessage = encodeURIComponent(whatsappMessage);
+            
+            // Open WhatsApp with pre-filled message
+            var whatsappURL = `https://wa.me/5521987926578?text=${encodedMessage}`;
+            window.open(whatsappURL, '_blank');
+            
+            // Show success message with animation
+            $('#success').html('<div class="alert alert-success fade-in-up"><strong>Sucesso!</strong> Redirecionando para o WhatsApp...</div>');
+            
+            // Reset form after 3 seconds
+            setTimeout(function() {
+                $('#contactForm')[0].reset();
+                $('#success').html('');
+            }, 3000);
+        });
+        
+        // Phone mask with better formatting
+        $('#phone').on('input', function() {
+            var value = this.value.replace(/\D/g, '');
+            var formattedValue = '';
+            
+            if (value.length > 0) {
+                formattedValue = '(' + value.substring(0, 2);
+            }
+            if (value.length > 2) {
+                formattedValue += ') ' + value.substring(2, 7);
+            }
+            if (value.length > 7) {
+                formattedValue += '-' + value.substring(7, 11);
+            }
+            
+            this.value = formattedValue;
+        });
+        
+        // Add loading animation to buttons
+        $('.btn').on('click', function() {
+            var $btn = $(this);
+            if (!$btn.hasClass('btn-loading')) {
+                $btn.addClass('btn-loading');
+                setTimeout(function() {
+                    $btn.removeClass('btn-loading');
+                }, 1000);
+            }
+        });
+    });
+    </script>
 
 </body>
 </html>

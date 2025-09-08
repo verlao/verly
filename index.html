@@ -299,6 +299,88 @@
              border: none;
              box-shadow: var(--shadow);
          }
+         
+         /* Form Styles */
+         .form-control {
+             border: 2px solid #e9ecef;
+             border-radius: 10px;
+             padding: 15px 20px;
+             font-size: 16px;
+             transition: all 0.3s ease;
+             background: #fff;
+         }
+         
+         .form-control:focus {
+             border-color: var(--secondary-color);
+             box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+             background: #fff;
+         }
+         
+         .form-group label {
+             font-weight: 600;
+             color: var(--primary-color);
+             margin-bottom: 8px;
+             font-size: 14px;
+             text-transform: uppercase;
+             letter-spacing: 0.5px;
+         }
+         
+         .contact-form {
+             background: #fff;
+             padding: 40px;
+             border-radius: 20px;
+             box-shadow: var(--shadow);
+             margin-top: 30px;
+         }
+         
+         .contact-info {
+             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+             color: white;
+             padding: 40px;
+             border-radius: 20px;
+             margin-top: 30px;
+         }
+         
+         .contact-info h3 {
+             margin-bottom: 30px;
+             font-weight: 700;
+         }
+         
+         .contact-info .contact-item {
+             display: flex;
+             align-items: center;
+             margin-bottom: 20px;
+         }
+         
+         .contact-info .contact-item i {
+             font-size: 20px;
+             margin-right: 15px;
+             width: 30px;
+         }
+         
+         .whatsapp-btn {
+             background: linear-gradient(45deg, #25d366, #128c7e);
+             border: none;
+             color: white;
+             padding: 15px 30px;
+             border-radius: 50px;
+             font-weight: 600;
+             text-transform: uppercase;
+             letter-spacing: 1px;
+             transition: all 0.3s ease;
+             box-shadow: var(--shadow);
+         }
+         
+         .whatsapp-btn:hover {
+             transform: translateY(-2px);
+             box-shadow: var(--shadow-hover);
+             color: white;
+         }
+         
+         .help-block {
+             font-size: 12px;
+             margin-top: 5px;
+         }
         
         /* Mobile Responsive */
         @media (max-width: 768px) {
@@ -426,7 +508,7 @@
     <header class="masthead bg-primary text-white text-center">
         <div class="container d-flex align-items-center flex-column masthead-content">
             <!-- Masthead Avatar Image -->
-            <img class="masthead-avatar mb-5 fade-in-up" src="img/logo-verly.png" alt="Verly Vidraçaria Logo">
+            <img class="masthead-avatar mb-5 fade-in-up" src="img/logo.png" alt="Verly Vidraçaria Logo">
             <!-- Masthead Heading -->
             <h1 class="masthead-heading text-uppercase mb-0 fade-in-up" style="animation-delay: 0.2s;">Verly Vidraçaria</h1>
             <!-- Icon Divider -->
@@ -471,7 +553,7 @@
                                 <i class="fas fa-plus fa-3x"></i>
                             </div>
                         </div>
-                        <img class="img-fluid" src="img/portfolio/vidro-temperado.jpg" alt="Vidro Temperado">
+                        <img class="img-fluid" src="img/portfolio/janela.jpg" alt="Vidro Temperado">
                     </div>
                 </div>
                 <!-- Portfolio Item 2 -->
@@ -482,7 +564,7 @@
                                 <i class="fas fa-plus fa-3x"></i>
                             </div>
                         </div>
-                        <img class="img-fluid" src="img/portfolio/box-blindex.jpg" alt="Box Blindex">
+                        <img class="img-fluid" src="img/portfolio/box.jpg" alt="Box Blindex">
                     </div>
                 </div>
                 <!-- Portfolio Item 3 -->
@@ -493,7 +575,7 @@
                                 <i class="fas fa-plus fa-3x"></i>
                             </div>
                         </div>
-                        <img class="img-fluid" src="img/portfolio/cortina-vidro.jpg" alt="Cortina de Vidro">
+                        <img class="img-fluid" src="img/portfolio/cortina.jpg" alt="Cortina de Vidro">
                     </div>
                 </div>
             </div>
@@ -539,10 +621,12 @@
                 <div class="divider-custom-line"></div>
             </div>
             <!-- Contact Section Form -->
-             <div class="row">
-                 <div class="col-lg-8 mx-auto">
-                     <!-- Contact Form -->
-                     <form id="contactForm" name="sentMessage" novalidate="novalidate">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="contact-form">
+                        <h3 class="text-center mb-4">Solicite seu Orçamento</h3>
+                        <!-- Contact Form -->
+                        <form id="contactForm" name="sentMessage" novalidate="novalidate">
                          <div class="control-group">
                              <div class="form-group floating-label-form-group controls mb-0 pb-2">
                                  <label>Nome Completo</label>
@@ -592,18 +676,64 @@
                          <div class="form-group text-center">
                              <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit">Solicitar Orçamento</button>
                          </div>
-                     </form>
-                     
-                     <!-- WhatsApp Button -->
-                     <div class="text-center mt-4">
-                         <p class="lead mb-3">Ou entre em contato diretamente:</p>
-                         <a class="btn btn-xl btn-outline-success mb-3" href="https://wa.me/5521987926578" target="_blank">
-                             <i class="fab fa-whatsapp mr-2"></i>
-                             WhatsApp: (21) 98792-6578
-                         </a>
-                     </div>
-                 </div>
-             </div>
+                        </form>
+                        
+                        <!-- WhatsApp Button -->
+                        <div class="text-center mt-4">
+                            <a class="whatsapp-btn" href="https://wa.me/5521987926578" target="_blank">
+                                <i class="fab fa-whatsapp mr-2"></i>WhatsApp Direto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="contact-info">
+                        <h3>Informações de Contato</h3>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong>Telefone</strong><br>
+                                (21) 98792-6578
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Horário de Atendimento</strong><br>
+                                Segunda a Sábado: 8h às 18h
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Área de Atendimento</strong><br>
+                                Zona Oeste do Rio de Janeiro
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-tools"></i>
+                            <div>
+                                <strong>Especialidades</strong><br>
+                                Vidros Temperados, Box Blindex,<br>
+                                Cortinas de Vidro, Alumínio
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-award"></i>
+                            <div>
+                                <strong>Garantia</strong><br>
+                                Qualidade e segurança garantidas
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 

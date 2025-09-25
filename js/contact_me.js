@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Send request
-    fetch('https://verly-service-production.up.railway.app/verly-service/leads', {
+    fetch('https://api.verlyvidracaria.com/verly-service/leads', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

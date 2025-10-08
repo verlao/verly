@@ -1486,8 +1486,43 @@
             btnText.hide();
             btnLoader.show();
 
-            // Simulate API delay (remove in production if using real backend)
-            setTimeout(function() {
+            // Prepare lead data
+            var leadData = {
+                name: name.val().trim(),
+                phone: phone.val().replace(/\D/g, ''),
+                email: email.val().trim(),
+                neighborhood: 'Contato Site Principal',
+                city: 'Rio de Janeiro',
+                description: service.find('option:selected').text() + (message ? ' - ' + message : ''),
+                screen_height: window.screen.height,
+                screen_width: window.screen.width,
+                user_agent: navigator.userAgent,
+                referrer: document.referrer,
+                submission_date: new Date().toISOString(),
+                device_type: /mobile/i.test(navigator.userAgent) ? 'mobile' : /tablet/i.test(navigator.userAgent) ? 'tablet' : 'desktop',
+                utm_source: new URLSearchParams(window.location.search).get('utm_source') || '',
+                utm_medium: new URLSearchParams(window.location.search).get('utm_medium') || '',
+                utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign') || ''
+            };
+
+            // Send to API first
+            fetch('https://api.verlyvidracaria.com/verly-service/leads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(leadData)
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const text = await response.text();
+                return text ? JSON.parse(text) : {};
+            })
+            .then(data => {
+                console.log('Lead saved successfully:', data);
+
                 // Create WhatsApp message
                 var whatsappMessage = '*Solicitação de Orçamento - Verly Vidraçaria*\n\n' +
                     '*Nome:* ' + name.val() + '\n' +
@@ -1505,7 +1540,7 @@
                 window.open(whatsappURL, '_blank');
 
                 // Show success message
-                $('#success').html('<div class="alert alert-success fade-in-up"><i class="fas fa-check-circle mr-2"></i><strong>Sucesso!</strong> Redirecionando para o WhatsApp...</div>');
+                $('#success').html('<div class="alert alert-success fade-in-up"><i class="fas fa-check-circle mr-2"></i><strong>Sucesso!</strong> Lead salvo! Redirecionando para o WhatsApp...</div>');
 
                 // Track conversion
                 trackEvent('form_submission', {
@@ -1525,7 +1560,38 @@
                 submitBtn.prop('disabled', false);
                 btnText.show();
                 btnLoader.hide();
-            }, 500);
+            })
+            .catch(error => {
+                console.error('Error saving lead:', error);
+
+                // Still redirect to WhatsApp even if API fails
+                var whatsappMessage = '*Solicitação de Orçamento - Verly Vidraçaria*\n\n' +
+                    '*Nome:* ' + name.val() + '\n' +
+                    '*Telefone:* ' + phone.val() + '\n' +
+                    '*Email:* ' + email.val() + '\n' +
+                    '*Serviço:* ' + service.find('option:selected').text() + '\n' +
+                    (message ? '*Mensagem:* ' + message + '\n\n' : '\n') +
+                    'Enviado através do site verlyvidracaria.com';
+
+                var encodedMessage = encodeURIComponent(whatsappMessage);
+                var whatsappURL = 'https://wa.me/5521987926578?text=' + encodedMessage;
+                window.open(whatsappURL, '_blank');
+
+                // Show warning message
+                $('#success').html('<div class="alert alert-warning fade-in-up"><i class="fas fa-exclamation-triangle mr-2"></i><strong>Atenção!</strong> Redirecionando para o WhatsApp...</div>');
+
+                // Reset button state
+                submitBtn.prop('disabled', false);
+                btnText.show();
+                btnLoader.hide();
+
+                // Track conversion anyway
+                trackEvent('form_submission', {
+                    'event_category': 'lead',
+                    'event_label': 'Contact Form - API Error',
+                    'service_type': service.val()
+                });
+            });
         });
         
         // Add loading animation to buttons

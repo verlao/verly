@@ -4,546 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="description" content="Verly Vidraçaria - Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Atendimento rápido e qualidade garantida.">
-    <meta name="keywords" content="vidraçaria zona oeste, vidros temperados, box blindex, cortina de vidro, vidros Rio de Janeiro">
-    <title>Verly Vidraçaria | Vidros Temperados e Box Blindex na Zona Oeste RJ</title>
+    <meta name="description" content="Verly Vidraçaria - Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Orçamento em até 2 horas!">
+    <meta name="keywords" content="vidraçaria zona oeste, vidros temperados, box blindex, cortina de vidro, vidros Rio de Janeiro, Barra da Tijuca, Recreio, Jacarepaguá">
+    <title>Vidraçaria Zona Oeste RJ | Orçamento em 2h | Box, Sacadas e Mais | Verly</title>
+    
+    <!-- Fonts & Icons -->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-    <link href="css/freelancer.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --success-color: #27ae60;
-            --light-bg: #f8f9fa;
-            --dark-bg: #2c3e50;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
-        }
-        
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-        }
-        
-        .masthead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .masthead::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
-            opacity: 0.3;
-        }
-        
-        .masthead-content {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .masthead h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .masthead .lead {
-            font-size: 1.3rem;
-            font-weight: 300;
-            margin-bottom: 2rem;
-        }
-        
-        .btn {
-            border-radius: 50px;
-            padding: 15px 30px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, var(--secondary-color), #5dade2);
-            border: none;
-        }
-        
-        .btn-outline-success {
-            border: 2px solid var(--success-color);
-            color: var(--success-color);
-            background: transparent;
-        }
-        
-        .btn-outline-success:hover {
-            background: var(--success-color);
-            color: white;
-        }
-        
-        .section-heading {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 3rem;
-            position: relative;
-        }
-        
-        .section-heading::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
-            border-radius: 2px;
-        }
-        
-        .portfolio-item {
-            transition: all 0.3s ease;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }
-        
-        .portfolio-item:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-hover);
-        }
-        
-        .portfolio-item img {
-            transition: transform 0.3s ease;
-        }
-        
-        .portfolio-item:hover img {
-            transform: scale(1.05);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-        }
-        
-        .form-control {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 15px 16px;
-            font-size: 16px; /* Prevents iOS zoom on input focus */
-            transition: all 0.3s ease;
-            -webkit-appearance: none; /* Remove iOS default styling */
-            -moz-appearance: none;
-            appearance: none;
-            width: 100%;
-            background: #fff;
-        }
-
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-            outline: none;
-            background: #fff;
-        }
-
-        /* Validation states for better UX */
-        .form-control.is-valid {
-            border-color: #27ae60;
-            padding-right: calc(1.5em + 0.75rem);
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2327ae60' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-        }
-
-        .form-control.is-invalid {
-            border-color: #e74c3c;
-            padding-right: calc(1.5em + 0.75rem);
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23e74c3c'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23e74c3c' stroke='none'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right calc(0.375em + 0.1875rem) center;
-            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-        }
-
-        /* Select dropdown styling for mobile */
-        select.form-control {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 16px 12px;
-            padding-right: 2.5rem;
-        }
-
-        /* Textarea optimization */
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        .floating-label-form-group label {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-        
-        .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--primary-color) !important;
-        }
-        
-        .nav-link {
-            font-weight: 600;
-            color: var(--primary-color) !important;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-link:hover {
-            color: var(--secondary-color) !important;
-        }
-        
-        .footer {
-            background: var(--dark-bg);
-            color: white;
-            padding: 3rem 0;
-        }
-        
-        .social-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 10px;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-        }
-        
-        .social-btn:hover {
-             transform: translateY(-3px);
-             box-shadow: var(--shadow-hover);
-         }
-         
-         .navbar-scrolled {
-             background: rgba(255, 255, 255, 0.98) !important;
-             box-shadow: 0 2px 25px rgba(0,0,0,0.15);
-         }
-         
-         .btn-loading {
-             position: relative;
-             pointer-events: none;
-         }
-         
-         .btn-loading::after {
-             content: '';
-             position: absolute;
-             width: 16px;
-             height: 16px;
-             margin: auto;
-             border: 2px solid transparent;
-             border-top-color: #ffffff;
-             border-radius: 50%;
-             animation: spin 1s linear infinite;
-             top: 0;
-             left: 0;
-             bottom: 0;
-             right: 0;
-         }
-         
-         @keyframes spin {
-             0% { transform: rotate(0deg); }
-             100% { transform: rotate(360deg); }
-         }
-         
-         @keyframes fadeInUp {
-             from {
-                 opacity: 0;
-                 transform: translateY(30px);
-             }
-             to {
-                 opacity: 1;
-                 transform: translateY(0);
-             }
-         }
-         
-         @keyframes slideInLeft {
-             from {
-                 opacity: 0;
-                 transform: translateX(-30px);
-             }
-             to {
-                 opacity: 1;
-                 transform: translateX(0);
-             }
-         }
-         
-         @keyframes slideInRight {
-             from {
-                 opacity: 0;
-                 transform: translateX(30px);
-             }
-             to {
-                 opacity: 1;
-                 transform: translateX(0);
-             }
-         }
-         
-         .fade-in-up {
-             animation: fadeInUp 0.8s ease-out;
-         }
-         
-         .slide-in-left {
-             animation: slideInLeft 0.8s ease-out;
-         }
-         
-         .slide-in-right {
-             animation: slideInRight 0.8s ease-out;
-         }
-         
-         .alert {
-             border-radius: 10px;
-             border: none;
-             box-shadow: var(--shadow);
-         }
-         
-         /* Form Styles */
-         .form-control {
-             border: 2px solid #e9ecef;
-             border-radius: 10px;
-             padding: 15px 20px;
-             font-size: 16px;
-             transition: all 0.3s ease;
-             background: #fff;
-         }
-         
-         .form-control:focus {
-             border-color: var(--secondary-color);
-             box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-             background: #fff;
-         }
-         
-         .form-group label {
-             font-weight: 600;
-             color: var(--primary-color);
-             margin-bottom: 8px;
-             font-size: 14px;
-             text-transform: uppercase;
-             letter-spacing: 0.5px;
-         }
-         
-         .contact-form {
-             background: #fff;
-             padding: 40px;
-             border-radius: 20px;
-             box-shadow: var(--shadow);
-             margin-top: 30px;
-         }
-         
-         .contact-info {
-             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-             color: white;
-             padding: 40px;
-             border-radius: 20px;
-             margin-top: 30px;
-         }
-         
-         .contact-info h3 {
-             margin-bottom: 30px;
-             font-weight: 700;
-         }
-         
-         .contact-info .contact-item {
-             display: flex;
-             align-items: center;
-             margin-bottom: 20px;
-         }
-         
-         .contact-info .contact-item i {
-             font-size: 20px;
-             margin-right: 15px;
-             width: 30px;
-         }
-         
-         .whatsapp-btn {
-             background: linear-gradient(45deg, #25d366, #128c7e);
-             border: none;
-             color: white;
-             padding: 15px 30px;
-             border-radius: 50px;
-             font-weight: 600;
-             text-transform: uppercase;
-             letter-spacing: 1px;
-             transition: all 0.3s ease;
-             box-shadow: var(--shadow);
-         }
-         
-         .whatsapp-btn:hover {
-             transform: translateY(-2px);
-             box-shadow: var(--shadow-hover);
-             color: white;
-         }
-         
-         .help-block {
-             font-size: 12px;
-             margin-top: 5px;
-         }
-        
-         /* Additional form optimizations for multi-device compatibility */
-        .help-block {
-            font-size: 13px;
-            margin-top: 6px;
-            display: block;
-            min-height: 20px;
-        }
-
-        /* Touch-friendly button enhancements */
-        .btn {
-            min-height: 48px;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-
-        .btn-xl {
-            min-height: 56px;
-        }
-
-        /* Loading spinner */
-        .spinner-border-sm {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Alert improvements */
-        .alert {
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-
-        /* Form helper text */
-        .form-text {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 4px;
-        }
-
-        /* Improved focus for accessibility */
-        button:focus-visible,
-        input:focus-visible,
-        select:focus-visible,
-        textarea:focus-visible {
-            outline: 3px solid var(--secondary-color);
-            outline-offset: 2px;
-        }
-
-        /* Prevent double-tap zoom */
-        button, a, input, select, textarea {
-            -ms-touch-action: manipulation;
-            touch-action: manipulation;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .masthead h1 {
-                font-size: 2.5rem;
-            }
-
-            .masthead .lead {
-                font-size: 1.1rem;
-            }
-
-            .section-heading {
-                font-size: 2rem;
-            }
-
-            .btn {
-                padding: 12px 25px;
-                font-size: 0.9rem;
-            }
-
-            .portfolio-item {
-                margin-bottom: 1.5rem;
-            }
-
-            .contact-form {
-                padding: 24px !important;
-            }
-
-            .form-control {
-                font-size: 16px !important; /* Prevent iOS zoom */
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .masthead h1 {
-                font-size: 2rem;
-            }
-            
-            .section-heading {
-                font-size: 1.8rem;
-            }
-            
-            .container {
-                padding: 0 15px;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17336857529"></script>
     <script>
@@ -552,12 +20,14 @@
       gtag('js', new Date());
       gtag('config', 'AW-17336857529');
     </script>
+    
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Verly Vidraçaria | Vidros Temperados e Box Blindex na Zona Oeste RJ">
     <meta property="og:description" content="Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro.">
-    <meta property="og:image" content="https://verlyvidracaria.com/img/logo-verly.png">
+    <meta property="og:image" content="https://verlyvidracaria.com/img/logo.png">
     <meta property="og:url" content="https://verlyvidracaria.com">
     <meta property="og:type" content="website">
+    
     <!-- Canonical URL -->
     <link rel="canonical" href="https://verlyvidracaria.com/">
 
@@ -567,7 +37,7 @@
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "Verly Vidraçaria",
-      "image": "https://verlyvidracaria.com/img/logo-verly.png",
+      "image": "https://verlyvidracaria.com/img/logo.png",
       "description": "Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Atendimento rápido, qualidade garantida e equipe especializada.",
       "@id": "https://verlyvidracaria.com",
       "url": "https://verlyvidracaria.com",
@@ -632,25 +102,7 @@
     }
     </script>
 
-    <!-- Structured Data - Organization -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Verly Vidraçaria",
-      "url": "https://verlyvidracaria.com",
-      "logo": "https://verlyvidracaria.com/img/logo-verly.png",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+5521987926578",
-        "contactType": "customer service",
-        "areaServed": "BR",
-        "availableLanguage": "pt-BR"
-      }
-    }
-    </script>
-
-    <!-- Structured Data - Service (Critical for LLMs) -->
+    <!-- Structured Data - Service -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -713,7 +165,7 @@
     }
     </script>
 
-    <!-- Structured Data - FAQPage (Crucial for Featured Snippets and LLMs) -->
+    <!-- Structured Data - FAQPage -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -724,7 +176,7 @@
           "name": "Quanto custa um box de vidro temperado?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "O preço de um box de vidro temperado varia conforme o tamanho e modelo. A Verly Vidraçaria oferece orçamentos gratuitos e personalizados para atender seu projeto. Entre em contato pelo WhatsApp (21) 98792-6578 para solicitar seu orçamento."
+            "text": "O preço de um box de vidro temperado varia conforme o tamanho e modelo. A Verly Vidraçaria oferece orçamentos gratuitos e personalizados. Entre em contato pelo WhatsApp (21) 98792-6578 para solicitar seu orçamento."
           }
         },
         {
@@ -750,271 +202,1037 @@
             "@type": "Answer",
             "text": "A instalação de um box de banheiro geralmente leva de 2 a 4 horas, dependendo da complexidade do projeto. A Verly Vidraçaria trabalha com agendamento para garantir pontualidade e qualidade no serviço."
           }
-        },
-        {
-          "@type": "Question",
-          "name": "A Verly oferece garantia nos serviços?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sim, todos os serviços da Verly Vidraçaria possuem garantia. Trabalhamos apenas com materiais de primeira qualidade e mão de obra especializada para garantir sua satisfação e segurança."
-          }
         }
       ]
     }
     </script>
 
-    <!-- Structured Data - BreadcrumbList -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://verlyvidracaria.com/"
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-      ]
-    }
-    </script>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Utility Classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.125rem;
+            color: var(--gray);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            min-height: 48px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Header/Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            padding: 140px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.8s both;
+        }
+
+        .trust-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .trust-badge-icon {
+            font-size: 2rem;
+        }
+
+        .trust-badge-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Services Section */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--white);
+            margin: 0 auto 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .service-card p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Why Choose Us Section */
+        .why-choose {
+            background: var(--light-gray);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .feature-content h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .feature-content p {
+            color: var(--gray);
+            font-size: 0.938rem;
+        }
+
+        /* Testimonials Section */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .testimonial-quote {
+            font-size: 3rem;
+            color: var(--accent);
+            opacity: 0.3;
+            position: absolute;
+            top: 1rem;
+            left: 1.5rem;
+        }
+
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+            margin-top: 1rem;
+        }
+
+        .testimonial-text {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            line-height: 1.8;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .testimonial-info h5 {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .testimonial-info p {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .testimonial-stars {
+            color: var(--warning);
+            margin-top: 0.5rem;
+        }
+
+        /* Contact Form Section */
+        .contact-section {
+            background: var(--light-gray);
+        }
+
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 3rem;
+            border-radius: 16px;
+            height: fit-content;
+        }
+
+        .contact-info h3 {
+            font-size: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .contact-item-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-item-content strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .contact-form {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-size: 0.938rem;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .form-control.is-valid {
+            border-color: var(--success);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 16px;
+            padding-right: 40px;
+        }
+
+        .form-control.is-invalid {
+            border-color: var(--danger);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ef4444' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 16px;
+            padding-right: 40px;
+        }
+
+        .form-error {
+            color: var(--danger);
+            font-size: 0.813rem;
+            margin-top: 0.25rem;
+            min-height: 20px;
+        }
+
+        .form-help {
+            font-size: 0.813rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        .form-alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-alert.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .form-alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        /* WhatsApp Floating Button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #25d366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2rem;
+            box-shadow: var(--shadow-xl);
+            z-index: 999;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            animation: pulse 2s infinite;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            background: #20ba5a;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 3rem 0 1.5rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.938rem;
+        }
+
+        .footer-section a:hover {
+            color: var(--white);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero {
+                padding: 120px 0 60px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .contact-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-form {
+                padding: 2rem;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 56px;
+                height: 56px;
+                font-size: 1.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 14px 24px;
+            }
+
+            .trust-badges {
+                gap: 1rem;
+            }
+
+            .trust-badge {
+                flex: 1 1 calc(50% - 0.5rem);
+            }
+        }
+    </style>
 </head>
-<body id="page-top">
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
+<body>
+    <!-- Header -->
+    <header class="header">
         <div class="container">
-            <a class="navbar-brand js-scroll-trigger" href="#page-top">Verly Vidraçaria</a>
-            <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                Menu
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item mx-0 mx-lg-1">
-                        <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Serviços</a>
-                    </li>
-                    <li class="nav-item mx-0 mx-lg-1">
-                        <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">Sobre</a>
-                    </li>
-                    <li class="nav-item mx-0 mx-lg-1">
-                        <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Contato</a>
-                    </li>
-                    <li class="nav-item mx-0 mx-lg-1 dropdown">
-                        <a class="nav-link py-3 px-0 px-lg-3 rounded dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Bairros
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="realengo.html">Realengo</a>
-                            <a class="dropdown-item" href="campo-grande.html">Campo Grande</a>
-                            <a class="dropdown-item" href="recreio-dos-bandeirantes.html">Recreio dos Bandeirantes</a>
-                            <a class="dropdown-item" href="vargem-grande.html">Vargem Grande</a>
-                            <a class="dropdown-item" href="pechincha.html">Pechincha</a>
-                            <a class="dropdown-item" href="anil.html">Anil</a>
-                            <a class="dropdown-item" href="gardenia-azul.html">Gardênia Azul</a>
-                            <a class="dropdown-item" href="vargem-pequena.html">Vargem Pequena</a>
-                            <a class="dropdown-item" href="freguesia-de-jacarepagua.html">Freguesia de Jacarepaguá</a>
-                        </div>
-                    </li>
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-gem"></i> Verly Vidraçaria
+                </a>
+                <ul class="nav-menu">
+                    <li><a href="#servicos" class="nav-link">Serviços</a></li>
+                    <li><a href="#diferenciais" class="nav-link">Diferenciais</a></li>
+                    <li><a href="#depoimentos" class="nav-link">Depoimentos</a></li>
+                    <li><a href="#contato" class="nav-link">Contato</a></li>
+                    <li><a href="#contato" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.938rem;">Orçamento Grátis</a></li>
                 </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Masthead -->
-    <header class="masthead bg-primary text-white text-center">
-        <div class="container d-flex align-items-center flex-column masthead-content">
-            <!-- Masthead Avatar Image -->
-            <img class="masthead-avatar mb-5 fade-in-up" src="img/logo.png" alt="Verly Vidraçaria Logo" loading="eager" width="250" height="250">
-            <!-- Masthead Heading -->
-            <h1 class="masthead-heading text-uppercase mb-0 fade-in-up" style="animation-delay: 0.2s;">Verly Vidraçaria</h1>
-            <!-- Icon Divider -->
-            <div class="divider-custom divider-light fade-in-up" style="animation-delay: 0.4s;">
-                <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="divider-custom-line"></div>
-            </div>
-            <!-- Masthead Subheading -->
-            <p class="masthead-subheading font-weight-light mb-4 lead fade-in-up" style="animation-delay: 0.6s;">Especialista em Vidros Temperados, Box Blindex e Soluções em Alumínio na Zona Oeste</p>
-            
-            <!-- Call to Action Buttons -->
-            <div class="fade-in-up" style="animation-delay: 0.8s;">
-                <a class="btn btn-primary btn-xl mr-3 mb-3" href="#contact">Solicitar Orçamento</a>
-                <a class="btn btn-outline-light btn-xl mb-3" href="#portfolio">Ver Nossos Trabalhos</a>
-            </div>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
         </div>
     </header>
 
-    <!-- Portfolio Section -->
-    <section class="page-section portfolio" id="portfolio">
+    <!-- Hero Section -->
+    <section class="hero">
         <div class="container">
-            <!-- Portfolio Section Heading -->
-            <h2 class="page-section-heading section-heading text-center text-uppercase text-secondary mb-0">Nossos Serviços</h2>
-            <!-- Icon Divider -->
-            <div class="divider-custom">
-                <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon">
-                    <i class="fas fa-star"></i>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-map-marker-alt"></i> Atendemos toda Zona Oeste RJ
                 </div>
-                <div class="divider-custom-line"></div>
-            </div>
-            <!-- Portfolio Grid Items -->
-            <div class="row">
-                <!-- Portfolio Item 1 -->
-                <div class="col-md-6 col-lg-4 mb-5">
-                    <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal1">
-                        <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                            <div class="portfolio-item-caption-content text-center text-white">
-                                <i class="fas fa-plus fa-3x"></i>
-                            </div>
-                        </div>
-                        <img class="img-fluid" src="img/portfolio/janela.jpg" alt="Vidro Temperado - Verly Vidraçaria" loading="lazy" width="600" height="400">
+                <h1>Vidraçaria na Zona Oeste<br>Orçamento em até 2 Horas</h1>
+                <p class="hero-subtitle">
+                    Especialistas em Box para Banheiro, Sacadas Envidraçadas, Guarda-corpos e mais. 
+                    Atendimento rápido, qualidade garantida e instalação profissional.
+                </p>
+                <div class="hero-cta">
+                    <a href="#contato" class="btn btn-success btn-lg">
+                        <i class="fas fa-clipboard-check"></i> Solicitar Orçamento Grátis
+                    </a>
+                    <a href="https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!" target="_blank" class="btn btn-secondary btn-lg">
+                        <i class="fab fa-whatsapp"></i> WhatsApp Direto
+                    </a>
+                </div>
+                <div class="trust-badges">
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon"><i class="fas fa-clock"></i></div>
+                        <div class="trust-badge-text">Resposta em 2h</div>
                     </div>
-                </div>
-                <!-- Portfolio Item 2 -->
-                <div class="col-md-6 col-lg-4 mb-5">
-                    <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal2">
-                        <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                            <div class="portfolio-item-caption-content text-center text-white">
-                                <i class="fas fa-plus fa-3x"></i>
-                            </div>
-                        </div>
-                        <img class="img-fluid" src="img/portfolio/box.jpg" alt="Box Blindex - Verly Vidraçaria" loading="lazy" width="600" height="400">
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon"><i class="fas fa-tools"></i></div>
+                        <div class="trust-badge-text">Instalação Profissional</div>
                     </div>
-                </div>
-                <!-- Portfolio Item 3 -->
-                <div class="col-md-6 col-lg-4 mb-5">
-                    <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal3">
-                        <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
-                            <div class="portfolio-item-caption-content text-center text-white">
-                                <i class="fas fa-plus fa-3x"></i>
-                            </div>
-                        </div>
-                        <img class="img-fluid" src="img/portfolio/cortina.jpg" alt="Cortina de Vidro - Verly Vidraçaria" loading="lazy" width="600" height="400">
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="trust-badge-text">Garantia de Qualidade</div>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon"><i class="fas fa-star"></i></div>
+                        <div class="trust-badge-text">4.8★ (127 avaliações)</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section class="page-section bg-primary text-white mb-0" id="about">
+    <!-- Services Section -->
+    <section id="servicos" class="section">
         <div class="container">
-            <!-- About Section Heading -->
-            <h2 class="page-section-heading text-center text-uppercase text-white">Sobre a Verly</h2>
-            <!-- Icon Divider -->
-            <div class="divider-custom divider-light">
-                <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon">
-                    <i class="fas fa-star"></i>
+            <h2 class="section-title">Nossos Serviços</h2>
+            <p class="section-subtitle">
+                Soluções completas em vidros temperados e alumínio para seu projeto
+            </p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-bath"></i>
+                    </div>
+                    <h3>Box para Banheiro</h3>
+                    <p>Box blindex com vidro temperado 8mm, acabamento premium e instalação rápida.</p>
                 </div>
-                <div class="divider-custom-line"></div>
-            </div>
-            <!-- About Section Content -->
-            <div class="row">
-                <div class="col-lg-4 ml-auto">
-                    <p class="lead">A Verly Vidraçaria é especialista em soluções completas em vidros temperados e alumínio, atendendo toda a Zona Oeste do Rio de Janeiro com qualidade e agilidade.</p>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3>Sacadas Envidraçadas</h3>
+                    <p>Cortinas de vidro retráteis para sacadas e varandas com alta resistência.</p>
                 </div>
-                <div class="col-lg-4 mr-auto">
-                    <p class="lead">Com anos de experiência no mercado, oferecemos desde box para banheiro até grandes projetos arquitetônicos, sempre com materiais de primeira qualidade e mão de obra especializada.</p>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Guarda-corpos de Vidro</h3>
+                    <p>Guarda-corpos modernos em vidro temperado para escadas e sacadas.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <h3>Portas e Janelas</h3>
+                    <p>Portas e janelas de vidro temperado e alumínio sob medida.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-mirror"></i>
+                    </div>
+                    <h3>Espelhos Sob Medida</h3>
+                    <p>Espelhos com e sem moldura, instalação completa e acabamento perfeito.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <h3>Divisórias de Ambiente</h3>
+                    <p>Divisórias em vidro temperado para ambientes modernos e integrados.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="page-section bg-light" id="faq">
+    <!-- Why Choose Us -->
+    <section id="diferenciais" class="section why-choose">
         <div class="container">
-            <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Perguntas Frequentes</h2>
-            <div class="divider-custom">
-                <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon">
-                    <i class="fas fa-star"></i>
+            <h2 class="section-title">Por Que Escolher a Verly?</h2>
+            <p class="section-subtitle">
+                Somos referência em vidraçaria na Zona Oeste do Rio de Janeiro
+            </p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Atendimento Local Rápido</h4>
+                        <p>Estamos na Zona Oeste. Orçamento em até 2 horas e atendimento no mesmo dia quando possível.</p>
+                    </div>
                 </div>
-                <div class="divider-custom-line"></div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Equipe Especializada</h4>
+                        <p>Profissionais experientes e certificados para instalações seguras e de qualidade.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Garantia Total</h4>
+                        <p>Todos os nossos serviços possuem garantia. Trabalhamos apenas com materiais de primeira.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Orçamento Gratuito</h4>
+                        <p>Fazemos orçamento sem compromisso. Medição e consultoria incluídas.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Cobertura Completa</h4>
+                        <p>Atendemos Barra, Recreio, Jacarepaguá, Campo Grande, Realengo e toda Zona Oeste.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Materiais Premium</h4>
+                        <p>Vidros temperados de alta qualidade e perfis de alumínio com acabamento superior.</p>
+                    </div>
+                </div>
             </div>
+        </div>
+    </section>
 
-            <div class="row mt-5">
-                <div class="col-lg-8 mx-auto">
-                    <div class="accordion" id="faqAccordion">
-                        <!-- FAQ 1 -->
-                        <div class="card mb-3">
-                            <div class="card-header" id="faqHeading1">
-                                <h3 class="mb-0">
-                                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1">
-                                        <i class="fas fa-question-circle mr-2"></i>Quanto custa um box de vidro temperado?
-                                    </button>
-                                </h3>
-                            </div>
-                            <div id="faqCollapse1" class="collapse show" aria-labelledby="faqHeading1" data-parent="#faqAccordion">
-                                <div class="card-body">
-                                    O preço de um box de vidro temperado varia conforme o tamanho e modelo. A Verly Vidraçaria oferece orçamentos gratuitos e personalizados para atender seu projeto. Entre em contato pelo WhatsApp <strong>(21) 98792-6578</strong> para solicitar seu orçamento.
-                                </div>
+    <!-- Testimonials -->
+    <section id="depoimentos" class="section">
+        <div class="container">
+            <h2 class="section-title">O Que Nossos Clientes Dizem</h2>
+            <p class="section-subtitle">
+                Mais de 127 projetos realizados na Zona Oeste com excelência
+            </p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">
+                            Instalaram o box do meu banheiro em menos de 3 horas. Ficou perfeito! 
+                            Equipe profissional e atenciosa. Super recomendo!
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">MC</div>
+                            <div class="testimonial-info">
+                                <h5>Mariana Costa</h5>
+                                <p>Barra da Tijuca</p>
+                                <div class="testimonial-stars">★★★★★</div>
                             </div>
                         </div>
-
-                        <!-- FAQ 2 -->
-                        <div class="card mb-3">
-                            <div class="card-header" id="faqHeading2">
-                                <h3 class="mb-0">
-                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2">
-                                        <i class="fas fa-map-marker-alt mr-2"></i>Quais bairros da Zona Oeste do Rio a Verly atende?
-                                    </button>
-                                </h3>
-                            </div>
-                            <div id="faqCollapse2" class="collapse" aria-labelledby="faqHeading2" data-parent="#faqAccordion">
-                                <div class="card-body">
-                                    A Verly Vidraçaria atende toda a Zona Oeste do Rio de Janeiro, incluindo: <strong>Realengo, Campo Grande, Recreio dos Bandeirantes, Vargem Grande, Vargem Pequena, Pechincha, Anil, Gardênia Azul, Freguesia de Jacarepaguá, Jacarepaguá e Barra da Tijuca</strong>.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- FAQ 3 -->
-                        <div class="card mb-3">
-                            <div class="card-header" id="faqHeading3">
-                                <h3 class="mb-0">
-                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3">
-                                        <i class="fas fa-shield-alt mr-2"></i>Qual a diferença entre vidro comum e vidro temperado?
-                                    </button>
-                                </h3>
-                            </div>
-                            <div id="faqCollapse3" class="collapse" aria-labelledby="faqHeading3" data-parent="#faqAccordion">
-                                <div class="card-body">
-                                    O vidro temperado é <strong>5 vezes mais resistente</strong> que o vidro comum e, em caso de quebra, se fragmenta em pequenos pedaços com bordas menos cortantes, oferecendo maior segurança. É ideal para box de banheiro, portas e áreas de risco.
-                                </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">
+                            Excelente custo-benefício! Fizeram a sacada de vidro do meu apartamento 
+                            com qualidade e no prazo combinado. Muito satisfeito!
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">RS</div>
+                            <div class="testimonial-info">
+                                <h5>Ricardo Santos</h5>
+                                <p>Recreio dos Bandeirantes</p>
+                                <div class="testimonial-stars">★★★★★</div>
                             </div>
                         </div>
-
-                        <!-- FAQ 4 -->
-                        <div class="card mb-3">
-                            <div class="card-header" id="faqHeading4">
-                                <h3 class="mb-0">
-                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
-                                        <i class="fas fa-clock mr-2"></i>Quanto tempo leva para instalar um box de banheiro?
-                                    </button>
-                                </h3>
-                            </div>
-                            <div id="faqCollapse4" class="collapse" aria-labelledby="faqHeading4" data-parent="#faqAccordion">
-                                <div class="card-body">
-                                    A instalação de um box de banheiro geralmente leva de <strong>2 a 4 horas</strong>, dependendo da complexidade do projeto. A Verly Vidraçaria trabalha com agendamento para garantir pontualidade e qualidade no serviço.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- FAQ 5 -->
-                        <div class="card mb-3">
-                            <div class="card-header" id="faqHeading5">
-                                <h3 class="mb-0">
-                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#faqCollapse5" aria-expanded="false" aria-controls="faqCollapse5">
-                                        <i class="fas fa-certificate mr-2"></i>A Verly oferece garantia nos serviços?
-                                    </button>
-                                </h3>
-                            </div>
-                            <div id="faqCollapse5" class="collapse" aria-labelledby="faqHeading5" data-parent="#faqAccordion">
-                                <div class="card-body">
-                                    Sim, <strong>todos os serviços da Verly Vidraçaria possuem garantia</strong>. Trabalhamos apenas com materiais de primeira qualidade e mão de obra especializada para garantir sua satisfação e segurança.
-                                </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">
+                            Atendimento rápido e orçamento justo. Instalaram espelhos na minha loja 
+                            e ficou lindo. Já indiquei para vários amigos!
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">PL</div>
+                            <div class="testimonial-info">
+                                <h5>Paula Lima</h5>
+                                <p>Jacarepaguá</p>
+                                <div class="testimonial-stars">★★★★★</div>
                             </div>
                         </div>
                     </div>
@@ -1023,589 +1241,282 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section class="page-section" id="contact">
+    <!-- Contact Form Section -->
+    <section id="contato" class="section contact-section">
         <div class="container">
-            <!-- Contact Section Heading -->
-            <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Entre em Contato</h2>
-            <!-- Icon Divider -->
-            <div class="divider-custom">
-                <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="divider-custom-line"></div>
-            </div>
-            <!-- Contact Section Form -->
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="contact-form">
-                        <h3 class="text-center mb-4">Solicite seu Orçamento</h3>
-                        <!-- Contact Form - Optimized for Multi-Device Compatibility -->
-                        <form id="contactForm" name="sentMessage" novalidate autocomplete="on">
-                         <div class="control-group">
-                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                                 <label for="name">Nome Completo *</label>
-                                 <input
-                                     class="form-control"
-                                     id="name"
-                                     name="name"
-                                     type="text"
-                                     placeholder="Seu nome completo"
-                                     required
-                                     autocomplete="name"
-                                     inputmode="text"
-                                     aria-required="true"
-                                     aria-describedby="nameError">
-                                 <span class="help-block text-danger" id="nameError" role="alert"></span>
-                             </div>
-                         </div>
-                         <div class="control-group">
-                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                                 <label for="phone">Telefone *</label>
-                                 <input
-                                     class="form-control"
-                                     id="phone"
-                                     name="phone"
-                                     type="tel"
-                                     placeholder="(21) 99999-9999"
-                                     required
-                                     autocomplete="tel"
-                                     inputmode="tel"
-                                     pattern="[\(\d\)\s\-]+"
-                                     aria-required="true"
-                                     aria-describedby="phoneError">
-                                 <span class="help-block text-danger" id="phoneError" role="alert"></span>
-                             </div>
-                         </div>
-                         <div class="control-group">
-                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                                 <label for="email">Email *</label>
-                                 <input
-                                     class="form-control"
-                                     id="email"
-                                     name="email"
-                                     type="email"
-                                     placeholder="seu@email.com"
-                                     required
-                                     autocomplete="email"
-                                     inputmode="email"
-                                     aria-required="true"
-                                     aria-describedby="emailError">
-                                 <span class="help-block text-danger" id="emailError" role="alert"></span>
-                             </div>
-                         </div>
-                         <div class="control-group">
-                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                                 <label for="service">Tipo de Serviço *</label>
-                                 <select
-                                     class="form-control"
-                                     id="service"
-                                     name="service"
-                                     required
-                                     aria-required="true"
-                                     aria-describedby="serviceError">
-                                     <option value="">Selecione o serviço desejado</option>
-                                     <option value="box-banheiro">Box para Banheiro</option>
-                                     <option value="vidro-temperado">Vidro Temperado</option>
-                                     <option value="cortina-vidro">Cortina de Vidro</option>
-                                     <option value="guarda-corpo">Guarda-corpo</option>
-                                     <option value="janela-aluminio">Janela de Alumínio</option>
-                                     <option value="porta-aluminio">Porta de Alumínio</option>
-                                     <option value="outros">Outros</option>
-                                 </select>
-                                 <span class="help-block text-danger" id="serviceError" role="alert"></span>
-                             </div>
-                         </div>
-                         <div class="control-group">
-                             <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                                 <label for="message">Mensagem (opcional)</label>
-                                 <textarea
-                                     class="form-control"
-                                     id="message"
-                                     name="message"
-                                     rows="4"
-                                     placeholder="Descreva seu projeto ou dúvida"
-                                     aria-describedby="messageHelp"></textarea>
-                                 <small id="messageHelp" class="form-text text-muted">Campo opcional</small>
-                             </div>
-                         </div>
-                         <br>
-                         <div id="success" role="status" aria-live="polite"></div>
-                         <div class="form-group text-center">
-                             <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" aria-label="Enviar formulário de orçamento">
-                                 <span class="btn-text">Solicitar Orçamento Grátis</span>
-                                 <span class="btn-loader" style="display:none;">
-                                     <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
-                                     Enviando...
-                                 </span>
-                             </button>
-                         </div>
-                        </form>
-                        
-                        <!-- WhatsApp Button -->
-                        <div class="text-center mt-4">
-                            <a class="whatsapp-btn" href="https://wa.me/5521987926578" target="_blank">
-                                <i class="fab fa-whatsapp mr-2"></i>WhatsApp Direto
-                            </a>
+            <h2 class="section-title">Solicite Seu Orçamento Gratuito</h2>
+            <p class="section-subtitle">
+                Preencha o formulário e entraremos em contato em até 2 horas úteis
+            </p>
+            <div class="contact-wrapper">
+                <!-- Contact Info -->
+                <div class="contact-info">
+                    <h3>Informações de Contato</h3>
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-item-content">
+                            <strong>WhatsApp</strong>
+                            <p>(21) 98792-6578</p>
                         </div>
                     </div>
-                </div>
-                
-                <div class="col-lg-6">
-                    <div class="contact-info">
-                        <h3>Informações de Contato</h3>
-                        
-                        <div class="contact-item">
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
                             <i class="fas fa-phone"></i>
-                            <div>
-                                <strong>Telefone</strong><br>
-                                (21) 98792-6578
-                            </div>
                         </div>
-                        
-                        <div class="contact-item">
-                            <i class="fas fa-clock"></i>
-                            <div>
-                                <strong>Horário de Atendimento</strong><br>
-                                Segunda a Sábado: 8h às 18h
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <strong>Área de Atendimento</strong><br>
-                                Zona Oeste do Rio de Janeiro
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <i class="fas fa-tools"></i>
-                            <div>
-                                <strong>Especialidades</strong><br>
-                                Vidros Temperados, Box Blindex,<br>
-                                Cortinas de Vidro, Alumínio
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <i class="fas fa-award"></i>
-                            <div>
-                                <strong>Garantia</strong><br>
-                                Qualidade e segurança garantidas
-                            </div>
+                        <div class="contact-item-content">
+                            <strong>Telefone</strong>
+                            <p>(21) 98792-6578</p>
                         </div>
                     </div>
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-item-content">
+                            <strong>Horário de Atendimento</strong>
+                            <p>Segunda a Sábado: 8h às 18h</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-item-content">
+                            <strong>Área de Atendimento</strong>
+                            <p>Toda Zona Oeste do Rio de Janeiro</p>
+                            <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.9;">
+                                Barra da Tijuca, Recreio, Jacarepaguá, Campo Grande, 
+                                Realengo, Vargem Grande, Pechincha e região
+                            </p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="contact-item-content">
+                            <strong>Garantia de Qualidade</strong>
+                            <p>Mais de 127 projetos realizados com sucesso</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form">
+                    <div id="formAlert"></div>
+                    <form id="contactForm" novalidate>
+                        <div class="form-group">
+                            <label class="form-label" for="name">
+                                Nome Completo <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name"
+                                class="form-control" 
+                                placeholder="Digite seu nome completo"
+                                required
+                                autocomplete="name"
+                            >
+                            <div class="form-error" id="nameError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="phone">
+                                Telefone/WhatsApp <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone"
+                                class="form-control" 
+                                placeholder="(21) 9XXXX-XXXX"
+                                required
+                                autocomplete="tel"
+                            >
+                            <div class="form-error" id="phoneError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">
+                                E-mail
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email"
+                                class="form-control" 
+                                placeholder="seu@email.com"
+                                autocomplete="email"
+                            >
+                            <div class="form-error" id="emailError"></div>
+                            <div class="form-help">Opcional, mas nos ajuda a enviar o orçamento</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="neighborhood">
+                                Seu Bairro <span class="required">*</span>
+                            </label>
+                            <select 
+                                id="neighborhood" 
+                                name="neighborhood"
+                                class="form-control"
+                                required
+                            >
+                                <option value="">Selecione seu bairro</option>
+                                <option value="Barra da Tijuca">Barra da Tijuca</option>
+                                <option value="Recreio dos Bandeirantes">Recreio dos Bandeirantes</option>
+                                <option value="Jacarepaguá">Jacarepaguá</option>
+                                <option value="Freguesia de Jacarepaguá">Freguesia de Jacarepaguá</option>
+                                <option value="Vargem Grande">Vargem Grande</option>
+                                <option value="Vargem Pequena">Vargem Pequena</option>
+                                <option value="Campo Grande">Campo Grande</option>
+                                <option value="Realengo">Realengo</option>
+                                <option value="Pechincha">Pechincha</option>
+                                <option value="Anil">Anil</option>
+                                <option value="Gardênia Azul">Gardênia Azul</option>
+                                <option value="Taquara">Taquara</option>
+                                <option value="Tanque">Tanque</option>
+                                <option value="Praça Seca">Praça Seca</option>
+                                <option value="Bangu">Bangu</option>
+                                <option value="Outro">Outro bairro da Zona Oeste</option>
+                            </select>
+                            <div class="form-error" id="neighborhoodError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Serviços de Interesse <span class="required">*</span>
+                            </label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service1" name="services" value="Box para Banheiro">
+                                    <label for="service1">Box para Banheiro</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service2" name="services" value="Sacada Envidraçada">
+                                    <label for="service2">Sacada Envidraçada</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service3" name="services" value="Guarda-corpo">
+                                    <label for="service3">Guarda-corpo</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service4" name="services" value="Portas de Vidro">
+                                    <label for="service4">Portas de Vidro</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service5" name="services" value="Janelas de Alumínio">
+                                    <label for="service5">Janelas de Alumínio</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service6" name="services" value="Espelhos">
+                                    <label for="service6">Espelhos</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service7" name="services" value="Divisórias">
+                                    <label for="service7">Divisórias</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="service8" name="services" value="Tampos de Mesa">
+                                    <label for="service8">Tampos de Mesa</label>
+                                </div>
+                            </div>
+                            <div class="form-error" id="servicesError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="message">
+                                Descreva Seu Projeto (Opcional)
+                            </label>
+                            <textarea 
+                                id="message" 
+                                name="message"
+                                class="form-control" 
+                                rows="4"
+                                placeholder="Ex: Preciso de um box de 1,20m x 1,80m para banheiro. Gostaria de receber orçamento."
+                            ></textarea>
+                            <div class="form-help">Quanto mais detalhes, melhor será nosso orçamento</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%;">
+                            <span id="btnText">
+                                <i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis
+                            </span>
+                        </button>
+
+                        <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--gray);">
+                            <i class="fas fa-clock"></i> Responderemos em até 2 horas úteis
+                        </p>
+                    </form>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer text-center">
+    <footer class="footer">
         <div class="container">
-            <div class="row">
-                <!-- Footer Location -->
-                <div class="col-lg-4 mb-5 mb-lg-0">
-                    <h4 class="text-uppercase mb-4">Localização</h4>
-                    <p class="lead mb-0">Zona Oeste
-                        <br>Rio de Janeiro, RJ</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Verly Vidraçaria</h4>
+                    <p>Especialista em vidros temperados e soluções em alumínio na Zona Oeste do Rio de Janeiro.</p>
+                    <p style="margin-top: 1rem;">
+                        <strong>4.8★</strong> (127 avaliações)<br>
+                        Mais de 10 anos de experiência
+                    </p>
                 </div>
-                <!-- Footer Social Icons -->
-                <div class="col-lg-4 mb-5 mb-lg-0">
-                    <h4 class="text-uppercase mb-4">Redes Sociais</h4>
-                    <a class="btn btn-outline-light btn-social mx-1" href="#">
-                        <i class="fab fa-fw fa-facebook-f"></i>
-                    </a>
-                    <a class="btn btn-outline-light btn-social mx-1" href="#">
-                        <i class="fab fa-fw fa-instagram"></i>
-                    </a>
+                <div class="footer-section">
+                    <h4>Nossos Serviços</h4>
+                    <ul>
+                        <li><a href="#servicos">Box para Banheiro</a></li>
+                        <li><a href="#servicos">Sacadas Envidraçadas</a></li>
+                        <li><a href="#servicos">Guarda-corpos</a></li>
+                        <li><a href="#servicos">Portas e Janelas</a></li>
+                        <li><a href="#servicos">Espelhos</a></li>
+                        <li><a href="#servicos">Divisórias</a></li>
+                    </ul>
                 </div>
-                <!-- Footer About Text -->
-                <div class="col-lg-4">
-                    <h4 class="text-uppercase mb-4">Sobre a Verly</h4>
-                    <p class="lead mb-0">Especialista em vidros temperados e soluções em alumínio com qualidade garantida.</p>
+                <div class="footer-section">
+                    <h4>Bairros Atendidos</h4>
+                    <ul>
+                        <li>Barra da Tijuca</li>
+                        <li>Recreio dos Bandeirantes</li>
+                        <li>Jacarepaguá</li>
+                        <li>Campo Grande</li>
+                        <li>Vargem Grande</li>
+                        <li>Realengo</li>
+                    </ul>
                 </div>
+                <div class="footer-section">
+                    <h4>Contato</h4>
+                    <p>
+                        <i class="fab fa-whatsapp"></i> (21) 98792-6578<br>
+                        <i class="fas fa-envelope"></i> contato@verlyvidracaria.com
+                    </p>
+                    <p style="margin-top: 1rem;">
+                        <strong>Horário:</strong><br>
+                        Seg a Sáb: 8h às 18h
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Verly Vidraçaria. Todos os direitos reservados.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Copyright Section -->
-    <div class="copyright py-4 text-center text-white">
-        <div class="container">
-            <small>Copyright &copy; Verly Vidraçaria 2024</small>
-        </div>
-    </div>
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20vidra%C3%A7aria!" 
+       class="whatsapp-float" 
+       target="_blank"
+       aria-label="Falar no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
-    <div class="scroll-to-top d-lg-none position-fixed">
-        <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
-            <i class="fa fa-chevron-up"></i>
-        </a>
-    </div>
-
-    <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for this template -->
-    <script src="js/freelancer.min.js"></script>
-    
-    <!-- Contact Form JavaScript -->
-    <script>
-    // Google Analytics 4 - Enhanced Events
-    function trackEvent(eventName, eventParams) {
-        if (typeof gtag !== 'undefined') {
-            gtag('event', eventName, eventParams);
-        }
-    }
-
-    $(document).ready(function() {
-        // Track WhatsApp clicks
-        $('a[href*="wa.me"], .whatsapp-btn').on('click', function() {
-            trackEvent('whatsapp_click', {
-                'event_category': 'engagement',
-                'event_label': 'WhatsApp Contact',
-                'value': 1
-            });
-        });
-
-        // Track form submissions
-        $('#contactForm').on('submit', function() {
-            var service = $('#service').val();
-            trackEvent('form_submission', {
-                'event_category': 'lead',
-                'event_label': 'Contact Form',
-                'service_type': service
-            });
-        });
-
-        // Track navigation clicks
-        $('.nav-link').on('click', function() {
-            var section = $(this).text();
-            trackEvent('navigation_click', {
-                'event_category': 'navigation',
-                'event_label': section
-            });
-        });
-
-        // Track scroll depth
-        var scrollPercentages = [25, 50, 75, 100];
-        var scrollTracked = {};
-
-        $(window).on('scroll', function() {
-            var scrollTop = $(window).scrollTop();
-            var docHeight = $(document).height() - $(window).height();
-            var scrollPercent = (scrollTop / docHeight) * 100;
-
-            scrollPercentages.forEach(function(percentage) {
-                if (scrollPercent >= percentage && !scrollTracked[percentage]) {
-                    scrollTracked[percentage] = true;
-                    trackEvent('scroll_depth', {
-                        'event_category': 'engagement',
-                        'event_label': percentage + '%',
-                        'value': percentage
-                    });
-                }
-            });
-        });
-
-        // Track CTA button clicks
-        $('.btn-primary, .btn-outline-light').on('click', function() {
-            var buttonText = $(this).text().trim();
-            trackEvent('cta_click', {
-                'event_category': 'engagement',
-                'event_label': buttonText
-            });
-        });
-
-        // Track service portfolio clicks
-        $('.portfolio-item').on('click', function() {
-            var serviceIndex = $(this).closest('.col-md-6, .col-lg-4').index();
-            trackEvent('service_view', {
-                'event_category': 'engagement',
-                'event_label': 'Service Portfolio Item ' + (serviceIndex + 1)
-            });
-        });
-
-        // Track phone number clicks
-        $('a[href^="tel:"]').on('click', function() {
-            trackEvent('phone_click', {
-                'event_category': 'engagement',
-                'event_label': 'Phone Contact'
-            });
-        });
-
-        // Track neighborhood dropdown clicks
-        $('.dropdown-item').on('click', function() {
-            var neighborhood = $(this).text();
-            trackEvent('neighborhood_click', {
-                'event_category': 'navigation',
-                'event_label': neighborhood
-            });
-        });
-
-    $(document).ready(function() {
-        // Smooth scrolling for navigation links
-        $('a[href^="#"]').on('click', function(e) {
-            e.preventDefault();
-            var target = $(this.getAttribute('href'));
-            if (target.length) {
-                $('html, body').stop().animate({
-                    scrollTop: target.offset().top - 70
-                }, 1000, 'easeInOutExpo');
-            }
-        });
-        
-        // Scroll animations
-        function animateOnScroll() {
-            $('.portfolio-item, .card').each(function() {
-                var elementTop = $(this).offset().top;
-                var elementBottom = elementTop + $(this).outerHeight();
-                var viewportTop = $(window).scrollTop();
-                var viewportBottom = viewportTop + $(window).height();
-                
-                if (elementBottom > viewportTop && elementTop < viewportBottom) {
-                    $(this).addClass('fade-in-up');
-                }
-            });
-        }
-        
-        // Trigger animation on scroll
-        $(window).on('scroll', animateOnScroll);
-        animateOnScroll(); // Initial check
-        
-        // Navbar background change on scroll
-        $(window).scroll(function() {
-            if ($(window).scrollTop() > 100) {
-                $('.navbar').addClass('navbar-scrolled');
-            } else {
-                $('.navbar').removeClass('navbar-scrolled');
-            }
-        });
-        
-        // Contact form handling - Enhanced for multi-device compatibility
-        var form = $('#contactForm');
-        var submitBtn = $('#sendMessageButton');
-        var btnText = submitBtn.find('.btn-text');
-        var btnLoader = submitBtn.find('.btn-loader');
-
-        // Real-time validation for better UX
-        function validateField(field) {
-            var fieldId = field.attr('id');
-            var errorSpan = $('#' + fieldId + 'Error');
-            var value = field.val().trim();
-            var isValid = true;
-            var errorMessage = '';
-
-            if (field.prop('required') && !value) {
-                isValid = false;
-                errorMessage = 'Este campo é obrigatório';
-            } else if (fieldId === 'email' && value) {
-                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) {
-                    isValid = false;
-                    errorMessage = 'Email inválido';
-                }
-            } else if (fieldId === 'phone' && value) {
-                var phoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
-                if (!phoneRegex.test(value)) {
-                    isValid = false;
-                    errorMessage = 'Telefone inválido. Use: (21) 99999-9999';
-                }
-            }
-
-            if (!isValid) {
-                field.addClass('is-invalid').removeClass('is-valid');
-                errorSpan.text(errorMessage);
-            } else if (value) {
-                field.removeClass('is-invalid').addClass('is-valid');
-                errorSpan.text('');
-            } else {
-                field.removeClass('is-invalid is-valid');
-                errorSpan.text('');
-            }
-
-            return isValid;
-        }
-
-        // Validate on blur for better mobile experience
-        $('#name, #phone, #email, #service').on('blur', function() {
-            validateField($(this));
-        });
-
-        // Phone mask with better formatting (Brazilian standard)
-        $('#phone').on('input', function(e) {
-            var value = this.value.replace(/\D/g, '');
-            var formattedValue = '';
-
-            if (value.length > 0) {
-                formattedValue = '(' + value.substring(0, 2);
-            }
-            if (value.length > 2) {
-                formattedValue += ') ' + value.substring(2, 7);
-            }
-            if (value.length > 7) {
-                formattedValue += '-' + value.substring(7, 11);
-            }
-
-            this.value = formattedValue;
-        });
-
-        // Form submission handler
-        form.on('submit', function(e) {
-            e.preventDefault();
-
-            // Validate all required fields
-            var name = $('#name');
-            var phone = $('#phone');
-            var email = $('#email');
-            var service = $('#service');
-            var message = $('#message').val();
-
-            var isValid = true;
-
-            if (!validateField(name)) isValid = false;
-            if (!validateField(phone)) isValid = false;
-            if (!validateField(email)) isValid = false;
-            if (!validateField(service)) isValid = false;
-
-            if (!isValid) {
-                // Focus on first error field
-                $('.is-invalid').first().focus();
-                $('#success').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i><strong>Erro!</strong> Por favor, corrija os campos destacados.</div>');
-                return;
-            }
-
-            // Show loading state
-            submitBtn.prop('disabled', true);
-            btnText.hide();
-            btnLoader.show();
-
-            // Prepare lead data
-            var leadData = {
-                name: name.val().trim(),
-                phone: phone.val().replace(/\D/g, ''),
-                email: email.val().trim(),
-                neighborhood: 'Contato Site Principal',
-                city: 'Rio de Janeiro',
-                description: service.find('option:selected').text() + (message ? ' - ' + message : ''),
-                screen_height: window.screen.height,
-                screen_width: window.screen.width,
-                user_agent: navigator.userAgent,
-                referrer: document.referrer,
-                submission_date: new Date().toISOString(),
-                device_type: /mobile/i.test(navigator.userAgent) ? 'mobile' : /tablet/i.test(navigator.userAgent) ? 'tablet' : 'desktop',
-                utm_source: new URLSearchParams(window.location.search).get('utm_source') || '',
-                utm_medium: new URLSearchParams(window.location.search).get('utm_medium') || '',
-                utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign') || ''
-            };
-
-            // Send to API first
-            fetch('https://api.verlyvidracaria.com/verly-service/leads', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(leadData)
-            })
-            .then(async response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const text = await response.text();
-                return text ? JSON.parse(text) : {};
-            })
-            .then(data => {
-                console.log('Lead saved successfully:', data);
-
-                // Create WhatsApp message
-                var whatsappMessage = '*Solicitação de Orçamento - Verly Vidraçaria*\n\n' +
-                    '*Nome:* ' + name.val() + '\n' +
-                    '*Telefone:* ' + phone.val() + '\n' +
-                    '*Email:* ' + email.val() + '\n' +
-                    '*Serviço:* ' + service.find('option:selected').text() + '\n' +
-                    (message ? '*Mensagem:* ' + message + '\n\n' : '\n') +
-                    'Enviado através do site verlyvidracaria.com';
-
-                // Encode message for URL
-                var encodedMessage = encodeURIComponent(whatsappMessage);
-
-                // Open WhatsApp with pre-filled message
-                var whatsappURL = 'https://wa.me/5521987926578?text=' + encodedMessage;
-                window.open(whatsappURL, '_blank');
-
-                // Show success message
-                $('#success').html('<div class="alert alert-success fade-in-up"><i class="fas fa-check-circle mr-2"></i><strong>Sucesso!</strong> Lead salvo! Redirecionando para o WhatsApp...</div>');
-
-                // Track conversion
-                trackEvent('form_submission', {
-                    'event_category': 'lead',
-                    'event_label': 'Contact Form',
-                    'service_type': service.val()
-                });
-
-                // Reset form after 3 seconds
-                setTimeout(function() {
-                    form[0].reset();
-                    $('.is-valid, .is-invalid').removeClass('is-valid is-invalid');
-                    $('#success').html('');
-                }, 3000);
-
-                // Reset button state
-                submitBtn.prop('disabled', false);
-                btnText.show();
-                btnLoader.hide();
-            })
-            .catch(error => {
-                console.error('Error saving lead:', error);
-
-                // Still redirect to WhatsApp even if API fails
-                var whatsappMessage = '*Solicitação de Orçamento - Verly Vidraçaria*\n\n' +
-                    '*Nome:* ' + name.val() + '\n' +
-                    '*Telefone:* ' + phone.val() + '\n' +
-                    '*Email:* ' + email.val() + '\n' +
-                    '*Serviço:* ' + service.find('option:selected').text() + '\n' +
-                    (message ? '*Mensagem:* ' + message + '\n\n' : '\n') +
-                    'Enviado através do site verlyvidracaria.com';
-
-                var encodedMessage = encodeURIComponent(whatsappMessage);
-                var whatsappURL = 'https://wa.me/5521987926578?text=' + encodedMessage;
-                window.open(whatsappURL, '_blank');
-
-                // Show warning message
-                $('#success').html('<div class="alert alert-warning fade-in-up"><i class="fas fa-exclamation-triangle mr-2"></i><strong>Atenção!</strong> Redirecionando para o WhatsApp...</div>');
-
-                // Reset button state
-                submitBtn.prop('disabled', false);
-                btnText.show();
-                btnLoader.hide();
-
-                // Track conversion anyway
-                trackEvent('form_submission', {
-                    'event_category': 'lead',
-                    'event_label': 'Contact Form - API Error',
-                    'service_type': service.val()
-                });
-            });
-        });
-        
-        // Add loading animation to buttons
-        $('.btn').on('click', function() {
-            var $btn = $(this);
-            if (!$btn.hasClass('btn-loading')) {
-                $btn.addClass('btn-loading');
-                setTimeout(function() {
-                    $btn.removeClass('btn-loading');
-                }, 1000);
-            }
-        });
-    });
-    </script>
-
+    <!-- Main JavaScript -->
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -280,36 +280,17 @@ async function handleFormSubmit(event) {
             console.error('API error:', response.status);
         }
         
-        // Prepare WhatsApp message
-        const whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +
-            `*Nome:* ${formData.name}\n` +
-            `*Telefone:* ${phoneField.value}\n` +
-            `*Bairro:* ${formData.neighborhood}\n` +
-            (formData.email ? `*E-mail:* ${formData.email}\n` : '') +
-            `*Serviços de Interesse:* ${selectedServices.join(', ')}\n` +
-            (messageField.value.trim() ? `*Mensagem:* ${messageField.value.trim()}\n\n` : '\n') +
-            `Enviado através do site verlyvidracaria.com`;
-        
-        const encodedMessage = encodeURIComponent(whatsappMessage);
-        const whatsappURL = `https://wa.me/5521987926578?text=${encodedMessage}`;
-        
-        // Show success message
-        if (apiSuccess) {
-            showAlert('✅ <strong>Orçamento solicitado com sucesso!</strong><br>Você será redirecionado para o WhatsApp para finalizar o contato. Responderemos em até 2 horas úteis!', 'success');
-        } else {
-            showAlert('✅ <strong>Dados recebidos!</strong><br>Você será redirecionado para o WhatsApp para finalizar o contato.', 'success');
-        }
-        
         // Track conversion
         trackEvent('form_submission', {
             event_category: 'lead',
             event_label: 'Contact Form',
             services: selectedServices.join(', '),
-            neighborhood: formData.neighborhood
+            neighborhood: formData.neighborhood,
+            api_status: apiSuccess ? 'success' : 'error'
         });
         
         // Track Google Ads conversion
-        if (typeof gtag !== 'undefined') {
+        if (typeof gtag !== 'undefined' && apiSuccess) {
             gtag('event', 'conversion', {
                 'send_to': 'AW-17336857529/CONVERSION_ID',
                 'value': 1.0,
@@ -323,10 +304,36 @@ async function handleFormSubmit(event) {
             el.classList.remove('is-valid', 'is-invalid');
         });
         
-        // Redirect to WhatsApp after 2 seconds
-        setTimeout(() => {
-            window.open(whatsappURL, '_blank');
-        }, 2000);
+        if (apiSuccess) {
+            // API Success: Show success message only (no WhatsApp redirect)
+            showAlert('✅ <strong>Orçamento solicitado com sucesso!</strong><br>Entraremos em contato em até 2 horas úteis. Obrigado!', 'success');
+            
+            // Auto-hide alert after 5 seconds
+            setTimeout(() => {
+                clearAlert();
+            }, 5000);
+            
+        } else {
+            // API Failed: Fallback to WhatsApp
+            const whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +
+                `*Nome:* ${formData.name}\n` +
+                `*Telefone:* ${phoneField.value}\n` +
+                `*Bairro:* ${formData.neighborhood}\n` +
+                (formData.email ? `*E-mail:* ${formData.email}\n` : '') +
+                `*Serviços de Interesse:* ${selectedServices.join(', ')}\n` +
+                (messageField.value.trim() ? `*Mensagem:* ${messageField.value.trim()}\n\n` : '\n') +
+                `Enviado através do site verlyvidracaria.com`;
+            
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            const whatsappURL = `https://wa.me/5521987926578?text=${encodedMessage}`;
+            
+            showAlert('⚠️ <strong>Problema no envio automático.</strong><br>Você será redirecionado para o WhatsApp para finalizar o contato.', 'error');
+            
+            // Redirect to WhatsApp after 2 seconds
+            setTimeout(() => {
+                window.open(whatsappURL, '_blank');
+            }, 2000);
+        }
         
     } catch (error) {
         console.error('Error submitting form:', error);

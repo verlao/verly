@@ -1,13 +1,46 @@
-# robots.txt para Verly Vidros
+# robots.txt otimizado para Verly Vidraçaria
+# Atualizado: 2025-10-08
+
+# Permitir todos os bots de busca
 User-agent: *
 Allow: /
-Allow: /index.html
+
+# Bloquear páginas de erro (não indexar)
+Disallow: /404.html
+Disallow: /500.html
+
+# Permitir explicitamente recursos importantes
 Allow: /img/
 Allow: /css/
 Allow: /js/
+Allow: /vendor/
 
-# Sitemap
-Sitemap: https://verlyvidros.com/sitemap.xml
+# Bots específicos - Otimizado para LLMs e buscadores modernos
+User-agent: Googlebot
+Allow: /
 
-# Crawl-delay
-Crawl-delay: 10 
+User-agent: Googlebot-Image
+Allow: /img/
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Sitemap - Fundamental para indexação
+Sitemap: https://verlyvidracaria.com/sitemap.xml
+
+# Remover Crawl-delay para melhor indexação (somente se necessário para bots específicos) 

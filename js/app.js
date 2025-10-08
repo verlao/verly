@@ -1,21 +1,182 @@
 /**
  * Verly Vidraçaria - Main Application JavaScript
- * Pure Vanilla JS - No jQuery dependencies
- * Focus: Form validation, conversion tracking, and UX optimization
+ * Pure Vanilla JS with Complete GA4 Tracking
+ * Focus: Form validation, conversion tracking, and user behavior analytics
  */
+
+// ============================================================================
+// GOOGLE ANALYTICS 4 (GA4) TRACKING UTILITIES
+// ============================================================================
+
+/**
+ * Track events to Google Analytics 4
+ * @param {string} eventName - GA4 event name (use snake_case)
+ * @param {object} eventParams - Event parameters
+ */
+function trackGA4Event(eventName, eventParams = {}) {
+    if (typeof gtag !== 'undefined') {
+        // Add common parameters to all events
+        const enrichedParams = {
+            ...eventParams,
+            timestamp: new Date().toISOString(),
+            page_location: window.location.href,
+            page_title: document.title
+        };
+        
+        gtag('event', eventName, enrichedParams);
+        console.log('📊 GA4 Event:', eventName, enrichedParams);
+    } else {
+        console.warn('⚠️ gtag not loaded yet');
+    }
+}
+
+/**
+ * Track page view (custom implementation)
+ */
+function trackPageView() {
+    trackGA4Event('page_view', {
+        page_path: window.location.pathname,
+        page_referrer: document.referrer || 'direct',
+        user_agent: navigator.userAgent,
+        screen_resolution: `${window.screen.width}x${window.screen.height}`,
+        viewport_size: `${window.innerWidth}x${window.innerHeight}`,
+        device_type: getDeviceType()
+    });
+}
+
+/**
+ * Track CTA button clicks
+ */
+function trackCTAClick(buttonText, buttonLocation, targetSection = '') {
+    trackGA4Event('cta_click', {
+        button_text: buttonText,
+        button_location: buttonLocation, // 'hero', 'menu', 'floating', 'section'
+        target_section: targetSection,
+        click_position_y: window.pageYOffset
+    });
+}
+
+/**
+ * Track form interactions
+ */
+function trackFormInteraction(action, fieldName, value = '', errorMessage = '') {
+    const params = {
+        form_name: 'contact_form',
+        form_action: action, // 'start', 'field_focus', 'field_blur', 'field_complete', 'validation_error', 'submit_attempt', 'submit_success', 'submit_error'
+        field_name: fieldName
+    };
+    
+    if (value) params.field_value_length = value.length;
+    if (errorMessage) params.error_message = errorMessage;
+    
+    trackGA4Event('form_interaction', params);
+}
+
+/**
+ * Track scroll depth
+ */
+function trackScrollDepth(percentage) {
+    trackGA4Event('scroll', {
+        percent_scrolled: percentage,
+        scroll_depth_threshold: percentage,
+        page_height: document.documentElement.scrollHeight,
+        viewport_height: window.innerHeight
+    });
+}
+
+/**
+ * Track section view (when section enters viewport)
+ */
+function trackSectionView(sectionName, sectionId) {
+    trackGA4Event('section_view', {
+        section_name: sectionName,
+        section_id: sectionId,
+        scroll_position: window.pageYOffset,
+        time_on_page: getTimeOnPage()
+    });
+}
+
+/**
+ * Track service card click
+ */
+function trackServiceClick(serviceName, servicePosition) {
+    trackGA4Event('service_interaction', {
+        service_name: serviceName,
+        service_position: servicePosition,
+        interaction_type: 'click'
+    });
+}
+
+/**
+ * Track WhatsApp interaction
+ */
+function trackWhatsAppClick(source, message = '') {
+    trackGA4Event('whatsapp_click', {
+        click_source: source, // 'floating_button', 'hero_cta', 'form_success', 'form_fallback'
+        has_pre_filled_message: !!message,
+        message_length: message ? message.length : 0
+    });
+}
+
+/**
+ * Track phone click
+ */
+function trackPhoneClick(phoneNumber, location) {
+    trackGA4Event('phone_click', {
+        phone_number: phoneNumber,
+        click_location: location // 'header', 'contact_section', 'footer'
+    });
+}
+
+/**
+ * Track navigation click
+ */
+function trackNavigationClick(linkText, linkTarget, navigationType) {
+    trackGA4Event('navigation_click', {
+        link_text: linkText,
+        link_target: linkTarget,
+        navigation_type: navigationType // 'menu', 'footer', 'internal_link'
+    });
+}
+
+/**
+ * Track user engagement milestones
+ */
+function trackEngagementMilestone(milestoneName, milestoneValue) {
+    trackGA4Event('engagement_milestone', {
+        milestone_name: milestoneName,
+        milestone_value: milestoneValue
+    });
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 
 /**
- * Track events to Google Analytics
+ * Get device type
  */
-function trackEvent(eventName, eventParams) {
-    if (typeof gtag !== 'undefined') {
-        gtag('event', eventName, eventParams);
-    }
-    console.log('Event tracked:', eventName, eventParams);
+function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/mobile/i.test(ua)) return 'mobile';
+    if (/tablet/i.test(ua)) return 'tablet';
+    return 'desktop';
+}
+
+/**
+ * Get URL parameter
+ */
+function getUrlParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+/**
+ * Get time on page in seconds
+ */
+let pageLoadTime = new Date();
+function getTimeOnPage() {
+    return Math.floor((new Date() - pageLoadTime) / 1000);
 }
 
 /**
@@ -52,6 +213,20 @@ function clearAlert() {
     alertDiv.innerHTML = '';
 }
 
+/**
+ * Smooth scroll to element
+ */
+function smoothScrollTo(target) {
+    const element = document.querySelector(target);
+    if (element) {
+        const offsetTop = element.offsetTop - 80; // Account for fixed header
+        window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+        });
+    }
+}
+
 // ============================================================================
 // FORM VALIDATION
 // ============================================================================
@@ -60,15 +235,11 @@ function clearAlert() {
  * Phone number mask (Brazilian format)
  */
 function applyPhoneMask(value) {
-    // Remove all non-digits
     value = value.replace(/\D/g, '');
     
-    // Apply mask: (21) 9XXXX-XXXX
     if (value.length <= 10) {
-        // Landline: (21) 1234-5678
         value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
     } else {
-        // Mobile: (21) 91234-5678
         value = value.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
     }
     
@@ -79,15 +250,12 @@ function applyPhoneMask(value) {
  * Validate phone number (Brazilian format)
  */
 function validatePhone(phone) {
-    // Remove mask to get only digits
     const digitsOnly = phone.replace(/\D/g, '');
     
-    // Must have 10 (landline) or 11 (mobile) digits
     if (digitsOnly.length < 10 || digitsOnly.length > 11) {
         return false;
     }
     
-    // DDD must be between 11 and 99
     const ddd = parseInt(digitsOnly.substring(0, 2));
     if (ddd < 11 || ddd > 99) {
         return false;
@@ -100,7 +268,7 @@ function validatePhone(phone) {
  * Validate email format
  */
 function validateEmail(email) {
-    if (!email) return true; // Email is optional
+    if (!email) return true;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
@@ -116,12 +284,10 @@ function validateField(field) {
     let isValid = true;
     let errorMessage = '';
     
-    // Check if required field is empty
     if (field.hasAttribute('required') && !value) {
         isValid = false;
         errorMessage = 'Este campo é obrigatório';
     }
-    // Validate specific field types
     else if (fieldId === 'name' && value && value.length < 3) {
         isValid = false;
         errorMessage = 'Nome deve ter pelo menos 3 caracteres';
@@ -150,11 +316,19 @@ function validateField(field) {
         if (errorElement) {
             errorElement.textContent = errorMessage;
         }
+        
+        // Track validation error
+        trackFormInteraction('validation_error', fieldId, value, errorMessage);
     } else if (value || field.value) {
         field.classList.remove('is-invalid');
         field.classList.add('is-valid');
         if (errorElement) {
             errorElement.textContent = '';
+        }
+        
+        // Track field complete
+        if (value) {
+            trackFormInteraction('field_complete', fieldId, value);
         }
     } else {
         field.classList.remove('is-invalid', 'is-valid');
@@ -177,6 +351,7 @@ function validateServices() {
         if (errorElement) {
             errorElement.textContent = 'Selecione pelo menos um serviço';
         }
+        trackFormInteraction('validation_error', 'services', '', 'Nenhum serviço selecionado');
         return false;
     }
     
@@ -197,6 +372,9 @@ async function handleFormSubmit(event) {
     event.preventDefault();
     
     clearAlert();
+    
+    // Track submit attempt
+    trackFormInteraction('submit_attempt', 'all_fields');
     
     // Get form fields
     const nameField = document.getElementById('name');
@@ -226,6 +404,7 @@ async function handleFormSubmit(event) {
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
         
+        trackFormInteraction('validation_failed', 'all_fields');
         return;
     }
     
@@ -236,7 +415,7 @@ async function handleFormSubmit(event) {
     // Prepare form data
     const formData = {
         name: nameField.value.trim(),
-        phone: phoneField.value.replace(/\D/g, ''), // Send only digits
+        phone: phoneField.value.replace(/\D/g, ''),
         email: emailField.value.trim() || undefined,
         neighborhood: neighborhoodField.value,
         city: 'Rio de Janeiro',
@@ -280,13 +459,17 @@ async function handleFormSubmit(event) {
             console.error('API error:', response.status);
         }
         
-        // Track conversion
-        trackEvent('form_submission', {
-            event_category: 'lead',
-            event_label: 'Contact Form',
+        // Track form submission with detailed data
+        trackFormInteraction('submit_success', 'all_fields', '', apiSuccess ? 'API success' : 'API failed');
+        
+        // Track as conversion with services and neighborhood
+        trackGA4Event('generate_lead', {
+            lead_source: 'contact_form',
             services: selectedServices.join(', '),
             neighborhood: formData.neighborhood,
-            api_status: apiSuccess ? 'success' : 'error'
+            api_status: apiSuccess ? 'success' : 'error',
+            has_email: !!formData.email,
+            has_message: !!messageField.value.trim()
         });
         
         // Track Google Ads conversion
@@ -329,6 +512,9 @@ async function handleFormSubmit(event) {
             
             showAlert('⚠️ <strong>Problema no envio automático.</strong><br>Você será redirecionado para o WhatsApp para finalizar o contato.', 'error');
             
+            // Track WhatsApp fallback
+            trackWhatsAppClick('form_fallback', whatsappMessage);
+            
             // Redirect to WhatsApp after 2 seconds
             setTimeout(() => {
                 window.open(whatsappURL, '_blank');
@@ -337,6 +523,8 @@ async function handleFormSubmit(event) {
         
     } catch (error) {
         console.error('Error submitting form:', error);
+        
+        trackFormInteraction('submit_error', 'all_fields', '', error.message);
         
         // Even on error, try to redirect to WhatsApp
         const whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +
@@ -351,6 +539,8 @@ async function handleFormSubmit(event) {
         
         showAlert('⚠️ Houve um problema ao enviar. Você será redirecionado para o WhatsApp para continuar.', 'error');
         
+        trackWhatsAppClick('form_error', whatsappMessage);
+        
         setTimeout(() => {
             window.open(whatsappURL, '_blank');
         }, 2000);
@@ -359,42 +549,6 @@ async function handleFormSubmit(event) {
         submitBtn.disabled = false;
         submitBtn.classList.remove('btn-loading');
         btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis';
-    }
-}
-
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
-/**
- * Get device type
- */
-function getDeviceType() {
-    const ua = navigator.userAgent;
-    if (/mobile/i.test(ua)) return 'mobile';
-    if (/tablet/i.test(ua)) return 'tablet';
-    return 'desktop';
-}
-
-/**
- * Get URL parameter
- */
-function getUrlParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-}
-
-/**
- * Smooth scroll to element
- */
-function smoothScrollTo(target) {
-    const element = document.querySelector(target);
-    if (element) {
-        const offsetTop = element.offsetTop - 80; // Account for fixed header
-        window.scrollTo({
-            top: offsetTop,
-            behavior: 'smooth'
-        });
     }
 }
 
@@ -410,7 +564,9 @@ function initMobileMenu() {
         mobileMenuBtn.addEventListener('click', () => {
             navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
             
-            // Position menu below header on mobile
+            // Track menu open
+            trackNavigationClick('mobile_menu', '#menu', 'mobile_menu_toggle');
+            
             if (window.innerWidth <= 768) {
                 navMenu.style.position = 'absolute';
                 navMenu.style.top = '100%';
@@ -435,7 +591,7 @@ function initMobileMenu() {
 }
 
 // ============================================================================
-// SCROLL EFFECTS
+// SCROLL EFFECTS & SECTION TRACKING
 // ============================================================================
 
 function initScrollEffects() {
@@ -451,40 +607,98 @@ function initScrollEffects() {
 }
 
 // ============================================================================
-// ANALYTICS TRACKING
+// INTERSECTION OBSERVER FOR SECTION VIEWS
 // ============================================================================
 
-function initAnalyticsTracking() {
+function initSectionTracking() {
+    const sections = document.querySelectorAll('section[id]');
+    const sectionViewTracked = {};
+    
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !sectionViewTracked[entry.target.id]) {
+                const sectionName = entry.target.querySelector('h2')?.textContent || entry.target.id;
+                trackSectionView(sectionName, entry.target.id);
+                sectionViewTracked[entry.target.id] = true;
+            }
+        });
+    }, {
+        threshold: 0.5 // Track when 50% of section is visible
+    });
+    
+    sections.forEach(section => sectionObserver.observe(section));
+}
+
+// ============================================================================
+// COMPLETE ANALYTICS TRACKING
+// ============================================================================
+
+function initCompleteAnalytics() {
+    // Track page load
+    trackPageView();
+    
+    // Track time on page milestones
+    setTimeout(() => trackEngagementMilestone('time_30s', 30), 30000);
+    setTimeout(() => trackEngagementMilestone('time_60s', 60), 60000);
+    setTimeout(() => trackEngagementMilestone('time_120s', 120), 120000);
+    
     // Track WhatsApp clicks
     document.querySelectorAll('a[href*="wa.me"], .whatsapp-float').forEach(element => {
         element.addEventListener('click', () => {
-            trackEvent('whatsapp_click', {
-                event_category: 'engagement',
-                event_label: 'WhatsApp Contact',
-                location: element.classList.contains('whatsapp-float') ? 'floating_button' : 'inline_button'
-            });
+            const source = element.classList.contains('whatsapp-float') ? 'floating_button' : 
+                          element.closest('.hero') ? 'hero_cta' : 'inline_button';
+            trackWhatsAppClick(source);
         });
     });
     
-    // Track CTA clicks
+    // Track ALL CTA clicks with detailed info
     document.querySelectorAll('.btn-primary, .btn-success, .btn-secondary').forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
             const buttonText = button.textContent.trim();
-            trackEvent('cta_click', {
-                event_category: 'engagement',
-                event_label: buttonText
-            });
+            const location = button.closest('.hero') ? 'hero' :
+                           button.closest('.navbar') ? 'menu' :
+                           button.closest('.contact-section') ? 'contact_form' :
+                           'other';
+            const targetHref = button.getAttribute('href');
+            
+            trackCTAClick(buttonText, location, targetHref);
         });
     });
     
     // Track service card clicks
-    document.querySelectorAll('.service-card').forEach(card => {
+    document.querySelectorAll('.service-card').forEach((card, index) => {
         card.addEventListener('click', () => {
-            const serviceName = card.querySelector('h3').textContent;
-            trackEvent('service_view', {
-                event_category: 'engagement',
-                event_label: serviceName
-            });
+            const serviceName = card.querySelector('h3')?.textContent || `Service ${index + 1}`;
+            trackServiceClick(serviceName, index + 1);
+        });
+    });
+    
+    // Track navigation clicks
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            const linkText = link.textContent.trim();
+            const linkTarget = link.getAttribute('href');
+            trackNavigationClick(linkText, linkTarget, 'menu');
+        });
+    });
+    
+    // Track footer links
+    document.querySelectorAll('.footer a').forEach(link => {
+        link.addEventListener('click', () => {
+            const linkText = link.textContent.trim();
+            const linkTarget = link.getAttribute('href');
+            trackNavigationClick(linkText, linkTarget, 'footer');
+        });
+    });
+    
+    // Track phone clicks
+    document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+        link.addEventListener('click', () => {
+            const phoneNumber = link.getAttribute('href').replace('tel:', '');
+            const location = link.closest('.header') ? 'header' :
+                           link.closest('.contact-section') ? 'contact_section' :
+                           link.closest('.footer') ? 'footer' : 'other';
+            trackPhoneClick(phoneNumber, location);
         });
     });
     
@@ -500,12 +714,39 @@ function initAnalyticsTracking() {
         scrollPercentages.forEach(percentage => {
             if (scrollPercent >= percentage && !scrollTracked[percentage]) {
                 scrollTracked[percentage] = true;
-                trackEvent('scroll_depth', {
-                    event_category: 'engagement',
-                    event_label: percentage + '%',
-                    value: percentage
-                });
+                trackScrollDepth(percentage);
             }
+        });
+    });
+    
+    // Track form field interactions
+    const formFields = ['name', 'phone', 'email', 'neighborhood', 'message'];
+    formFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            // Track first focus (form start)
+            let firstFocus = true;
+            field.addEventListener('focus', () => {
+                if (firstFocus) {
+                    trackFormInteraction('start', fieldId);
+                    firstFocus = false;
+                }
+                trackFormInteraction('field_focus', fieldId);
+            });
+            
+            // Track field blur
+            field.addEventListener('blur', () => {
+                trackFormInteraction('field_blur', fieldId, field.value);
+            });
+        }
+    });
+    
+    // Track service checkboxes
+    document.querySelectorAll('input[name="services"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const checkedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
+                .map(cb => cb.value);
+            trackFormInteraction('service_selected', 'services', checkedServices.join(', '));
         });
     });
 }
@@ -519,11 +760,14 @@ function initSmoothScroll() {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             
-            // Ignore empty anchors
             if (href === '#' || !href) return;
             
             e.preventDefault();
             smoothScrollTo(href);
+            
+            // Track internal navigation
+            const linkText = this.textContent.trim();
+            trackNavigationClick(linkText, href, 'internal_link');
         });
     });
 }
@@ -533,7 +777,7 @@ function initSmoothScroll() {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Verly Vidraçaria - App initialized');
+    console.log('🚀 Verly Vidraçaria - App initialized with complete GA4 tracking');
     
     // Form validation and submission
     const contactForm = document.getElementById('contactForm');
@@ -553,7 +797,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     validateField(field);
                 });
                 
-                // Also validate on input for better UX
                 field.addEventListener('input', () => {
                     if (field.classList.contains('is-invalid')) {
                         validateField(field);
@@ -571,17 +814,14 @@ document.addEventListener('DOMContentLoaded', () => {
         contactForm.addEventListener('submit', handleFormSubmit);
     }
     
-    // Initialize other features
+    // Initialize all features
     initMobileMenu();
     initScrollEffects();
     initSmoothScroll();
-    initAnalyticsTracking();
+    initSectionTracking();
+    initCompleteAnalytics();
     
-    // Track page view
-    trackEvent('page_view', {
-        event_category: 'engagement',
-        event_label: 'Home Page'
-    });
+    console.log('✅ GA4 tracking initialized with 15+ event types');
 });
 
 // ============================================================================
@@ -593,8 +833,7 @@ if (typeof module !== 'undefined' && module.exports) {
         validatePhone,
         validateEmail,
         applyPhoneMask,
-        validateField
+        validateField,
+        trackGA4Event
     };
 }
-
-

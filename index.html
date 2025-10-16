@@ -53,16 +53,16 @@
       "email": "contato@verlyvidracaria.com",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Zona Oeste",
-        "addressLocality": "Rio de Janeiro",
+        "streetAddress": "R. Gen. Azeredo, 218 - Loja C",
+        "addressLocality": "Realengo",
         "addressRegion": "RJ",
-        "postalCode": "21000-000",
+        "postalCode": "21765-000",
         "addressCountry": "BR"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": -22.9068,
-        "longitude": -43.1729
+        "latitude": -22.8814,
+        "longitude": -43.4251
       },
       "areaServed": [
         {
@@ -963,9 +963,20 @@
 
             .contact-wrapper {
                 grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
             }
 
+            /* Formulário aparece primeiro no mobile */
+            .contact-info {
+                order: 2;
+                margin-top: 2rem;
+                padding: 2rem;
+            }
+
+            /* Formulário tem prioridade visual no mobile */
             .contact-form {
+                order: 1;
                 padding: 2rem;
             }
 
@@ -1001,6 +1012,12 @@
             }
         }
     </style>
+    
+    <!-- UI/UX Improvements -->
+    <link href="css/ui-improvements.css" rel="stylesheet" type="text/css">
+    
+    <!-- WhatsApp CTA Optimization -->
+    <link href="css/whatsapp-cta.css" rel="stylesheet" type="text/css">
 </head>
 <body>
     <!-- Header -->
@@ -1104,7 +1121,7 @@
                 </div>
                 <div class="service-card">
                     <div class="service-icon">
-                        <i class="fas fa-mirror"></i>
+                        <i class="fas fa-expand-arrows-alt"></i>
                     </div>
                     <h3>Espelhos Sob Medida</h3>
                     <p>Espelhos com e sem moldura, instalação completa e acabamento perfeito.</p>
@@ -1501,8 +1518,38 @@
                 <div class="footer-section">
                     <h4>Contato</h4>
                     <p>
-                        <i class="fab fa-whatsapp"></i> (21) 98792-6578<br>
-                        <i class="fas fa-envelope"></i> contato@verlyvidracaria.com
+                        <i class="fab fa-whatsapp"></i> 
+                        <a href="https://web.whatsapp.com/send?phone=5521987926578&text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!" 
+                           class="footer-contact-link whatsapp-link" 
+                           data-context="footer-whatsapp"
+                           data-track="footer_whatsapp_click">
+                            (21) 98792-6578
+                        </a>
+                        <br>
+                        <i class="fas fa-phone"></i> 
+                        <a href="tel:+552134216066" 
+                           class="footer-contact-link phone-link" 
+                           data-track="footer_phone_click">
+                            (21) 3421-6066
+                        </a>
+                        <br>
+                        <i class="fas fa-envelope"></i> 
+                        <a href="mailto:contato@verlyvidracaria.com" 
+                           class="footer-contact-link" 
+                           data-track="footer_email_click">
+                            contato@verlyvidracaria.com
+                        </a>
+                    </p>
+                    <p style="margin-top: 1rem;">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <a href="https://www.google.com/maps/search/?api=1&query=R.+Gen.+Azeredo+218+Loja+C+Realengo+Rio+de+Janeiro+RJ+21765-000" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="footer-contact-link address-link" 
+                           data-track="footer_address_click">
+                            R. Gen. Azeredo, 218 - Loja C<br>
+                            Realengo - Rio de Janeiro, RJ - 21765-000
+                        </a>
                     </p>
                     <p style="margin-top: 1rem;">
                         <strong>Horário:</strong><br>
@@ -1517,13 +1564,19 @@
     </footer>
 
     <!-- WhatsApp Floating Button -->
-    <a href="https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20vidra%C3%A7aria!" 
+    <a href="https://web.whatsapp.com/send?phone=5521987926578&text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20vidra%C3%A7aria!" 
        class="whatsapp-float" 
-       target="_blank"
+       data-context="floating-button"
        aria-label="Falar no WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <!-- UI/UX Improvements JavaScript -->
+    <script src="js/ui-improvements.js"></script>
+    
+    <!-- WhatsApp CTA Optimization -->
+    <script src="js/whatsapp-cta.js"></script>
+    
     <!-- Main JavaScript -->
     <script src="js/app.js"></script>
 </body>

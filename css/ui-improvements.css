@@ -1,0 +1,589 @@
+/**
+ * UI/UX Improvements - Verly Vidraçaria
+ * Melhorias de interface baseadas em testes de usuário
+ */
+
+/* ============================================================================
+   LOADING STATES & ANIMATIONS
+   ============================================================================ */
+
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Button loading state */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ============================================================================
+   TOAST NOTIFICATIONS
+   ============================================================================ */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    pointer-events: none;
+}
+
+.toast {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: slideInRight 0.3s ease-out;
+    pointer-events: all;
+    border-left: 4px solid;
+}
+
+.toast.success {
+    border-left-color: #28a745;
+}
+
+.toast.error {
+    border-left-color: #dc3545;
+}
+
+.toast.warning {
+    border-left-color: #ffc107;
+}
+
+.toast.info {
+    border-left-color: #17a2b8;
+}
+
+.toast-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.toast.success .toast-icon {
+    color: #28a745;
+}
+
+.toast.error .toast-icon {
+    color: #dc3545;
+}
+
+.toast.warning .toast-icon {
+    color: #ffc107;
+}
+
+.toast.info .toast-icon {
+    color: #17a2b8;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #212529;
+}
+
+.toast-message {
+    font-size: 13px;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1;
+    transition: color 0.2s;
+    margin-left: 8px;
+}
+
+.toast-close:hover {
+    color: #212529;
+}
+
+/* Mobile toast adjustments */
+@media (max-width: 576px) {
+    .toast-container {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+}
+
+/* ============================================================================
+   FORM VALIDATION ICONS
+   ============================================================================ */
+
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-control-wrapper {
+    position: relative;
+}
+
+.form-control.has-icon {
+    padding-right: 40px;
+}
+
+.form-validation-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.form-control.is-valid ~ .form-validation-icon.success-icon {
+    opacity: 1;
+    color: #28a745;
+}
+
+.form-control.is-invalid ~ .form-validation-icon.error-icon {
+    opacity: 1;
+    color: #dc3545;
+}
+
+/* Enhanced form states */
+.form-control {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    border-color: #1abc9c;
+    box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.15);
+}
+
+.form-control.is-valid {
+    border-color: #28a745;
+    background-image: none;
+}
+
+.form-control.is-valid:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: none;
+}
+
+.form-control.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+}
+
+/* ============================================================================
+   TOOLTIPS
+   ============================================================================ */
+
+.tooltip-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: help;
+    margin-left: 6px;
+    transition: all 0.2s;
+}
+
+.tooltip-trigger:hover {
+    background: #1abc9c;
+    color: white;
+}
+
+.tooltip-content {
+    position: absolute;
+    background: #2c3e50;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 250px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+    white-space: normal;
+}
+
+.tooltip-trigger:hover .tooltip-content,
+.tooltip-trigger:focus .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip-content::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 20px;
+    border: 6px solid transparent;
+    border-bottom-color: #2c3e50;
+}
+
+/* ============================================================================
+   SEARCHABLE SELECT (Bairro)
+   ============================================================================ */
+
+.searchable-select {
+    position: relative;
+}
+
+.searchable-select-input {
+    width: 100%;
+    cursor: pointer;
+}
+
+.searchable-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ced4da;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.searchable-select-dropdown.active {
+    display: block;
+}
+
+.searchable-select-search {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.searchable-select-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.searchable-select-search input:focus {
+    outline: none;
+    border-color: #1abc9c;
+}
+
+.searchable-select-options {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.searchable-select-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    font-size: 14px;
+}
+
+.searchable-select-option:hover {
+    background-color: #f8f9fa;
+}
+
+.searchable-select-option.selected {
+    background-color: #e7f9f5;
+    color: #1abc9c;
+    font-weight: 500;
+}
+
+.searchable-select-option.hidden {
+    display: none;
+}
+
+.searchable-select-no-results {
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* ============================================================================
+   IMPROVED ACCESSIBILITY
+   ============================================================================ */
+
+/* Better focus indicators */
+*:focus-visible {
+    outline: 2px solid #1abc9c;
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #1abc9c;
+    outline-offset: 2px;
+}
+
+/* Hide outline for mouse users */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Improved checkbox/radio accessibility */
+.checkbox-item {
+    position: relative;
+    padding: 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.checkbox-item:hover {
+    background-color: #f8f9fa;
+}
+
+.checkbox-item:focus-within {
+    background-color: #e7f9f5;
+    outline: 2px solid #1abc9c;
+    outline-offset: 2px;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkbox-item label {
+    cursor: pointer;
+    user-select: none;
+    margin-left: 8px;
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ============================================================================
+   MOBILE OPTIMIZATIONS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Larger touch targets */
+    button,
+    input,
+    select,
+    textarea {
+        min-height: 44px;
+    }
+
+    /* Prevent zoom on iOS */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Better spacing */
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    /* Improved checkbox layout */
+    .checkbox-group {
+        display: grid;
+        gap: 8px;
+    }
+
+    .checkbox-item {
+        padding: 14px 12px;
+    }
+
+    /* Sticky submit button on mobile */
+    .form-submit-wrapper {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 16px;
+        margin: 0 -16px -16px;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+    }
+
+    /* Modal-like form on small screens */
+    .contact-form {
+        border-radius: 20px 20px 0 0;
+    }
+}
+
+/* ============================================================================
+   ENHANCED FORM ALERT (Replace default)
+   ============================================================================ */
+
+#formAlert {
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.form-alert {
+    padding: 14px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.form-alert.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.form-alert.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.form-alert i {
+    font-size: 18px;
+    margin-top: 1px;
+}
+
+/* ============================================================================
+   SMOOTH SCROLLING
+   ============================================================================ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* ============================================================================
+   LOADING OVERLAY (Optional - for full page loading)
+   ============================================================================ */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #e9ecef;
+    border-top-color: #1abc9c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-help {
+    cursor: help;
+}
+
+.user-select-none {
+    user-select: none;
+}
+
+.transition-all {
+    transition: all 0.2s ease-in-out;
+}
+

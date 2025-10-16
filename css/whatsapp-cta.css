@@ -1,0 +1,436 @@
+/**
+ * WhatsApp CTA Optimization Styles
+ * Baseado em melhores práticas de conversão
+ */
+
+/* ============================================================================
+   STICKY CTA BAR (aparece após scroll)
+   ============================================================================ */
+
+.whatsapp-sticky-cta {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+    padding: 12px 20px;
+    z-index: 999;
+    transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.whatsapp-sticky-cta.active {
+    transform: translateY(0);
+}
+
+.sticky-cta-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.sticky-cta-text {
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+.sticky-cta-text strong {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.sticky-cta-text span {
+    font-size: 0.875rem;
+    opacity: 0.95;
+}
+
+.sticky-cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    color: #25D366;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sticky-cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    color: #128C7E;
+}
+
+.sticky-cta-button i {
+    font-size: 1.3rem;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .whatsapp-sticky-cta {
+        padding: 10px 15px;
+    }
+    
+    .sticky-cta-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .sticky-cta-text strong {
+        font-size: 0.95rem;
+    }
+    
+    .sticky-cta-text span {
+        font-size: 0.8rem;
+    }
+    
+    .sticky-cta-button {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+    }
+}
+
+/* ============================================================================
+   SERVICE CARD CTA BUTTONS
+   ============================================================================ */
+
+.service-whatsapp-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.service-whatsapp-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    color: white;
+}
+
+.service-whatsapp-cta i {
+    font-size: 1.2rem;
+}
+
+/* Ajustar service-card para incluir botão */
+.service-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* ============================================================================
+   FLOATING BUTTON ENHANCEMENTS
+   ============================================================================ */
+
+/* Garantir que o botão flutuante mantenha position fixed */
+.whatsapp-float {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    left: auto !important;
+    width: 64px;
+    height: 64px;
+    z-index: 1000;
+}
+
+/* Tooltip do botão flutuante */
+.whatsapp-float-tooltip {
+    position: absolute;
+    right: 75px;
+    top: 50%;
+    transform: translateY(-50%) translateX(10px);
+    background: #25D366;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.whatsapp-float-tooltip::after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 8px solid transparent;
+    border-left-color: #25D366;
+}
+
+.whatsapp-float-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* Animação de shake para chamar atenção */
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+    20%, 40%, 60%, 80% { transform: rotate(10deg); }
+}
+
+.whatsapp-float.shake {
+    animation: shake 0.8s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Pulso mais sutil no botão flutuante */
+@keyframes subtle-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+.whatsapp-float {
+    animation: subtle-pulse 2s infinite;
+}
+
+/* ============================================================================
+   HERO CTA IMPROVEMENTS
+   ============================================================================ */
+
+/* Melhorar visual do botão WhatsApp no hero */
+.hero-cta a[href*="whatsapp"],
+.hero-cta .btn-secondary {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-cta a[href*="whatsapp"]::before,
+.hero-cta .btn-secondary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.hero-cta a[href*="whatsapp"]:hover::before,
+.hero-cta .btn-secondary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.hero-cta a[href*="whatsapp"]:hover,
+.hero-cta .btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+}
+
+/* ============================================================================
+   CONTACT SECTION CTA
+   ============================================================================ */
+
+/* Adicionar estilo para CTA na seção de contato */
+.contact-whatsapp-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 20px 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+}
+
+.contact-whatsapp-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+    color: white;
+}
+
+.contact-whatsapp-cta i {
+    font-size: 1.5rem;
+}
+
+/* Badge "Resposta Rápida" */
+.quick-response-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(37, 211, 102, 0.15);
+    color: #128C7E;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.quick-response-badge i {
+    color: #25D366;
+}
+
+/* ============================================================================
+   MOBILE OPTIMIZATIONS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Botão flutuante maior em mobile - manter fixed! */
+    .whatsapp-float {
+        position: fixed !important;
+        width: 68px !important;
+        height: 68px !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        left: auto !important;
+        z-index: 1000 !important;
+    }
+    
+    .whatsapp-float i {
+        font-size: 2rem !important;
+    }
+    
+    /* Tooltip não aparece em mobile */
+    .whatsapp-float-tooltip {
+        display: none;
+    }
+    
+    /* Service CTAs ocupam largura total em mobile */
+    .service-whatsapp-cta {
+        width: 100%;
+    }
+    
+    /* Contact CTA */
+    .contact-whatsapp-cta {
+        font-size: 1rem;
+        padding: 14px 24px;
+    }
+}
+
+/* ============================================================================
+   ACCESSIBILITY
+   ============================================================================ */
+
+/* Focus states */
+.sticky-cta-button:focus,
+.service-whatsapp-cta:focus,
+.contact-whatsapp-cta:focus,
+.whatsapp-float:focus {
+    outline: 3px solid #FFD700;
+    outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .whatsapp-sticky-cta,
+    .sticky-cta-button,
+    .service-whatsapp-cta,
+    .whatsapp-float,
+    .whatsapp-float-tooltip {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* ============================================================================
+   PRINT (esconder CTAs ao imprimir)
+   ============================================================================ */
+
+@media print {
+    .whatsapp-sticky-cta,
+    .service-whatsapp-cta,
+    .contact-whatsapp-cta,
+    .whatsapp-float {
+        display: none !important;
+    }
+}
+
+/* ============================================================================
+   FOOTER CONTACT LINKS
+   ============================================================================ */
+
+.footer-contact-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    display: inline-block;
+    position: relative;
+}
+
+.footer-contact-link:hover {
+    color: #25D366 !important;
+    transform: translateX(5px);
+}
+
+/* WhatsApp Link no Footer */
+.footer-contact-link.whatsapp-link:hover {
+    color: #25D366 !important;
+}
+
+/* Phone Link no Footer */
+.footer-contact-link.phone-link:hover {
+    color: #4CAF50 !important;
+}
+
+/* Address Link no Footer */
+.footer-contact-link.address-link {
+    display: inline-block;
+    line-height: 1.5;
+}
+
+.footer-contact-link.address-link:hover {
+    color: #FF5722 !important;
+}
+
+/* Ícones do footer com espaçamento */
+.footer-section i {
+    margin-right: 8px;
+    min-width: 20px;
+    display: inline-block;
+}
+
+/* Mobile - ajustar espaçamento */
+@media (max-width: 768px) {
+    .footer-contact-link:hover {
+        transform: translateX(3px);
+    }
+}
+

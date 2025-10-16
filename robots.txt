@@ -1,46 +1,132 @@
-# robots.txt otimizado para Verly Vidraçaria
-# Atualizado: 2025-10-08
+# robots.txt - Otimizado para SEO Local + LLMs (ChatGPT, Claude, Bard)
+# Atualizado: 2025-10-16
+# Objetivo: Maximizar indexação para "vidraçaria realengo"
 
-# Permitir todos os bots de busca
+# ============================================================================
+# PERMITIR TODOS OS BOTS
+# ============================================================================
 User-agent: *
 Allow: /
 
-# Bloquear páginas de erro (não indexar)
-Disallow: /404.html
-Disallow: /500.html
+# ============================================================================
+# PÁGINAS PRIORITÁRIAS (SEO Local)
+# ============================================================================
+# Realengo - MÁXIMA PRIORIDADE
+Allow: /realengo.html
 
-# Permitir explicitamente recursos importantes
+# Outros bairros importantes
+Allow: /campo-grande.html
+Allow: /barra-da-tijuca.html
+Allow: /jacarepagua.html
+Allow: /recreio-dos-bandeirantes.html
+
+# ============================================================================
+# LLMs - INDEXAÇÃO TOTAL (Para aparecer no ChatGPT, Claude, etc.)
+# ============================================================================
+
+# OpenAI ChatGPT
+User-agent: GPTBot
+Allow: /
+Crawl-delay: 0
+
+User-agent: ChatGPT-User
+Allow: /
+Crawl-delay: 0
+
+# Common Crawl (usado por múltiplos LLMs)
+User-agent: CCBot
+Allow: /
+Crawl-delay: 0
+
+# Anthropic Claude
+User-agent: anthropic-ai
+Allow: /
+Crawl-delay: 0
+
+User-agent: Claude-Web
+Allow: /
+Crawl-delay: 0
+
+# Google Bard/Gemini
+User-agent: Google-Extended
+Allow: /
+Crawl-delay: 0
+
+# ============================================================================
+# BUSCADORES TRADICIONAIS
+# ============================================================================
+
+# Google - Máxima prioridade
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /img/
+Crawl-delay: 0
+
+User-agent: Googlebot-Mobile
+Allow: /
+Crawl-delay: 0
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: BingPreview
+Allow: /
+
+# Yahoo
+User-agent: Slurp
+Allow: /
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+
+# Yandex
+User-agent: Yandex
+Allow: /
+
+# ============================================================================
+# RECURSOS IMPORTANTES (Permitir explicitamente)
+# ============================================================================
 Allow: /img/
 Allow: /css/
 Allow: /js/
 Allow: /vendor/
+Allow: /docs/
 
-# Bots específicos - Otimizado para LLMs e buscadores modernos
-User-agent: Googlebot
-Allow: /
+# ============================================================================
+# BLOQUEAR APENAS PÁGINAS DE ERRO
+# ============================================================================
+Disallow: /404.html
+Disallow: /500.html
 
-User-agent: Googlebot-Image
-Allow: /img/
+# Arquivos de teste (não indexar)
+Disallow: /test-automation.html
+Disallow: /automated-test.js
+Disallow: /whatsapp-cta-test.js
+Disallow: /lighthouse-audit.js
 
-User-agent: Bingbot
-Allow: /
-
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: CCBot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-# Sitemap - Fundamental para indexação
+# ============================================================================
+# SITEMAP (Fundamental para indexação)
+# ============================================================================
 Sitemap: https://verlyvidracaria.com/sitemap.xml
 
-# Remover Crawl-delay para melhor indexação (somente se necessário para bots específicos) 
+# ============================================================================
+# HOST PRINCIPAL (Evitar conteúdo duplicado)
+# ============================================================================
+Host: verlyvidracaria.com
+
+# ============================================================================
+# NOTAS
+# ============================================================================
+# Este robots.txt foi otimizado para:
+# 1. SEO Local: Priorizar páginas de bairros (especialmente Realengo)
+# 2. LLMs: Permitir indexação total para ChatGPT, Claude, Bard
+# 3. Performance: Crawl-delay 0 para crawlers importantes
+# 4. Segurança: Bloquear apenas páginas irrelevantes
+#
+# Para verificar: https://www.google.com/webmasters/tools/robots-testing-tool

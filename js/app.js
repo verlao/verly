@@ -183,24 +183,38 @@ function getTimeOnPage() {
  * Show alert message
  */
 function showAlert(message, type = 'success') {
-    const alertDiv = document.getElementById('formAlert');
-    const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-    
-    alertDiv.innerHTML = `
-        <div class="form-alert ${type}">
-            <i class="fas ${iconClass}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    alertDiv.style.display = 'block';
-    
-    // Auto hide after 5 seconds for success messages
-    if (type === 'success') {
-        setTimeout(() => {
-            alertDiv.style.display = 'none';
-            alertDiv.innerHTML = '';
-        }, 5000);
+    // Use ToastManager if available, fallback to inline alert
+    if (typeof ToastManager !== 'undefined') {
+        const cleanMessage = message.replace(/<[^>]*>/g, ''); // Remove HTML tags
+        
+        if (type === 'success') {
+            ToastManager.success(cleanMessage);
+        } else if (type === 'error') {
+            ToastManager.error(cleanMessage);
+        } else {
+            ToastManager.info(cleanMessage);
+        }
+    } else {
+        // Fallback to original behavior
+        const alertDiv = document.getElementById('formAlert');
+        const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
+        alertDiv.innerHTML = `
+            <div class="form-alert ${type}">
+                <i class="fas ${iconClass}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        alertDiv.style.display = 'block';
+        
+        // Auto hide after 5 seconds for success messages
+        if (type === 'success') {
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
     }
 }
 
@@ -330,6 +344,11 @@ function validateField(field) {
         if (value) {
             trackFormInteraction('field_complete', fieldId, value);
         }
+        
+        // Announce to screen readers
+        if (typeof AccessibilityEnhancer !== 'undefined' && !isValid) {
+            AccessibilityEnhancer.announce(`Erro no campo ${fieldId}: ${errorMessage}`);
+        }
     } else {
         field.classList.remove('is-invalid', 'is-valid');
         if (errorElement) {
@@ -433,10 +452,14 @@ async function handleFormSubmit(event) {
         utm_campaign: getUrlParam('utm_campaign') || ''
     };
     
-    // Show loading state
-    submitBtn.disabled = true;
-    submitBtn.classList.add('btn-loading');
-    btnText.textContent = 'Enviando...';
+    // Show loading state (use ButtonLoader if available)
+    if (typeof ButtonLoader !== 'undefined') {
+        ButtonLoader.start(submitBtn);
+    } else {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-loading');
+        btnText.textContent = 'Enviando...';
+    }
     
     try {
         // Send to API
@@ -545,10 +568,15 @@ async function handleFormSubmit(event) {
             window.open(whatsappURL, '_blank');
         }, 2000);
     } finally {
-        // Reset button state
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('btn-loading');
-        btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis';
+        // Reset button state (use ButtonLoader if available)
+        if (typeof ButtonLoader !== 'undefined') {
+            ButtonLoader.stop(submitBtn);
+            btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-loading');
+            btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis';
+        }
     }
 }
 

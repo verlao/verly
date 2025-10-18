@@ -34,7 +34,7 @@
     "chrome-launcher": "^1.2.1",
     "del": "^6.1.1",
     "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^9.0.0",
+    "gulp-autoprefixer": "^8.0.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-header": "^2.0.9",
     "gulp-plumber": "^1.2.1",

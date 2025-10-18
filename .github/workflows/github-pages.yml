@@ -27,12 +27,6 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build site with Gulp
-        run: npm run build
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

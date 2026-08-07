@@ -1,52 +1,13 @@
 {
-  "title": "Verly Vidraçaria",
-  "name": "verly-vidracaria",
-  "version": "2.0.0",
+  "name": "verly-lp",
+  "type": "module",
+  "private": true,
   "scripts": {
-    "start": "node_modules/.bin/gulp watch",
-    "build": "node_modules/.bin/gulp"
-  },
-  "description": "Site da Verly Vidraçaria - Zona Oeste RJ",
-  "keywords": [
-    "vidraçaria",
-    "vidros temperados",
-    "box blindex",
-    "zona oeste",
-    "rio de janeiro"
-  ],
-  "homepage": "https://verlyvidracaria.com",
-  "license": "MIT",
-  "author": "Verly Vidraçaria",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/verlao/verly.git"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.5.1",
-    "bootstrap": "^4.6.2",
-    "jquery": "^3.7.1",
-    "jquery.easing": "^1.4.1",
-    "magnific-popup": "^1.1.0",
-    "puppeteer": "^24.25.0"
-  },
-  "devDependencies": {
-    "browser-sync": "^3.0.2",
-    "chrome-launcher": "^1.2.1",
-    "del": "^7.1.0",
-    "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^9.0.0",
-    "gulp-clean-css": "^4.3.0",
-    "gulp-header": "^2.0.9",
-    "gulp-plumber": "^1.2.1",
-    "gulp-rename": "^2.0.0",
-    "gulp-sass": "^5.1.0",
-    "gulp-uglify": "^3.0.2",
-    "lighthouse": "^13.0.0",
-    "merge-stream": "^2.0.0",
-    "sass": "^1.69.7"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "astro": "^5.18.2"
   }
 }

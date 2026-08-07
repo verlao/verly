@@ -1,0 +1,81 @@
+name: Build + Deploy to GitHub Pages
+
+# A fonte agora vive em `main` e o site é o resultado do build, não a árvore do repo.
+#
+# ⚠️ PRÉ-REQUISITO DE UMA VEZ SÓ: as Settings do Pages precisam sair de
+# "Deploy from a branch: gh-pages" para "GitHub Actions". Enquanto não trocar, este
+# workflow roda verde e o site continua servindo o gh-pages antigo — o que é o
+# comportamento seguro para revisar sem risco.
+#
+# ROLLBACK: voltar a fonte do Pages para o branch `gh-pages`. Ele fica congelado no
+# último estado bom, então o site antigo volta no ato.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # Rede de segurança contra o bug que motivou esta migração: âncora apontando
+      # para seção que não existe. Barato de rodar, cara de descobrir em produção.
+      - name: Checar âncoras e imagens
+        run: |
+          set -euo pipefail
+          cd dist
+          if grep -rlE 'index\.html#(contact|portfolio|about)\b' *.html; then
+            echo "✗ âncora morta (as seções do index são #contato/#servicos/#diferenciais/#depoimentos)"
+            exit 1
+          fi
+          missing=0
+          for f in $(grep -rhoE '(src|href)="/(img|js|css|vendor)/[^"]+"' *.html | sed -E 's/.*"\/(.*)"/\1/' | sort -u); do
+            if [ ! -e "$f" ]; then echo "✗ referência quebrada: $f"; missing=1; fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+          for want in index.html realengo.html barra-da-tijuca.html robots.txt sitemap.xml CNAME; do
+            [ -e "$want" ] || { echo "✗ faltou no build: $want"; exit 1; }
+          done
+          echo "✓ âncoras, imagens e arquivos-chave conferidos"
+
+      - uses: actions/configure-pages@v4
+        if: github.event_name != 'pull_request'
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

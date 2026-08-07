@@ -1,0 +1,41 @@
+---
+// Uma única cópia do nav. Antes eram 13 arquivos com o mesmo markup, e foi assim
+// que as âncoras quebraram: o index renomeou as seções e as cópias não seguiram.
+// Aqui o destino é calculado, então não tem como divergir.
+interface Props {
+  /** true na home (âncora na própria página); false nas demais (salta para o index) */
+  home?: boolean;
+}
+const { home = false } = Astro.props;
+const base = home ? '' : '/index.html';
+
+const links = [
+  { href: `${base}#servicos`, label: 'Serviços' },
+  { href: `${base}#diferenciais`, label: 'Diferenciais' },
+  { href: `${base}#depoimentos`, label: 'Depoimentos' },
+  { href: `${base}#contato`, label: 'Contato' },
+];
+// Fase 2 troca para '#orcamento' quando o formulário existir NA página.
+// Até então precisa apontar para o form da home — âncora para seção inexistente
+// foi exatamente o bug do #39.
+const quoteHref = home ? '#contato' : '/index.html#contato';
+---
+
+<nav class="navbar">
+  <a href={home ? '#' : '/index.html'} class="logo">
+    <i class="fas fa-gem"></i> Verly Vidraçaria
+  </a>
+  <ul class="nav-menu">
+    {links.map((l) => (
+      <li><a href={l.href} class="nav-link">{l.label}</a></li>
+    ))}
+    <li>
+      <a href={quoteHref} class="btn btn-primary" style="padding: 10px 20px; font-size: 0.938rem;">
+        Orçamento Grátis
+      </a>
+    </li>
+  </ul>
+  <button class="mobile-menu-btn" aria-label="Abrir menu">
+    <i class="fas fa-bars"></i>
+  </button>
+</nav>

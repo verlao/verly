@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 // Uma única cópia do nav. Antes eram 13 arquivos com o mesmo markup, e foi assim
 // que as âncoras quebraram: o index renomeou as seções e as cópias não seguiram.
 // Aqui o destino é calculado, então não tem como divergir.
@@ -23,7 +24,7 @@ const quoteHref = `${contactBase}#contato`;
 
 <nav class="navbar">
   <a href={home ? '#' : '/index.html'} class="logo">
-    <i class="fas fa-gem"></i> Verly Vidraçaria
+    <Icon name="gem" /> Verly Vidraçaria
   </a>
   <ul class="nav-menu">
     {links.map((l) => (
@@ -36,6 +37,6 @@ const quoteHref = `${contactBase}#contato`;
     </li>
   </ul>
   <button class="mobile-menu-btn" aria-label="Abrir menu">
-    <i class="fas fa-bars"></i>
+    <Icon name="bars" />
   </button>
 </nav>

@@ -1,9 +1,34 @@
 :root {
-            --primary: #1e40af;
-            --primary-dark: #1e3a8a;
-            --secondary: #3b82f6;
-            --accent: #60a5fa;
-            --success: #10b981;
+            /* Paleta v2 — derivada, não escolhida no olho.
+               O matiz vem da PLACA da loja (amostrada das fotos: 204-210°), para o
+               site e a fachada serem reconhecíveis um no outro. A antiga era o
+               Tailwind default em 226°, azul-indigo, que não é a cor da Verly.
+               Todo par texto/fundo abaixo passa WCAG AA (>=4.5:1) — verificado por
+               scripts/check-contrast.mjs, que roda no CI. */
+
+            /* Marca — azul azure da placa */
+            --primary: #0f5f9e;        /* 207° · branco sobre ele = 6.66:1 */
+            --primary-dark: #0b4a7d;   /* hover · 9.17:1 */
+            --secondary: #1077cb;      /* fim do gradiente · 4.64:1 (antes 3.68:1, reprovava) */
+            --accent: #60a5fa;         /* só decorativo (aspas do depoimento), nunca texto */
+
+            /* CTA — complementar do azul (âmbar 38°). É a ÚNICA cor dessa família na
+               página e só o botão principal a usa. Texto ESCURO em cima: 6.83:1, com
+               separação de luminância de 3.10:1 contra o hero — o verde antigo dava
+               1.45:1, então o botão se destacava só por matiz e sumia em escala de
+               cinza e para daltônicos. */
+            --cta: #f59e0b;
+            --cta-dark: #d97706;
+            --cta-text: #1f2937;
+
+            /* WhatsApp — verde OFICIAL, com texto escuro (7.40:1). Aqui verde
+               significa "WhatsApp", não "prosseguir". */
+            --whatsapp: #25d366;
+            --whatsapp-dark: #1eb658;
+            --whatsapp-text: #1f2937;
+
+            --success: #10b981;        /* estados de validação do formulário */
+            --star: #b45309;           /* estrelas: âmbar escuro, legível no branco */
             --warning: #f59e0b;
             --danger: #ef4444;
             --dark: #1f2937;
@@ -95,12 +120,12 @@
         }
 
         .btn-success {
-            background: var(--success);
-            color: var(--white);
+            background: var(--cta);
+            color: var(--cta-text);
         }
 
         .btn-success:hover {
-            background: #059669;
+            background: var(--cta-dark);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
@@ -203,7 +228,7 @@
 
         .hero h1 {
             font-size: 3.5rem;
-            font-weight: 900;
+            font-weight: 800;
             line-height: 1.2;
             margin-bottom: 1.5rem;
             animation: fadeInUp 0.6s ease-out 0.2s both;
@@ -408,7 +433,7 @@
         }
 
         .testimonial-stars {
-            color: var(--warning);
+            color: var(--star);
             margin-top: 0.5rem;
         }
 
@@ -821,3 +846,18 @@
 }
 .faq-item[open] > summary::after { content: '\2212'; }
 .faq-item > p { margin: 0.75rem 0 0; color: #4b5563; }
+
+/* WhatsApp com a cor da própria marca. Antes o botão era outline azul enquanto o
+   VERDE estava no botão do formulário — no Brasil verde lê "WhatsApp", então as
+   duas cores estavam trocadas de função. */
+.btn-whatsapp {
+    background: var(--whatsapp);
+    color: var(--whatsapp-text);
+    border: none;
+}
+.btn-whatsapp:hover {
+    background: var(--whatsapp-dark);
+    color: var(--whatsapp-text);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}

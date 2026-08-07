@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
 import { CONTACT, SITE_URL } from '../data/site';
 import QuoteForm from '../components/QuoteForm.astro';
@@ -47,30 +48,30 @@ const faqSchema =
     <div class="container">
       <div class="hero-content">
         <div class="hero-badge">
-          <i class="fas fa-map-marker-alt"></i> Atendemos {n.name} e toda a Zona Oeste
+          <Icon name="map-marker-alt" /> Atendemos {n.name} e toda a Zona Oeste
         </div>
         {/* palavra-chave primeiro, métrica depois — o index já usa essa fórmula */}
         <h1>{n.h1} — Orçamento em até 2 Horas</h1>
         {n.heroSubtitle && <p class="hero-subtitle">{n.heroSubtitle}</p>}
         <div class="hero-cta">
           <a href="#contato" class="btn btn-success btn-lg">
-            <i class="fas fa-clipboard-check"></i> Solicitar Orçamento Grátis
+            <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
           </a>
-          <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
-            <i class="fab fa-whatsapp"></i> WhatsApp Direto
+          <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg">
+            <Icon name="whatsapp" /> WhatsApp Direto
           </a>
         </div>
         <div class="trust-badges">
           <div class="trust-badge">
-            <div class="trust-badge-icon"><i class="fas fa-clock"></i></div>
+            <div class="trust-badge-icon"><Icon name="clock" /></div>
             <div class="trust-badge-text">Resposta em 2h</div>
           </div>
           <div class="trust-badge">
-            <div class="trust-badge-icon"><i class="fas fa-tools"></i></div>
+            <div class="trust-badge-icon"><Icon name="tools" /></div>
             <div class="trust-badge-text">Instalação Profissional</div>
           </div>
           <div class="trust-badge">
-            <div class="trust-badge-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="trust-badge-icon"><Icon name="shield-alt" /></div>
             <div class="trust-badge-text">Garantia de Qualidade</div>
           </div>
         </div>
@@ -86,7 +87,7 @@ const faqSchema =
       <div class="services-grid">
         {n.services.map((s) => (
           <div class="service-card">
-            <div class="service-icon"><i class="fas fa-check"></i></div>
+            <div class="service-icon"><Icon name="check" /></div>
             <h3>{s}</h3>
           </div>
         ))}
@@ -106,7 +107,7 @@ const faqSchema =
       <div class="services-grid">
         {n.reasons.map((r) => (
           <div class="service-card">
-            <div class="service-icon"><i class="fas fa-star"></i></div>
+            <div class="service-icon"><Icon name="star" /></div>
             <h3>{r}</h3>
           </div>
         ))}

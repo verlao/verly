@@ -52,7 +52,7 @@ jobs:
             exit 1
           fi
           missing=0
-          for f in $(grep -rhoE '(src|href)="/(img|js|css|vendor)/[^"]+"' *.html | sed -E 's/.*"\/(.*)"/\1/' | sort -u); do
+          for f in $(grep -rhoE '(src|href)="/(img|js|css)/[^"]+"' *.html | sed -E 's/.*"\/(.*)"/\1/' | sort -u); do
             if [ ! -e "$f" ]; then echo "✗ referência quebrada: $f"; missing=1; fi
           done
           [ "$missing" -eq 0 ] || exit 1

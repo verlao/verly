@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import { CONTACT, SERVICES, FOOTER_NEIGHBORHOODS } from '../data/site';
 
 interface Props {
@@ -41,23 +42,23 @@ const base = home ? '' : '/index.html';
       <div class="footer-section">
         <h4>Contato</h4>
         <p>
-          <i class="fab fa-whatsapp"></i>
+          <Icon name="whatsapp" />
           <a href={CONTACT.whatsappWeb} class="footer-contact-link whatsapp-link" data-context="footer-whatsapp" data-track="footer_whatsapp_click">
             {CONTACT.mobileDisplay}
           </a>
           <br />
-          <i class="fas fa-phone"></i>
+          <Icon name="phone" />
           <a href={`tel:${CONTACT.landline}`} class="footer-contact-link phone-link" data-track="footer_phone_click">
             {CONTACT.landlineDisplay}
           </a>
           <br />
-          <i class="fas fa-envelope"></i>
+          <Icon name="envelope" />
           <a href={`mailto:${CONTACT.email}`} class="footer-contact-link" data-track="footer_email_click">
             {CONTACT.email}
           </a>
         </p>
         <p style="margin-top: 1rem;">
-          <i class="fas fa-map-marker-alt"></i>
+          <Icon name="map-marker-alt" />
           <a href={CONTACT.mapsUrl} target="_blank" rel="noopener noreferrer" class="footer-contact-link address-link" data-track="footer_address_click">
             {CONTACT.address.street}<br />
             {CONTACT.address.line2}

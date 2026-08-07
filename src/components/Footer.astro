@@ -1,0 +1,77 @@
+---
+import { CONTACT, SERVICES, FOOTER_NEIGHBORHOODS } from '../data/site';
+
+interface Props {
+  home?: boolean;
+}
+const { home = false } = Astro.props;
+const base = home ? '' : '/index.html';
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Verly Vidraçaria</h4>
+        <p>Especialista em vidros temperados e soluções em alumínio na Zona Oeste do Rio de Janeiro.</p>
+        <p style="margin-top: 1rem;">
+          <strong>4.8★</strong> (127 avaliações)<br />
+          Mais de 10 anos de experiência
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h4>Nossos Serviços</h4>
+        <ul>
+          {SERVICES.map((s) => (
+            <li><a href={`${base}#servicos`}>{s}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Bairros Atendidos</h4>
+        <ul>
+          {FOOTER_NEIGHBORHOODS.map((n) => (
+            <li><a href={`/${n.slug}.html`}>{n.name}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4>Contato</h4>
+        <p>
+          <i class="fab fa-whatsapp"></i>
+          <a href={CONTACT.whatsappWeb} class="footer-contact-link whatsapp-link" data-context="footer-whatsapp" data-track="footer_whatsapp_click">
+            {CONTACT.mobileDisplay}
+          </a>
+          <br />
+          <i class="fas fa-phone"></i>
+          <a href={`tel:${CONTACT.landline}`} class="footer-contact-link phone-link" data-track="footer_phone_click">
+            {CONTACT.landlineDisplay}
+          </a>
+          <br />
+          <i class="fas fa-envelope"></i>
+          <a href={`mailto:${CONTACT.email}`} class="footer-contact-link" data-track="footer_email_click">
+            {CONTACT.email}
+          </a>
+        </p>
+        <p style="margin-top: 1rem;">
+          <i class="fas fa-map-marker-alt"></i>
+          <a href={CONTACT.mapsUrl} target="_blank" rel="noopener noreferrer" class="footer-contact-link address-link" data-track="footer_address_click">
+            {CONTACT.address.street}<br />
+            {CONTACT.address.line2}
+          </a>
+        </p>
+        <p style="margin-top: 1rem;">
+          <strong>Horário:</strong><br />
+          Seg a Sáb: 8h às 18h
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2024 Verly Vidraçaria. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>

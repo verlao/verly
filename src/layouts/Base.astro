@@ -1,0 +1,128 @@
+---
+import { SITE_URL, ANALYTICS, CONTACT } from '../data/site';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import LocalBusinessSchema from '../components/LocalBusinessSchema.astro';
+import '../styles/index-inline.css';
+import '../styles/ui-improvements.css';
+import '../styles/whatsapp-cta.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** caminho canônico com .html, ex.: '/realengo.html' ou '/' na home */
+  canonicalPath: string;
+  keywords?: string;
+  /** paridade: as páginas de bairro publicam meta robots hoje; a home não */
+  robots?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  /** true só na home — decide se as âncoras do nav são locais ou saltam pro index */
+  home?: boolean;
+  bodyClass?: string;
+  /** paridade: blog/obrigado/404/500 não carregam LocalBusiness hoje */
+  schema?: boolean;
+  /** paridade: realengo.html não tem aggregateRating hoje */
+  includeRating?: boolean;
+  /** override de og:url — a home hoje publica a URL sem barra final */
+  ogUrl?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  keywords,
+  robots,
+  ogTitle,
+  ogDescription,
+  ogImage = `${SITE_URL}/img/logo.png`,
+  home = false,
+  bodyClass,
+  schema = true,
+  includeRating = true,
+  ogUrl,
+} = Astro.props;
+
+const canonical = `${SITE_URL}${canonicalPath}`;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
+    {robots && <meta name="robots" content={robots} />}
+    <title>{title}</title>
+
+    <!-- Fonts & Icons -->
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Google Analytics 4 + Google Ads (carregado verbatim do site atual) -->
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS.ga4}`}></script>
+    <script is:inline define:vars={{ ga4: ANALYTICS.ga4, ads: ANALYTICS.googleAds }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', ga4, {
+        send_page_view: true,
+        cookie_flags: 'SameSite=None;Secure',
+      });
+      gtag('config', ads);
+    </script>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={ogTitle ?? title} />
+    <meta property="og:description" content={ogDescription ?? description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={ogUrl ?? canonical} />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle ?? title} />
+    <meta name="twitter:description" content={ogDescription ?? description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="canonical" href={canonical} />
+
+    {schema && <LocalBusinessSchema includeRating={includeRating} />}
+    <slot name="head" />
+  </head>
+
+  <body class={bodyClass}>
+    <header class="header">
+      <div class="container">
+        <Nav home={home} />
+      </div>
+    </header>
+
+    <slot />
+
+    <Footer home={home} />
+
+    <!-- Botão flutuante do WhatsApp. Antes só existia na home; agora vale em toda página. -->
+    <a
+      href={CONTACT.whatsappFloat}
+      class="whatsapp-float"
+      data-context="floating-button"
+      aria-label="Falar no WhatsApp"
+    >
+      <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script is:inline src="/js/ui-improvements.js"></script>
+    <script is:inline src="/js/whatsapp-cta.js"></script>
+    <script is:inline src="/js/app.js"></script>
+  </body>
+</html>

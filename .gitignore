@@ -1,6 +1,4 @@
-.DS_Store
-# Dependencies
 node_modules/
-
-# Test files
-*.log
+dist/
+.astro/
+.DS_Store

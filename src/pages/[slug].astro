@@ -1,0 +1,122 @@
+---
+import Base from '../layouts/Base.astro';
+import { CONTACT, SITE_URL } from '../data/site';
+import neighborhoods from '../data/neighborhoods.json';
+
+// As 11 páginas de bairro saem daqui. Antes eram 11 arquivos de ~305 linhas com o
+// mesmo esqueleto — e foi por isso que o nav divergiu do index e as âncoras quebraram.
+export function getStaticPaths() {
+  return neighborhoods.map((n) => ({ params: { slug: n.slug }, props: { n } }));
+}
+
+const { n } = Astro.props;
+
+// FAQPage só entra quando o bairro realmente tem perguntas (hoje só Realengo).
+const faqSchema =
+  n.faq.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: n.faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }
+    : null;
+---
+
+<Base
+  title={n.title}
+  description={n.metaDescription}
+  canonicalPath={`/${n.slug}.html`}
+  ogTitle={n.ogTitle}
+  ogDescription={n.ogDescription}
+  keywords={n.keywords ?? undefined}
+  robots={n.robots ?? undefined}
+  ogImage={n.ogImage ?? undefined}
+  includeRating={n.hasRating}
+>
+  {faqSchema && (
+    <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  )}
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fas fa-map-marker-alt"></i> Atendemos {n.name} e toda a Zona Oeste
+        </div>
+        <h1>{n.h1}</h1>
+        {n.heroSubtitle && <p class="hero-subtitle">{n.heroSubtitle}</p>}
+        <div class="hero-cta">
+          <a href="/index.html#contato" class="btn btn-success btn-lg">
+            <i class="fas fa-clipboard-check"></i> Solicitar Orçamento Grátis
+          </a>
+          <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
+            <i class="fab fa-whatsapp"></i> WhatsApp Direto
+          </a>
+        </div>
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <div class="trust-badge-icon"><i class="fas fa-clock"></i></div>
+            <div class="trust-badge-text">Resposta em 2h</div>
+          </div>
+          <div class="trust-badge">
+            <div class="trust-badge-icon"><i class="fas fa-tools"></i></div>
+            <div class="trust-badge-text">Instalação Profissional</div>
+          </div>
+          <div class="trust-badge">
+            <div class="trust-badge-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="trust-badge-text">Garantia de Qualidade</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">{n.sectionTitle}</h2>
+      {n.intro.map((p) => <p class="section-subtitle">{p}</p>)}
+
+      <div class="services-grid">
+        {n.services.map((s) => (
+          <div class="service-card">
+            <div class="service-icon"><i class="fas fa-check"></i></div>
+            <h3>{s}</h3>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section why-choose">
+    <div class="container">
+      <h2 class="section-title">Por que escolher a Verly em {n.name}?</h2>
+      <div class="services-grid">
+        {n.reasons.map((r) => (
+          <div class="service-card">
+            <div class="service-icon"><i class="fas fa-star"></i></div>
+            <h3>{r}</h3>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {n.faq.length > 0 && (
+    <section id="faq" class="section">
+      <div class="container">
+        <h2 class="section-title">Perguntas Frequentes sobre Vidraçaria em {n.name}</h2>
+        {/* <details> nativo: o accordion antigo dependia de jQuery + Bootstrap, que saíram */}
+        {n.faq.map((f) => (
+          <details class="faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  )}
+</Base>

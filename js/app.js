@@ -5,6 +5,18 @@
  */
 
 // ============================================================================
+// GOOGLE ADS — CONVERSION LABEL
+// ============================================================================
+// Preencher com o label da ação de conversão no Google Ads
+// (Ferramentas → Conversões → a ação → "Instalar a tag manualmente":
+//  send_to: 'AW-17336857529/XXXXXXXXXXXXXXXXX' — copiar só a parte depois da barra).
+// Enquanto estiver vazio, NENHUMA conversão é enviada: o valor antigo era o
+// literal 'CONVERSION_ID', que o Ads descarta silenciosamente — a campanha ficava
+// sem sinal de conversão e ninguém percebia.
+const ADS_CONVERSION_ID = 'AW-17336857529';
+const ADS_CONVERSION_LABEL = '';
+
+// ============================================================================
 // GOOGLE ANALYTICS 4 (GA4) TRACKING UTILITIES
 // ============================================================================
 
@@ -497,11 +509,15 @@ async function handleFormSubmit(event) {
         
         // Track Google Ads conversion
         if (typeof gtag !== 'undefined' && apiSuccess) {
-            gtag('event', 'conversion', {
-                'send_to': 'AW-17336857529/CONVERSION_ID',
-                'value': 1.0,
-                'currency': 'BRL'
-            });
+            if (ADS_CONVERSION_LABEL) {
+                gtag('event', 'conversion', {
+                    'send_to': `${ADS_CONVERSION_ID}/${ADS_CONVERSION_LABEL}`,
+                    'value': 1.0,
+                    'currency': 'BRL'
+                });
+            } else {
+                console.warn('⚠️ ADS_CONVERSION_LABEL vazio — conversão do Google Ads NÃO enviada (o lead foi registrado normalmente).');
+            }
         }
         
         // Reset form

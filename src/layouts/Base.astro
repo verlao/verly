@@ -20,6 +20,8 @@ interface Props {
   ogImage?: string;
   /** true só na home — decide se as âncoras do nav são locais ou saltam pro index */
   home?: boolean;
+  /** a página traz o formulário? decide se o nav aponta #contato local */
+  hasForm?: boolean;
   bodyClass?: string;
   /** paridade: blog/obrigado/404/500 não carregam LocalBusiness hoje */
   schema?: boolean;
@@ -39,6 +41,7 @@ const {
   ogDescription,
   ogImage = `${SITE_URL}/img/logo.png`,
   home = false,
+  hasForm = false,
   bodyClass,
   schema = true,
   includeRating = true,
@@ -103,7 +106,7 @@ const canonical = `${SITE_URL}${canonicalPath}`;
   <body class={bodyClass}>
     <header class="header">
       <div class="container">
-        <Nav home={home} />
+        <Nav home={home} hasForm={hasForm} />
       </div>
     </header>
 

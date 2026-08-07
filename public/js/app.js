@@ -527,14 +527,18 @@ async function handleFormSubmit(event) {
         });
         
         if (apiSuccess) {
-            // API Success: Show success message only (no WhatsApp redirect)
+            // API Success: confirma e manda para /obrigado.html.
+            // A página de agradecimento é o destino de conversão — sem uma URL própria
+            // não existe onde o Google Ads/GA4 marcarem "lead concluído", que era o
+            // caso antes: o alerta inline deixava o visitante na mesma URL.
             showAlert('✅ <strong>Orçamento solicitado com sucesso!</strong><br>Entraremos em contato em até 2 horas úteis. Obrigado!', 'success');
-            
-            // Auto-hide alert after 5 seconds
+
+            // Pequena espera antes de navegar: dá tempo de a pessoa ler a confirmação
+            // e de os beacons de analytics saírem antes da troca de página.
             setTimeout(() => {
-                clearAlert();
-            }, 5000);
-            
+                window.location.href = '/obrigado.html';
+            }, 1200);
+
         } else {
             // API Failed: Fallback to WhatsApp
             const whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +

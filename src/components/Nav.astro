@@ -3,22 +3,22 @@
 // que as âncoras quebraram: o index renomeou as seções e as cópias não seguiram.
 // Aqui o destino é calculado, então não tem como divergir.
 interface Props {
-  /** true na home (âncora na própria página); false nas demais (salta para o index) */
+  /** true na home (âncoras na própria página); false nas demais (saltam para o index) */
   home?: boolean;
+  /** true quando a página tem o formulário — então #contato é local, não salta */
+  hasForm?: boolean;
 }
-const { home = false } = Astro.props;
+const { home = false, hasForm = false } = Astro.props;
 const base = home ? '' : '/index.html';
+const contactBase = home || hasForm ? '' : '/index.html';
 
 const links = [
   { href: `${base}#servicos`, label: 'Serviços' },
   { href: `${base}#diferenciais`, label: 'Diferenciais' },
   { href: `${base}#depoimentos`, label: 'Depoimentos' },
-  { href: `${base}#contato`, label: 'Contato' },
+  { href: `${contactBase}#contato`, label: 'Contato' },
 ];
-// Fase 2 troca para '#orcamento' quando o formulário existir NA página.
-// Até então precisa apontar para o form da home — âncora para seção inexistente
-// foi exatamente o bug do #39.
-const quoteHref = home ? '#contato' : '/index.html#contato';
+const quoteHref = `${contactBase}#contato`;
 ---
 
 <nav class="navbar">

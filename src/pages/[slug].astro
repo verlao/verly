@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { CONTACT, SITE_URL } from '../data/site';
+import QuoteForm from '../components/QuoteForm.astro';
 import neighborhoods from '../data/neighborhoods.json';
 
 // As 11 páginas de bairro saem daqui. Antes eram 11 arquivos de ~305 linhas com o
@@ -36,6 +37,7 @@ const faqSchema =
   robots={n.robots ?? undefined}
   ogImage={n.ogImage ?? undefined}
   includeRating={n.hasRating}
+  hasForm={true}
 >
   {faqSchema && (
     <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
@@ -47,10 +49,11 @@ const faqSchema =
         <div class="hero-badge">
           <i class="fas fa-map-marker-alt"></i> Atendemos {n.name} e toda a Zona Oeste
         </div>
-        <h1>{n.h1}</h1>
+        {/* palavra-chave primeiro, métrica depois — o index já usa essa fórmula */}
+        <h1>{n.h1} — Orçamento em até 2 Horas</h1>
         {n.heroSubtitle && <p class="hero-subtitle">{n.heroSubtitle}</p>}
         <div class="hero-cta">
-          <a href="/index.html#contato" class="btn btn-success btn-lg">
+          <a href="#contato" class="btn btn-success btn-lg">
             <i class="fas fa-clipboard-check"></i> Solicitar Orçamento Grátis
           </a>
           <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
@@ -90,6 +93,12 @@ const faqSchema =
       </div>
     </div>
   </section>
+
+  <QuoteForm
+    neighborhood={n.name}
+    title={`Orçamento Grátis em ${n.name}`}
+    subtitle="Preencha e entraremos em contato em até 2 horas úteis. Sem compromisso."
+  />
 
   <section class="section why-choose">
     <div class="container">

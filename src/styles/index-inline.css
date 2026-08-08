@@ -880,3 +880,32 @@
     line-height: 1.4;
     opacity: 0.9;
 }
+
+/* Marca — duas linhas, como a placa: nome + descritor.
+   Sem itálico de propósito: a placa é inclinada, mas obter isso aqui exigiria
+   carregar o eixo itálico da fonte (mais um arquivo) ou usar oblíquo sintético,
+   que engorda mal os traços. O vínculo com a fachada vem da cor e da arquitetura
+   de duas linhas; a inclinação volta quando entrar o SVG. */
+.brand {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1;
+}
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--primary);
+}
+.brand-sub {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--secondary);
+    margin-top: 0.15rem;
+}
+@media (max-width: 480px) {
+    .brand-name { font-size: 1.25rem; }
+    .brand-sub { font-size: 0.625rem; letter-spacing: 0.18em; }
+}

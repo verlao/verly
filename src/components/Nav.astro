@@ -23,8 +23,17 @@ const quoteHref = `${contactBase}#contato`;
 ---
 
 <nav class="navbar">
-  <a href={home ? '#' : '/index.html'} class="logo">
-    <Icon name="gem" /> Verly Vidraçaria
+  {/* Marca em duas linhas, espelhando a arquitetura da placa da loja: nome grande
+      + descritor em caixa alta espaçada abaixo. Antes aqui havia um ícone genérico
+      de diamante — a marca real não aparecia em lugar nenhum da página, só como
+      og:image. O peso 800 do Inter já está carregado, então isso não custa bytes.
+      Quando existir o SVG do letreiro redesenhado, troca-se este bloco por uma
+      <img> e mais nada muda. */}
+  <a href={home ? '#' : '/index.html'} class="logo" aria-label="Verly Vidraçaria — página inicial">
+    <span class="brand">
+      <span class="brand-name">Verly</span>
+      <span class="brand-sub">Vidraçaria</span>
+    </span>
   </a>
   <ul class="nav-menu">
     {links.map((l) => (

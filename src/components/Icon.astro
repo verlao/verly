@@ -1,0 +1,52 @@
+---
+// SVG inline no lugar do Font Awesome inteiro.
+//
+// O site usa 25 ícones e carregava 223KB para isso: 55KB de CSS + 168KB de
+// webfonts, ambos render-blocking. Os paths abaixo são os SVGs oficiais da MESMA
+// versão que estava vendorizada (Free 5.10.2), então a arte não muda — só o custo.
+// icons.json tem 13KB e nem chega ao navegador: cada página carrega apenas os
+// paths que usa, direto no HTML.
+import icons from '../data/icons.json';
+
+interface Props {
+  /** nome do ícone sem prefixo: 'check', 'whatsapp', 'map-marker-alt'… */
+  name: string;
+  /** rótulo acessível. Sem ele o ícone é decorativo e fica escondido do leitor de tela. */
+  label?: string;
+  class?: string;
+}
+
+const { name, label, class: className } = Astro.props;
+const icon = (icons as Record<string, { viewBox: string; d: string }>)[name];
+
+if (!icon) {
+  // Falha no build em vez de renderizar um buraco silencioso na página.
+  throw new Error(
+    `Icon "${name}" não existe em src/data/icons.json. Ícones disponíveis: ${Object.keys(icons).join(', ')}`
+  );
+}
+---
+
+<svg
+  class:list={['icon', className]}
+  viewBox={icon.viewBox}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  fill="currentColor"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {label && <title>{label}</title>}
+  <path d={icon.d} />
+</svg>
+
+<style is:global>
+  /* Acompanha o tamanho e a cor do texto, como o <i> do Font Awesome fazia. */
+  .icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+  }
+</style>

@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import { SITE_URL, ANALYTICS, CONTACT } from '../data/site';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -62,10 +63,13 @@ const canonical = `${SITE_URL}${canonicalPath}`;
     {robots && <meta name="robots" content={robots} />}
     <title>{title}</title>
 
-    <!-- Fonts & Icons -->
-    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" />
+    <!-- Fonte. Antes: 6 pesos estáticos (300..800) + Font Awesome inteiro, os dois
+         render-blocking. Agora: a fonte variável cobre 400-800 num arquivo só, e os
+         ícones viraram SVG inline (src/components/Icon.astro). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap"
       rel="stylesheet"
     />
 
@@ -121,7 +125,7 @@ const canonical = `${SITE_URL}${canonicalPath}`;
       data-context="floating-button"
       aria-label="Falar no WhatsApp"
     >
-      <i class="fab fa-whatsapp"></i>
+      <Icon name="whatsapp" />
     </a>
 
     <script is:inline src="/js/ui-improvements.js"></script>

@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import { NEIGHBORHOOD_OPTIONS } from '../data/site';
 
 interface Props {
@@ -27,7 +28,7 @@ const {
                     <h3>Informações de Contato</h3>
                     <div class="contact-item">
                         <div class="contact-item-icon">
-                            <i class="fab fa-whatsapp"></i>
+                            <Icon name="whatsapp" />
                         </div>
                         <div class="contact-item-content">
                             <strong>WhatsApp</strong>
@@ -36,7 +37,7 @@ const {
                     </div>
                     <div class="contact-item">
                         <div class="contact-item-icon">
-                            <i class="fas fa-phone"></i>
+                            <Icon name="phone" />
                         </div>
                         <div class="contact-item-content">
                             <strong>Telefone</strong>
@@ -45,7 +46,7 @@ const {
                     </div>
                     <div class="contact-item">
                         <div class="contact-item-icon">
-                            <i class="fas fa-clock"></i>
+                            <Icon name="clock" />
                         </div>
                         <div class="contact-item-content">
                             <strong>Horário de Atendimento</strong>
@@ -54,7 +55,7 @@ const {
                     </div>
                     <div class="contact-item">
                         <div class="contact-item-icon">
-                            <i class="fas fa-map-marker-alt"></i>
+                            <Icon name="map-marker-alt" />
                         </div>
                         <div class="contact-item-content">
                             <strong>Área de Atendimento</strong>
@@ -67,7 +68,7 @@ const {
                     </div>
                     <div class="contact-item">
                         <div class="contact-item-icon">
-                            <i class="fas fa-award"></i>
+                            <Icon name="award" />
                         </div>
                         <div class="contact-item-content">
                             <strong>Garantia de Qualidade</strong>
@@ -203,12 +204,12 @@ const {
 
                         <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%;">
                             <span id="btnText">
-                                <i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis
+                                <Icon name="paper-plane" /> Solicitar Orçamento Grátis
                             </span>
                         </button>
 
                         <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--gray);">
-                            <i class="fas fa-clock"></i> Responderemos em até 2 horas úteis
+                            <Icon name="clock" /> Responderemos em até 2 horas úteis
                         </p>
                     </form>
                 </div>

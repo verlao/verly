@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from '../components/Icon.astro';
 import { NEIGHBORHOOD_OPTIONS } from '../data/site';
+import lojaFrente from '../assets/loja-verly-realengo.jpg';
 
 interface Props {
   /** Bairro da página — pré-seleciona a opção no <select>. A escolha segue editável:
@@ -26,6 +28,24 @@ const {
                 <!-- Contact Info -->
                 <div class="contact-info">
                     <h3>Informações de Contato</h3>
+
+                    <!-- Foto da fachada. Fica AQUI, junto do endereço, e não no hero:
+                         fachada prova que a loja existe (credibilidade local), mas quem
+                         escolhe um box compra pelo resultado — desejo vem das fotos de
+                         trabalho instalado, que ainda não temos. -->
+                    <figure class="store-photo">
+                        <Image
+                            src={lojaFrente}
+                            alt="Fachada da Verly Vidraçaria na Rua General Azeredo, 218 - Loja C, em Realengo"
+                            width={1000}
+                            widths={[400, 700, 1000]}
+                            sizes="(max-width: 768px) 92vw, 380px"
+                            format="webp"
+                            quality={78}
+                            loading="lazy"
+                        />
+                        <figcaption>Nossa loja em Realengo &mdash; atendimento presencial de seg a sáb, 8h às 18h</figcaption>
+                    </figure>
                     <div class="contact-item">
                         <div class="contact-item-icon">
                             <Icon name="whatsapp" />

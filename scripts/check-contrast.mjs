@@ -35,6 +35,8 @@ const PAIRS = [
   ['Corpo de texto', 'gray', 'white', false],
   ['Títulos', 'dark', 'white', false],
   ['Estrelas de avaliação', 'star', 'white', false],
+  ['Marca — nome no cabeçalho', 'primary', 'white', false],
+  ['Marca — descritor "Vidraçaria"', 'secondary', 'white', false],
 ];
 
 const MIN = { normal: 4.5, large: 3.0 };

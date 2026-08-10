@@ -5,7 +5,8 @@ import neighborhoods from '../data/neighborhoods.json';
 interface Props {
   /** URL absoluta da imagem — mesma do og:image, para não divergirem */
   image?: string;
-  /** paridade com o site atual: realengo.html não tem aggregateRating hoje */
+  /** emite aggregateRating. Era false em realengo por paridade com o site antigo;
+      agora as 11 páginas de bairro exibem a nota na tela, então todas declaram. */
   includeRating?: boolean;
 }
 const { includeRating = true, image } = Astro.props;

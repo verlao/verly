@@ -1,6 +1,8 @@
 ---
 import Icon from '../components/Icon.astro';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import lojaFrente from '../assets/loja-verly-realengo.png';
 import QuoteForm from '../components/QuoteForm.astro';
 ---
 
@@ -20,6 +22,7 @@ import QuoteForm from '../components/QuoteForm.astro';
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
+            <div class="hero-grid">
             <div class="hero-content">
                 <div class="hero-badge">
                     <Icon name="map-marker-alt" /> Atendemos toda Zona Oeste RJ
@@ -59,6 +62,26 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <div class="trust-badge-text">4.8★ (127 avaliações)</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Foto da fachada no hero. Ficava só embaixo, no bloco de contato, porque
+                 a versão anterior era dura de olhar: céu estourado, fiação, laje
+                 manchada. A foto nova é frontal e limpa, então o motivo de esconder
+                 deixou de existir — prova visual nos primeiros segundos vale mais que
+                 prova visual no rodapé. Eager porque está acima da dobra e é candidata
+                 a LCP. -->
+            <figure class="hero-photo">
+                <Image
+                    src={lojaFrente}
+                    alt="Fachada da Verly Vidraçaria na Rua General Azeredo, 218 - Loja C, em Realengo"
+                    widths={[420, 700, 980]}
+                    width={980}
+                    sizes="(max-width: 1024px) 92vw, 460px"
+                    format="webp"
+                    quality={80}
+                    loading="eager"
+                />
+            </figure>
             </div>
         </div>
     </section>

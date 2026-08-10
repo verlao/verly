@@ -3,6 +3,8 @@ import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
 import { CONTACT, SITE_URL } from '../data/site';
 import QuoteForm from '../components/QuoteForm.astro';
+import { Image } from 'astro:assets';
+import lojaFrente from '../assets/loja-verly-realengo.png';
 import neighborhoods from '../data/neighborhoods.json';
 
 // As 11 páginas de bairro saem daqui. Antes eram 11 arquivos de ~305 linhas com o
@@ -45,7 +47,7 @@ const faqSchema =
   )}
 
   <section class="hero">
-    <div class="container">
+    <div class="container hero-grid">
       <div class="hero-content">
         <div class="hero-badge">
           <Icon name="map-marker-alt" /> Atendemos {n.name} e toda a Zona Oeste
@@ -80,6 +82,19 @@ const faqSchema =
           </div>
         </div>
       </div>
+
+      <figure class="hero-photo">
+        <Image
+          src={lojaFrente}
+          alt={`Fachada da Verly Vidraçaria em Realengo, que atende ${n.name}`}
+          widths={[420, 700, 980]}
+          width={980}
+          sizes="(max-width: 1024px) 92vw, 460px"
+          format="webp"
+          quality={80}
+          loading="eager"
+        />
+      </figure>
     </div>
   </section>
 

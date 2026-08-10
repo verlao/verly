@@ -2,7 +2,7 @@
 import Icon from '../components/Icon.astro';
 import { getImage } from 'astro:assets';
 import { SITE_URL, ANALYTICS, CONTACT } from '../data/site';
-import lojaFrente from '../assets/loja-verly-realengo.jpg';
+import lojaFrente from '../assets/loja-verly-realengo.png';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import LocalBusinessSchema from '../components/LocalBusinessSchema.astro';
@@ -58,7 +58,19 @@ const canonical = `${SITE_URL}${canonicalPath}`;
 // que aparecia era o logotipo antigo em script fino. Derivando do asset, os dois
 // nunca mais divergem.
 // JPEG de propósito — suporte a webp em scraper de rede social ainda é irregular.
-const ogFallback = await getImage({ src: lojaFrente, width: 1200, format: 'jpeg', quality: 82 });
+// A foto é retrato (a fachada, sem corte). Para o thumb social, recorto no
+// pipeline com fit/position em vez de manter um segundo arquivo: assim continua
+// derivando do MESMO asset, e 'bottom' foca a loja em vez do céu — um recorte
+// centrado nesta foto mostraria quase só céu.
+const ogFallback = await getImage({
+  src: lojaFrente,
+  width: 1200,
+  height: 630,
+  fit: 'cover',
+  position: 'center',
+  format: 'jpeg',
+  quality: 82,
+});
 const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
 ---
 

@@ -15,6 +15,7 @@ import { CONTACT } from '../data/site';
   ogTitle={'Verly Vidraçaria | Vidros Temperados e Box Blindex na Zona Oeste RJ'}
   ogDescription={'Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro.'}
   ogUrl="https://verlyvidracaria.com"
+  pageType="home"
   home={true}
   hasForm={true}
 >
@@ -44,7 +45,11 @@ import { CONTACT } from '../data/site';
                     <a href="#contato" class="btn btn-success btn-lg">
                         <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
                     </a>
-                    <a href="https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!" target="_blank" class="btn btn-whatsapp btn-lg">
+                    {/* data-context nomeia a origem do clique no whatsapp_click. Sem ele o
+                        evento saía como context="unknown", e este é o CTA mais exposto da
+                        página. O mesmo valor vale no hero das páginas de bairro: quem separa
+                        home de bairro agora é o page_type. */}
+                    <a href="https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!" target="_blank" class="btn btn-whatsapp btn-lg" data-context="hero-whatsapp">
                         <Icon name="whatsapp" /> WhatsApp Direto
                     </a>
                 </div>
@@ -163,7 +168,7 @@ import { CONTACT } from '../data/site';
                 <a href="#contato" class="btn btn-success">
                     <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
                 </a>
-                <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="cta-band-alt">
+                <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="cta-band-alt" data-context="cta-band">
                     ou fale direto no WhatsApp
                 </a>
             </div>

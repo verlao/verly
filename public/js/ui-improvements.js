@@ -583,8 +583,17 @@ const AccessibilityEnhancer = {
 // INITIALIZE ALL IMPROVEMENTS
 // ============================================================================
 
+/**
+ * Log de passo do carregamento fica atrás do mesmo interruptor dos eventos
+ * (app.js: `?analytics_debug=1` ou localStorage `verly_debug`), em vez de aparecer no
+ * console de todo visitante.
+ */
+function uiDebugLog(...args) {
+    if (window.VerlyAnalytics) window.VerlyAnalytics.log(...args);
+}
+
 function initUIImprovements() {
-    console.log('🎨 Initializing UI/UX improvements...');
+    uiDebugLog('🎨 Initializing UI/UX improvements...');
     
     // Initialize components
     ToastManager.init();
@@ -593,7 +602,7 @@ function initUIImprovements() {
     SearchableSelect.init();
     AccessibilityEnhancer.init();
     
-    console.log('✅ UI/UX improvements loaded');
+    uiDebugLog('✅ UI/UX improvements loaded');
 }
 
 // Initialize when DOM is ready

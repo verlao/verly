@@ -192,8 +192,13 @@ verly-lp/
 - Abre navegação (Maps, Waze, etc.)
 
 ### Tracking:
-- Todos os links têm `data-track` para GA4
-- Device info enviado automaticamente
+- Um clique = UM evento. A escolha é por especificidade: WhatsApp → `whatsapp_click`,
+  `tel:` → `phone_click`, `data-track` (e-mail/endereço) → `contact_link_click`, o
+  resto → `navigation_click`.
+- `data-context` nomeia a origem do clique de WhatsApp (`hero-whatsapp`, `cta-band`,
+  `footer-whatsapp`, `floating-button`, `sticky-cta`, `service-*`, `thank-you-page`).
+- Dispositivo, navegador e sistema operacional NÃO são enviados: o GA4 já publica os
+  três como dimensões nativas em todo evento.
 
 ---
 
@@ -201,21 +206,37 @@ verly-lp/
 
 ### Eventos Rastreados:
 
+Todo evento carrega `page_type` (`home`, `bairro`, `blog`, `obrigado`, `erro`) e, nas
+páginas de bairro, `neighborhood_page`. É o que permite comparar a conversão da home
+com a das 11 páginas de bairro.
+
 | Evento | Descrição | Dados Capturados |
 |--------|-----------|------------------|
-| `page_view_with_device` | Carregamento da página | device_type, browser, os |
-| `whatsapp_click` | Clique em WhatsApp | context, device, browser |
-| `contact_link_click` | Clique em telefone/email/endereço | link_type, device, browser |
-| `form_submission` | Envio de formulário | services, neighborhood |
-| `scroll` | Profundidade de scroll | percent (25/50/75/100) |
+| `page_view` | Carregamento da página (o automático do gtag, um por acesso) | page_location, page_title, page_referrer |
+| `whatsapp_click` | Clique em WhatsApp | context, click_source, button_text |
+| `contact_link_click` | Clique em e-mail/endereço | event_name, link_type, link_text |
+| `phone_click` | Clique em `tel:` | phone_number, click_location |
+| `navigation_click` | Clique de navegação (menu, rodapé, âncora) | link_text, link_target, navigation_type |
+| `cta_click` | Clique em botão de CTA | button_text, button_location, target_section |
+| `service_interaction` | Clique em card de serviço | service_name, service_position |
+| `form_interaction` | Cada passo do formulário | form_action, field_name |
+| `generate_lead` | Formulário enviado com sucesso | services, neighborhood, api_status |
+| `scroll` | Profundidade de scroll | percent_scrolled (25/50/75/100) |
 | `section_view` | Visualização de seção | section_name, section_id |
+| `engagement_milestone` | 30s / 60s / 120s na página | milestone_name, milestone_value |
 
 ### Como Ver os Dados:
 ```
 GA4 → Relatórios → Eventos
-- Filtrar por: device_type, browser, os
-- Dimensões customizadas disponíveis
+- Dispositivo, navegador e SO: dimensões nativas, nada a configurar
+- page_type e neighborhood_page precisam ser registrados em
+  Administrador → Definições personalizadas → Dimensões personalizadas
+  (escopo de EVENTO), senão não aparecem em relatório
 ```
+
+### Depurar no Navegador:
+O log de evento é silencioso em produção. Para ligar: `?analytics_debug=1` na URL
+(vale para o acesso) ou `localStorage.setItem('verly_debug', '1')` (fica no aparelho).
 
 **Ver guia completo:** [`docs/GA4_TRACKING_GUIDE.md`](docs/GA4_TRACKING_GUIDE.md)
 

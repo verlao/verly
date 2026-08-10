@@ -55,16 +55,20 @@ const year = new Date().getFullYear();
         </ul>
       </div>
 
+      {/* `data-track` só onde contact_link_click é o ÚNICO evento do clique — hoje
+          e-mail e endereço. O link de WhatsApp já sai como whatsapp_click (data-context)
+          e o telefone como phone_click, então o data-track deles fazia o mesmo clique
+          virar dois eventos. */}
       <div class="footer-section">
         <h2>Contato</h2>
         <p>
           <Icon name="whatsapp" />
-          <a href={CONTACT.whatsappFooter} target="_blank" rel="noopener noreferrer" class="footer-contact-link whatsapp-link" data-context="footer-whatsapp" data-track="footer_whatsapp_click">
+          <a href={CONTACT.whatsappFooter} target="_blank" rel="noopener noreferrer" class="footer-contact-link whatsapp-link" data-context="footer-whatsapp">
             {CONTACT.mobileDisplay}
           </a>
           <br />
           <Icon name="phone" />
-          <a href={`tel:${CONTACT.landline}`} class="footer-contact-link phone-link" data-track="footer_phone_click">
+          <a href={`tel:${CONTACT.landline}`} class="footer-contact-link phone-link">
             {CONTACT.landlineDisplay}
           </a>
           <br />

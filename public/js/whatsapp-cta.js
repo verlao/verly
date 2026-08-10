@@ -100,6 +100,112 @@ const WhatsAppCTA = {
     },
 
     /**
+     * Estado de visibilidade do flutuante. Ele desaparece em duas situações, e as
+     * duas podem valer ao mesmo tempo — daí flags separadas em vez de um booleano:
+     * a sticky oferece exatamente a mesma ação (redundante), e o formulário na tela
+     * significa que o botão está por cima dos checkboxes (estorvo).
+     */
+    floatState: { stickyVisible: false, formVisible: false, contentUnder: false },
+
+    /**
+     * Aplica o estado ao botão. Chamado pelos dois observadores.
+     */
+    syncFloat() {
+        const btn = document.querySelector('.whatsapp-float');
+        if (!btn) return;
+        const hide = this.floatState.stickyVisible || this.floatState.formVisible || this.floatState.contentUnder;
+        btn.classList.toggle('is-hidden', hide);
+        // Fora da ordem de tabulação enquanto invisível: pointer-events resolve o
+        // mouse, não o teclado.
+        btn.setAttribute('aria-hidden', String(hide));
+        if (hide) btn.setAttribute('tabindex', '-1');
+        else btn.removeAttribute('tabindex');
+    },
+
+    /**
+     * Esconde o flutuante enquanto a seção do formulário estiver na tela: ali ele fica
+     * sobre os checkboxes e é redundante com o próprio formulário.
+     */
+    watchFormVisibility() {
+        const form = document.querySelector('#contato');
+        if (!form || !('IntersectionObserver' in window)) return;
+        new IntersectionObserver((entries) => {
+            this.floatState.formVisible = entries[0].isIntersecting;
+            this.syncFloat();
+        }, { threshold: 0 }).observe(form);
+    },
+
+    /**
+     * Rede de segurança geométrica: esconde o flutuante quando existe DE FATO texto
+     * ou alvo de toque embaixo dele.
+     *
+     * Tentei antes por lista de seletor (.section-subtitle e afins) e passou do ponto:
+     * como esses blocos começam logo abaixo do hero, o botão ficava visível em 7% da
+     * rolagem na home e em NENHUMA parte das páginas de bairro. Aqui o critério é o
+     * pixel, não a estrutura, então não há caso especial por página nem excesso.
+     *
+     * Custo controlado: 5 pontos de amostragem, e a medida do texto usa Range em vez
+     * da caixa do elemento — a caixa de um parágrafo centralizado ocupa a largura
+     * inteira mesmo onde não há glifo nenhum, e era isso que dava falso positivo.
+     */
+    watchContentUnderFloat() {
+        const btn = document.querySelector('.whatsapp-float');
+        if (!btn) return;
+
+        const overlaps = (r, f) =>
+            Math.max(0, Math.min(r.right, f.right) - Math.max(r.left, f.left)) *
+            Math.max(0, Math.min(r.bottom, f.bottom) - Math.max(r.top, f.top)) > 4;
+
+        const test = () => {
+            const f = btn.getBoundingClientRect();
+
+            // Sem isso o próprio botão é o resultado de todo elementsFromPoint.
+            const prev = btn.style.pointerEvents;
+            btn.style.pointerEvents = 'none';
+            const candidates = new Set();
+            const pts = [
+                [f.left + 4, f.top + 4], [f.right - 4, f.top + 4],
+                [f.left + 4, f.bottom - 4], [f.right - 4, f.bottom - 4],
+                [(f.left + f.right) / 2, (f.top + f.bottom) / 2],
+            ];
+            for (const [x, y] of pts) {
+                for (const el of document.elementsFromPoint(x, y)) candidates.add(el);
+            }
+            btn.style.pointerEvents = prev;
+
+            let collides = false;
+            for (const el of candidates) {
+                if (el === btn || btn.contains(el) || el === document.body || el === document.documentElement) continue;
+                if (el.matches('input, select, textarea, button, a')) { collides = true; break; }
+                for (const n of el.childNodes) {
+                    if (n.nodeType !== Node.TEXT_NODE || !n.nodeValue.trim()) continue;
+                    const range = document.createRange();
+                    range.selectNodeContents(n);
+                    for (const r of range.getClientRects()) {
+                        if (overlaps(r, f)) { collides = true; break; }
+                    }
+                    if (collides) break;
+                }
+                if (collides) break;
+            }
+
+            this.floatState.contentUnder = collides;
+            this.syncFloat();
+        };
+
+        let scheduled = false;
+        const schedule = () => {
+            if (scheduled) return;
+            scheduled = true;
+            requestAnimationFrame(() => { scheduled = false; test(); });
+        };
+        window.addEventListener('scroll', schedule, { passive: true });
+        window.addEventListener('resize', schedule);
+        test();
+        console.log('✓ Flutuante recua quando há conteúdo embaixo dele');
+    },
+
+    /**
      * Inicializar otimizações de CTA
      */
     init() {
@@ -117,6 +223,8 @@ const WhatsAppCTA = {
 
         // 3. Melhorar botão flutuante
         this.enhanceFloatingButton();
+        this.watchFormVisibility();
+        this.watchContentUnderFloat();
 
         // 4. Track conversions
         this.trackConversions();
@@ -164,7 +272,11 @@ const WhatsAppCTA = {
                 // Esconder quando volta ao topo
                 stickyBar.classList.remove('active');
             }
-            
+
+            // A sticky e o flutuante são o mesmo CTA: quando ela aparece, ele sai.
+            this.floatState.stickyVisible = stickyBar.classList.contains('active');
+            this.syncFloat();
+
             lastScroll = currentScroll;
         });
         
@@ -231,8 +343,10 @@ const WhatsAppCTA = {
         tooltip.textContent = 'Fale conosco!';
         floatingBtn.appendChild(tooltip);
         
-        // Animar periodicamente para chamar atenção
+        // Animar periodicamente para chamar atenção — mas não enquanto ele está
+        // escondido: sacudir um elemento invisível só gasta frame.
         setInterval(() => {
+            if (floatingBtn.classList.contains('is-hidden')) return;
             floatingBtn.classList.add('shake');
             setTimeout(() => floatingBtn.classList.remove('shake'), 1000);
         }, 15000); // A cada 15 segundos

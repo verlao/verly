@@ -313,10 +313,10 @@ node whatsapp-cta-test.js
 5. **Floating Button:** WhatsApp fixo no canto (desktop/mobile)
 
 ### Prova Social:
-- 4.8★ (127 avaliações)
-- 3 depoimentos de clientes reais
+- 5,0★ no Google (nota do Google Business Profile; a contagem não vai para a tela)
+- 3 depoimentos copiados na íntegra do perfil do Google
 - Mais de 10 anos de experiência
-- 127+ projetos realizados
+- Loja física em Realengo, com foto da fachada no hero
 
 ### Senso de Urgência:
 - "Orçamento em até 2 Horas"

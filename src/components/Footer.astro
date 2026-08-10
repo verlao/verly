@@ -1,6 +1,6 @@
 ---
 import Icon from '../components/Icon.astro';
-import { CONTACT, SERVICES, FOOTER_NEIGHBORHOODS } from '../data/site';
+import { CONTACT, SERVICES, FOOTER_NEIGHBORHOODS, GOOGLE_REVIEWS } from '../data/site';
 
 interface Props {
   home?: boolean;
@@ -31,8 +31,10 @@ const year = new Date().getFullYear();
       <div class="footer-section">
         <h2>Verly Vidraçaria</h2>
         <p>Especialista em vidros temperados e soluções em alumínio na Zona Oeste do Rio de Janeiro.</p>
+        {/* A nota vem do Google Business Profile; a contagem, não — ela fica só no
+            aggregateRating do LocalBusiness, que exige o campo. Ver GOOGLE_REVIEWS. */}
         <p style="margin-top: 1rem;">
-          <strong>4.8★</strong> (127 avaliações)<br />
+          <strong>{GOOGLE_REVIEWS.ratingDisplay}★</strong> no Google<br />
           Mais de 10 anos de experiência
         </p>
       </div>

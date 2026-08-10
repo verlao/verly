@@ -4,7 +4,18 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import lojaFrente from '../assets/loja-verly-realengo.png';
 import QuoteForm from '../components/QuoteForm.astro';
-import { CONTACT } from '../data/site';
+import { CONTACT, GOOGLE_REVIEWS } from '../data/site';
+
+// Iniciais do avatar DERIVADAS do nome do autor. Antes eram três strings digitadas à
+// mão ao lado de três nomes inventados; com nomes reais, digitar de novo só cria uma
+// segunda fonte de verdade para alguém desencontrar depois.
+const initials = (name: string): string =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join('');
 ---
 
 <Base
@@ -72,7 +83,14 @@ import { CONTACT } from '../data/site';
                     </div>
                     <div class="trust-badge">
                         <div class="trust-badge-icon"><Icon name="star" /></div>
-                        <div class="trust-badge-text">4.8★ (127 avaliações)</div>
+                        {/* Nota sem contagem, e com a fonte clicável: a diferença entre uma
+                            estrela que o visitante acredita e uma que ele confere é o link. A
+                            contagem real (15) fica só no aggregateRating — ver GOOGLE_REVIEWS. */}
+                        <div class="trust-badge-text">
+                            <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">
+                                {GOOGLE_REVIEWS.ratingDisplay}★ no Google
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -245,61 +263,34 @@ import { CONTACT } from '../data/site';
     <section id="depoimentos" class="section">
         <div class="container">
             <h2 class="section-title">O Que Nossos Clientes Dizem</h2>
+            {/* Os três cartões eram texto de escritório assinado por gente que não existe.
+                Agora saem de GOOGLE_REVIEWS.featured — avaliações do perfil da loja, copiadas
+                na íntegra. O subtítulo trocou "mais de 127 projetos" pela procedência: ali o
+                127 era a contagem falsa de avaliações reaproveitada como contagem de obras. O
+                que o visitante pode conferir não é quantos, é onde as falas estão publicadas —
+                e em que data foram lidas, senão os "há N semanas" envelhecem calados. */}
             <p class="section-subtitle">
-                Mais de 127 projetos realizados na Zona Oeste com excelência
+                Avaliações publicadas por clientes
+                <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">no perfil do Google da loja</a>,
+                reproduzidas aqui na íntegra — como estavam em {GOOGLE_REVIEWS.snapshotDate}
             </p>
             <div class="testimonials-grid">
+                {GOOGLE_REVIEWS.featured.map((review) => (
                 <div class="testimonial-card">
                     <div class="testimonial-quote">"</div>
                     <div class="testimonial-content">
-                        <p class="testimonial-text">
-                            Instalaram o box do meu banheiro em menos de 3 horas. Ficou perfeito! 
-                            Equipe profissional e atenciosa. Super recomendo!
-                        </p>
+                        <p class="testimonial-text">{review.text}</p>
                         <div class="testimonial-author">
-                            <div class="testimonial-avatar">MC</div>
+                            <div class="testimonial-avatar">{initials(review.author)}</div>
                             <div class="testimonial-info">
-                                <h3>Mariana Costa</h3>
-                                <p>Barra da Tijuca</p>
+                                <h3>{review.author}</h3>
+                                <p>{review.age}</p>
                                 <div class="testimonial-stars">★★★★★</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">"</div>
-                    <div class="testimonial-content">
-                        <p class="testimonial-text">
-                            Excelente custo-benefício! Fizeram a sacada de vidro do meu apartamento 
-                            com qualidade e no prazo combinado. Muito satisfeito!
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="testimonial-avatar">RS</div>
-                            <div class="testimonial-info">
-                                <h3>Ricardo Santos</h3>
-                                <p>Recreio dos Bandeirantes</p>
-                                <div class="testimonial-stars">★★★★★</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">"</div>
-                    <div class="testimonial-content">
-                        <p class="testimonial-text">
-                            Atendimento rápido e orçamento justo. Instalaram espelhos na minha loja 
-                            e ficou lindo. Já indiquei para vários amigos!
-                        </p>
-                        <div class="testimonial-author">
-                            <div class="testimonial-avatar">PL</div>
-                            <div class="testimonial-info">
-                                <h3>Paula Lima</h3>
-                                <p>Jacarepaguá</p>
-                                <div class="testimonial-stars">★★★★★</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
         </div>
     </section>

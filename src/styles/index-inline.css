@@ -909,3 +909,42 @@
     .brand-name { font-size: 1.25rem; }
     .brand-sub { font-size: 0.625rem; letter-spacing: 0.18em; }
 }
+
+/* Hero em duas colunas a partir de 1024px: texto à esquerda, foto à direita.
+   Abaixo disso volta a coluna única e a foto vem depois dos selos — no celular
+   o CTA tem que aparecer antes da imagem, não depois dela. */
+.hero-grid {
+    position: relative;
+    z-index: 1;
+}
+.hero-photo {
+    margin: 2.5rem auto 0;
+    max-width: 560px;
+}
+.hero-photo img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 14px;
+    box-shadow: var(--shadow-xl);
+}
+@media (min-width: 1024px) {
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr 460px;
+        gap: 3rem;
+        align-items: center;
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+    .hero-grid .hero-content {
+        text-align: left;
+        max-width: none;
+        margin: 0;
+    }
+    .hero-grid .hero-cta,
+    .hero-grid .trust-badges {
+        justify-content: flex-start;
+    }
+    .hero-photo { margin: 0; max-width: none; }
+}

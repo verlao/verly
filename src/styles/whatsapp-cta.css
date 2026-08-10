@@ -223,6 +223,19 @@
     animation: subtle-pulse 2s infinite;
 }
 
+/* O flutuante sai de cena quando seria redundante ou estorvo: com a barra sticky
+   na tela os dois oferecem a mesma coisa, e com o formulário na tela ele fica em
+   cima dos checkboxes. Some o botão em vez de estreitar a página toda, que era o
+   preço da solução anterior. visibility + pointer-events junto com a opacidade:
+   sem isso ele continua clicável e focável por teclado depois de invisível. */
+.whatsapp-float.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(0.85);
+    animation: none;
+}
+
 /* ============================================================================
    HERO CTA IMPROVEMENTS
    ============================================================================ */

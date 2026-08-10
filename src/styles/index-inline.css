@@ -50,13 +50,14 @@
                mais 2x16 de padding do .navbar); no mobile o min-height completa. */
             --header-height: 80px;
 
-            /* Área morta do botão flutuante do WhatsApp: diâmetro + folga da borda.
-               O botão é fixed, logo a página inteira desliza por baixo dele — sem
-               reservar essa faixa, texto e checkbox terminam embaixo de um alvo de
-               toque que está sempre por cima. */
+            /* Tamanho e recuo do botão flutuante do WhatsApp. Antes daqui saía também
+               uma --float-safe-area que reservava a faixa do botão no .container
+               inteiro: resolvia a sobreposição, mas estreitava a medida do celular de
+               350 para 304px, custava +513px de rolagem e deixava todo título
+               centralizado 23px fora do centro. Agora o botão se esconde quando
+               atrapalha, e a página não paga nada. */
             --float-size: 60px;
             --float-inset: 30px;
-            --float-safe-area: calc(var(--float-size) + var(--float-inset));
         }
 
         * {
@@ -77,27 +78,6 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
-        }
-
-        /* 1380px = 1200 do container + 2x a área do flutuante: acima disso a margem
-           lateral que sobra já é maior que o botão e o conteúdo nunca o alcança.
-           Abaixo, o container encosta na borda direita e precisa da folga — senão o
-           flutuante fica em cima do selo "Parcelamos em até 12x", do 3º depoimento e
-           dos checkboxes do formulário, que foi o que acontecia. */
-        @media (max-width: 1380px) {
-            .container {
-                /* A folga é medida da borda da viewport, e os 20px de padding já estão
-                   dentro dela — daí max() e não soma. */
-                padding-right: max(20px, var(--float-safe-area));
-            }
-
-            /* O cabeçalho está preso no topo e o flutuante no rodapé da viewport: eles
-               nunca se cruzam, então o header não paga a folga. Pagando, o menu não
-               cabia entre 769 e ~820px e o botão de orçamento quebrava em duas linhas
-               (header de 100px em vez de 80px). */
-            .header .container {
-                padding-right: 20px;
-            }
         }
 
         .section {
@@ -743,8 +723,10 @@
             animation: spin 0.6s linear infinite;
         }
 
-        /* WhatsApp Floating Button — tamanho e posição vêm dos tokens porque a folga
-           reservada no .container é calculada a partir deles. */
+        /* WhatsApp Floating Button. Ele é fixed, logo a página desliza por baixo —
+           quem resolve a sobreposição é o estado .is-hidden (whatsapp-cta.css),
+           acionado pelo whatsapp-cta.js quando o botão seria redundante ou
+           estorvo. */
         .whatsapp-float {
             position: fixed;
             bottom: var(--float-inset);
@@ -1333,22 +1315,6 @@
     }
 }
 
-/* Abaixo de 1380px o .container reserva a faixa do botão flutuante e a coluna de
-   texto do hero cai de 672px para 582px, depois 406px em 1024. Com corpo fixo a
-   métrica voltava a quebrar em duas linhas; fluido ela fecha em uma em toda a
-   faixa. O medido: a métrica pede ~12.9px de largura por px de corpo. */
-@media (min-width: 1024px) and (max-width: 1380px) {
-    .hero h1 { font-size: clamp(1.875rem, 3vw, 2.8125rem); }
-    .hero-h1-lead { font-size: 1.25rem; }
-    /* Nessa faixa cada selo tem ~105px ou menos: com o ícone ao lado, o rótulo
-       encostava no selo vizinho. Ícone em cima devolve a largura inteira ao texto,
-       e os 5 continuam numa linha. */
-    .trust-badge {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.25rem;
-    }
-}
 
 @media (min-width: 1024px) {
     .hero-grid {

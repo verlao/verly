@@ -1,6 +1,8 @@
 ---
 import Icon from '../components/Icon.astro';
+import { getImage } from 'astro:assets';
 import { SITE_URL, ANALYTICS, CONTACT } from '../data/site';
+import lojaFrente from '../assets/loja-verly-realengo.jpg';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import LocalBusinessSchema from '../components/LocalBusinessSchema.astro';
@@ -40,7 +42,7 @@ const {
   robots,
   ogTitle,
   ogDescription,
-  ogImage = `${SITE_URL}/img/logo.png`,
+  ogImage,
   home = false,
   hasForm = false,
   bodyClass,
@@ -50,6 +52,14 @@ const {
 } = Astro.props;
 
 const canonical = `${SITE_URL}${canonicalPath}`;
+
+// O thumb de compartilhamento sai da MESMA imagem que a página exibe. Antes era
+// `/img/logo.png` fixo: trocar a foto da loja não mudava o preview no WhatsApp, e o
+// que aparecia era o logotipo antigo em script fino. Derivando do asset, os dois
+// nunca mais divergem.
+// JPEG de propósito — suporte a webp em scraper de rede social ainda é irregular.
+const ogFallback = await getImage({ src: lojaFrente, width: 1200, format: 'jpeg', quality: 82 });
+const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
 ---
 
 <!doctype html>
@@ -91,7 +101,7 @@ const canonical = `${SITE_URL}${canonicalPath}`;
     <!-- Open Graph -->
     <meta property="og:title" content={ogTitle ?? title} />
     <meta property="og:description" content={ogDescription ?? description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta property="og:url" content={ogUrl ?? canonical} />
     <meta property="og:type" content="website" />
 
@@ -99,11 +109,11 @@ const canonical = `${SITE_URL}${canonicalPath}`;
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle ?? title} />
     <meta name="twitter:description" content={ogDescription ?? description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <link rel="canonical" href={canonical} />
 
-    {schema && <LocalBusinessSchema includeRating={includeRating} />}
+    {schema && <LocalBusinessSchema includeRating={includeRating} image={ogImageUrl} />}
     <slot name="head" />
   </head>
 

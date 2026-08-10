@@ -3,10 +3,12 @@ import { SITE_URL, CONTACT, ANALYTICS } from '../data/site';
 import neighborhoods from '../data/neighborhoods.json';
 
 interface Props {
+  /** URL absoluta da imagem — mesma do og:image, para não divergirem */
+  image?: string;
   /** paridade com o site atual: realengo.html não tem aggregateRating hoje */
   includeRating?: boolean;
 }
-const { includeRating = true } = Astro.props;
+const { includeRating = true, image } = Astro.props;
 
 // Schema LocalBusiness — antes duplicado em cada página HTML, agora gerado.
 // NOTA: aggregateRating 4.8 / 127 é carregado VERBATIM do site atual por decisão
@@ -17,7 +19,7 @@ const schema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Verly Vidraçaria',
-  image: `${SITE_URL}/img/logo.png`,
+  image: image ?? `${SITE_URL}/img/logo.png`,
   description:
     'Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Atendimento rápido, qualidade garantida e equipe especializada.',
   '@id': SITE_URL,

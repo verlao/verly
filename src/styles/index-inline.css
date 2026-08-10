@@ -356,6 +356,25 @@
             line-height: 1.3;
         }
 
+        /* O selo de avaliação leva ao perfil no Google — é o que deixa a nota conferível.
+           Herdar a cor é obrigatório: o azul default de link cairia sobre o gradiente azul
+           do hero e sumiria. O sublinhado fica porque, sem cor própria, é o único sinal de
+           que ali há um link. */
+        .trust-badge-text a {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        /* Mesma ideia no subtítulo dos depoimentos, mas sobre fundo branco: aqui o azul da
+           marca (--primary, 6.66:1 no branco, o mesmo par que o gate de contraste já
+           verifica) diz "link" sem depender só do sublinhado. */
+        .section-subtitle a {
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
         /* Services Section */
         /* Colunas explícitas por breakpoint em vez de auto-fit. Com minmax(280px) o
            1440 dava 4 colunas para 6 cartões — 4+2, e o vazio à direita do tamanho de

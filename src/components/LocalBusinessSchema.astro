@@ -1,5 +1,5 @@
 ---
-import { SITE_URL, CONTACT, ANALYTICS } from '../data/site';
+import { SITE_URL, CONTACT, ANALYTICS, GOOGLE_REVIEWS } from '../data/site';
 import neighborhoods from '../data/neighborhoods.json';
 
 interface Props {
@@ -11,10 +11,13 @@ interface Props {
 const { includeRating = true, image } = Astro.props;
 
 // Schema LocalBusiness — antes duplicado em cada página HTML, agora gerado.
-// NOTA: aggregateRating 4.8 / 127 é carregado VERBATIM do site atual por decisão
-// explícita (2026-08-07). O número não corresponde ao Google Business Profile e
-// segue como item de risco em aberto — structured data inflado pode custar o
-// rich result. Trocar quando as avaliações reais entrarem (Fase 3).
+// O aggregateRating saía daqui com 4,8 / 127: números herdados do site antigo, sem
+// fonte, e por isso registrados como risco em aberto em 2026-08-07 — structured data
+// que não bate com o Google Business Profile custa o rich result inteiro, não só a
+// estrela inflada. O risco está FECHADO em 2026-08-10: a nota e a contagem passaram a
+// vir de GOOGLE_REVIEWS, que espelha o perfil real da loja (15 avaliações, todas 5
+// estrelas). A contagem não aparece em lugar nenhum da interface, por decisão do dono;
+// ela existe aqui porque o schema.org exige reviewCount dentro de aggregateRating.
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
@@ -63,7 +66,13 @@ const schema = {
   ],
   sameAs: ['https://facebook.com/verlyvidracaria', 'https://instagram.com/verlyvidracaria'],
   ...(includeRating
-    ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.8', reviewCount: '127' } }
+    ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: GOOGLE_REVIEWS.ratingValue,
+          reviewCount: GOOGLE_REVIEWS.reviewCount,
+        },
+      }
     : {}),
 };
 ---

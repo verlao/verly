@@ -85,6 +85,21 @@
 
 ---
 
+### [Analytics Plan](ANALYTICS_PLAN.md)
+**O que é:** Plano de leitura do GA4 — o que registrar no painel e quais explorações montar.
+
+**Conteúdo:**
+- Inventário de eventos com arquivo:linha, parâmetros e cardinalidade
+- As 14 dimensões personalizadas a registrar, com escopo e caminho de menu
+- Eventos-chave e o funil de 6 etapas
+- 4 explorações: bairro, serviço, formulário, CTA
+- Limites de volume e o que não fazer com amostra pequena
+- Como religar o Google Ads por importação de conversão
+
+**Quando ler:** Antes de abrir o painel do GA4. É executável, não descritivo.
+
+---
+
 ## 🛠️ **Desenvolvimento & Técnico**
 
 ### [Implementation Notes](IMPLEMENTATION_NOTES.md)

@@ -41,6 +41,8 @@ const faqSchema =
   ogImage={n.ogImage ?? undefined}
   includeRating={n.hasRating}
   hasForm={true}
+  hasServices={true}
+  hasDifferentials={true}
 >
   {faqSchema && (
     <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
@@ -98,7 +100,10 @@ const faqSchema =
     </div>
   </section>
 
-  <section class="section">
+  {/* id local: o nav ancorava "Serviços" em /index.html#servicos mesmo aqui, onde a
+      seção existe — 3 dos 4 itens do menu levavam o visitante embora da página de
+      bairro em que ele acabou de chegar por busca local. */}
+  <section id="servicos" class="section">
     <div class="container">
       <h2 class="section-title">{n.sectionTitle}</h2>
       {n.intro.map((p) => <p class="section-subtitle">{p}</p>)}
@@ -120,7 +125,7 @@ const faqSchema =
     subtitle="Preencha e entraremos em contato em até 2 horas úteis. Sem compromisso."
   />
 
-  <section class="section why-choose">
+  <section id="diferenciais" class="section why-choose">
     <div class="container">
       <h2 class="section-title">Por que escolher a Verly em {n.name}?</h2>
       <div class="services-grid">

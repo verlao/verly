@@ -1,6 +1,6 @@
 ---
 import Icon from '../components/Icon.astro';
-import { NEIGHBORHOOD_OPTIONS } from '../data/site';
+import { CONTACT, NEIGHBORHOOD_OPTIONS } from '../data/site';
 
 interface Props {
   /** Bairro da página — pré-seleciona a opção no <select>. A escolha segue editável:
@@ -33,16 +33,20 @@ const {
                         </div>
                         <div class="contact-item-content">
                             <strong>WhatsApp</strong>
-                            <p>(21) 98792-6578</p>
+                            <p>{CONTACT.mobileDisplay}</p>
                         </div>
                     </div>
+                    {/* Os dois campos mostravam o MESMO celular, os dois escritos à mão aqui:
+                        quem preferia ligar de um fixo tinha só um número de celular na tela,
+                        e o fixo da loja — que o rodapé já publica — não aparecia. Vindo de
+                        CONTACT não há como um número mudar e o outro ficar para trás. */}
                     <div class="contact-item">
                         <div class="contact-item-icon">
                             <Icon name="phone" />
                         </div>
                         <div class="contact-item-content">
                             <strong>Telefone</strong>
-                            <p>(21) 98792-6578</p>
+                            <p>{CONTACT.landlineDisplay}</p>
                         </div>
                     </div>
                     <div class="contact-item">

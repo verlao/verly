@@ -56,21 +56,29 @@ const WhatsAppCTA = {
     },
     
     /**
-     * Forçar abertura no WhatsApp Web ou App
-     * Desktop: WhatsApp Web
-     * Mobile: WhatsApp App (API)
+     * Link do WhatsApp com a mensagem já preenchida.
+     *
+     * Sempre wa.me: é ele que decide entre app instalado, WhatsApp Web e loja de
+     * aplicativos, e acerta em casos que sniffing de user agent não cobre (WhatsApp
+     * Desktop, tablet, navegador em modo desktop no celular). A versão anterior
+     * mandava todo desktop para web.whatsapp.com/send, o que joga quem não tem sessão
+     * ativa no navegador numa tela de QR code — no meio do clique de conversão.
      */
-    getWhatsAppWebURL(message = '') {
-        const encodedMessage = encodeURIComponent(message);
-        const deviceInfo = this.getDeviceInfo();
-        
-        if (deviceInfo.isMobile) {
-            // Mobile: usar API para abrir diretamente no app
-            return `https://api.whatsapp.com/send?phone=${this.phone}&text=${encodedMessage}`;
-        } else {
-            // Desktop: forçar WhatsApp Web
-            return `https://web.whatsapp.com/send?phone=${this.phone}&text=${encodedMessage}`;
-        }
+    waLink(message = '') {
+        return `https://wa.me/${this.phone}?text=${encodeURIComponent(message)}`;
+    },
+
+    /**
+     * Markup do ícone do WhatsApp, clonado do que a página já renderizou.
+     *
+     * O Font Awesome saiu na migração de assets, então `<i class="fab fa-whatsapp">`
+     * não desenha mais nada — era um botão de WhatsApp sem WhatsApp. O SVG do botão
+     * flutuante vem de src/data/icons.json via Icon.astro; clonar de lá mantém uma
+     * fonte de verdade só para o desenho e não repete o path dentro de /public.
+     */
+    iconHTML() {
+        const rendered = document.querySelector('.whatsapp-float svg.icon');
+        return rendered ? rendered.outerHTML : '';
     },
 
     /**
@@ -96,59 +104,24 @@ const WhatsAppCTA = {
      */
     init() {
         console.log('🚀 WhatsApp CTA Optimization iniciado');
-        
-        // 1. Atualizar todos os links existentes para WhatsApp Web
-        this.updateExistingLinks();
-        
-        // 2. Adicionar Sticky CTA após scroll
-        this.addStickyCTA();
-        
-        // 3. Adicionar CTAs inline nas seções de serviços
-        this.addServiceCTAs();
-        
-        // 4. Melhorar botão flutuante
-        this.enhanceFloatingButton();
-        
-        // 5. Track conversions
-        this.trackConversions();
-        
-        console.log('✅ Otimizações aplicadas');
-    },
 
-    /**
-     * Atualizar links existentes para WhatsApp Web
-     */
-    updateExistingLinks() {
-        // Selecionar TODOS os links de WhatsApp, incluindo os que já têm web.whatsapp.com
-        const whatsappLinks = document.querySelectorAll(
-            'a[href*="wa.me"], a[href*="whatsapp"], .whatsapp-float'
-        );
-        
-        whatsappLinks.forEach(link => {
-            // Extrair mensagem existente se houver
-            const currentHref = link.getAttribute('href');
-            
-            // Se não tiver href, pular
-            if (!currentHref) return;
-            
-            const textMatch = currentHref.match(/text=([^&]*)/);
-            const existingMessage = textMatch ? decodeURIComponent(textMatch[1]) : this.messages.floating;
-            
-            // Atualizar para WhatsApp Web
-            const newUrl = this.getWhatsAppWebURL(existingMessage);
-            link.setAttribute('href', newUrl);
-            
-            // Manter target para abrir em nova aba
-            link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noopener noreferrer');
-            
-            // Log específico para botão flutuante
-            if (link.classList.contains('whatsapp-float')) {
-                console.log('✓ Botão flutuante atualizado:', newUrl);
-            }
-        });
-        
-        console.log(`✓ ${whatsappLinks.length} links atualizados para WhatsApp Web`);
+        // Os links que o Astro renderiza já saem prontos (src/data/site.ts). O que
+        // existia aqui era um passe reescrevendo TODOS eles para web.whatsapp.com;
+        // agora só os CTAs criados em runtime precisam de href.
+
+        // 1. Adicionar Sticky CTA após scroll
+        this.addStickyCTA();
+
+        // 2. Adicionar CTAs inline nas seções de serviços
+        this.addServiceCTAs();
+
+        // 3. Melhorar botão flutuante
+        this.enhanceFloatingButton();
+
+        // 4. Track conversions
+        this.trackConversions();
+
+        console.log('✅ Otimizações aplicadas');
     },
 
     /**
@@ -165,10 +138,12 @@ const WhatsAppCTA = {
                     <strong>🎉 Orçamento Grátis em 2 Horas!</strong>
                     <span>Fale com nossos especialistas agora</span>
                 </div>
-                <a href="${this.getWhatsAppWebURL(this.messages.urgente)}" 
+                <a href="${this.waLink(this.messages.urgente)}"
                    class="sticky-cta-button"
+                   target="_blank"
+                   rel="noopener noreferrer"
                    data-context="sticky-cta">
-                    <i class="fab fa-whatsapp"></i>
+                    ${this.iconHTML()}
                     <span>Chamar no WhatsApp</span>
                 </a>
             </div>
@@ -222,10 +197,10 @@ const WhatsAppCTA = {
                 
                 // Adicionar botão no card
                 const ctaButton = document.createElement('a');
-                ctaButton.href = this.getWhatsAppWebURL(service.message);
+                ctaButton.href = this.waLink(service.message);
                 ctaButton.className = 'service-whatsapp-cta';
                 ctaButton.innerHTML = `
-                    <i class="fab fa-whatsapp"></i>
+                    ${this.iconHTML()}
                     <span>Pedir Orçamento</span>
                 `;
                 ctaButton.dataset.context = `service-${service.name.toLowerCase().replace(/\s+/g, '-')}`;
@@ -246,10 +221,10 @@ const WhatsAppCTA = {
     enhanceFloatingButton() {
         const floatingBtn = document.querySelector('.whatsapp-float');
         if (!floatingBtn) return;
-        
-        // Atualizar URL
-        floatingBtn.href = this.getWhatsAppWebURL(this.messages.floating);
-        
+
+        // O href vem do servidor (CONTACT.whatsappFloat) e já é um wa.me com a
+        // mensagem certa — não há o que reescrever aqui.
+
         // Adicionar tooltip
         const tooltip = document.createElement('div');
         tooltip.className = 'whatsapp-float-tooltip';

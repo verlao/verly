@@ -7,6 +7,11 @@ interface Props {
 }
 const { home = false } = Astro.props;
 const base = home ? '' : '/index.html';
+
+// O site é estático: o ano sai do build, não do relógio do visitante. Fixo em 2024,
+// o rodapé anunciava um site abandonado há dois anos — em página de orçamento isso
+// vira dúvida sobre a loja ainda existir. Qualquer republicação atualiza.
+const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
@@ -43,7 +48,7 @@ const base = home ? '' : '/index.html';
         <h4>Contato</h4>
         <p>
           <Icon name="whatsapp" />
-          <a href={CONTACT.whatsappWeb} class="footer-contact-link whatsapp-link" data-context="footer-whatsapp" data-track="footer_whatsapp_click">
+          <a href={CONTACT.whatsappFooter} target="_blank" rel="noopener noreferrer" class="footer-contact-link whatsapp-link" data-context="footer-whatsapp" data-track="footer_whatsapp_click">
             {CONTACT.mobileDisplay}
           </a>
           <br />
@@ -72,7 +77,7 @@ const base = home ? '' : '/index.html';
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; 2024 Verly Vidraçaria. Todos os direitos reservados.</p>
+      <p>&copy; {year} Verly Vidraçaria. Todos os direitos reservados.</p>
     </div>
   </div>
 </footer>

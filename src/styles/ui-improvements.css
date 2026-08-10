@@ -195,9 +195,12 @@
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+/* Foco derivado de --primary. Esta regra carrega DEPOIS de index-inline.css, então
+   era ela que pintava o anel de foco de verde-água (#1abc9c, do tema Bootstrap que o
+   site abandonou) — mexer no anel de lá não mudava nada na tela. */
 .form-control:focus {
-    border-color: #1abc9c;
-    box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .form-control.is-valid {
@@ -369,9 +372,9 @@
    IMPROVED ACCESSIBILITY
    ============================================================================ */
 
-/* Better focus indicators */
+/* Better focus indicators — mesma cor da marca, pelo mesmo motivo do anel acima. */
 *:focus-visible {
-    outline: 2px solid #1abc9c;
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
 }
 
@@ -379,7 +382,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-    outline: 2px solid #1abc9c;
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
 }
 
@@ -401,8 +404,8 @@ textarea:focus-visible {
 }
 
 .checkbox-item:focus-within {
-    background-color: #e7f9f5;
-    outline: 2px solid #1abc9c;
+    background-color: color-mix(in srgb, var(--primary) 8%, white);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
 }
 

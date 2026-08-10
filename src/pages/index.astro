@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import lojaFrente from '../assets/loja-verly-realengo.png';
 import QuoteForm from '../components/QuoteForm.astro';
+import { CONTACT } from '../data/site';
 ---
 
 <Base
@@ -27,7 +28,14 @@ import QuoteForm from '../components/QuoteForm.astro';
                 <div class="hero-badge">
                     <Icon name="map-marker-alt" /> Atendemos toda Zona Oeste RJ
                 </div>
-                <h1>Vidraçaria na Zona Oeste<br>Orçamento em até 2 Horas</h1>
+                {/* Promessa e métrica em blocos separados, não um <br> no meio de uma
+                    linha de 3.5rem: naquele tamanho "Vidraçaria na Zona Oeste" já
+                    quebrava sozinha e o <br> somava a QUARTA linha. As páginas de
+                    bairro usam a mesma estrutura. */}
+                <h1 class="hero-h1">
+                    <span class="hero-h1-lead">Vidraçaria na Zona Oeste</span>
+                    <span class="hero-h1-metric">Orçamento em até 2 Horas</span>
+                </h1>
                 <p class="hero-subtitle">
                     Especialistas em Box para Banheiro, Sacadas Envidraçadas, Guarda-corpos e mais. 
                     Atendimento rápido, qualidade garantida e instalação profissional.
@@ -140,6 +148,28 @@ import QuoteForm from '../components/QuoteForm.astro';
         </div>
     </section>
 
+    <!-- Ponto de conversão no meio da página. As páginas de bairro já trazem o
+         formulário exatamente aqui, logo depois dos serviços: é onde o visitante
+         acabou de reconhecer o que precisa (interesse) e ainda faltam ~5.000px de
+         rolagem no celular até o formulário. Faixa com âncora, não um segundo
+         <QuoteForm /> — ver o comentário de .cta-band no CSS. -->
+    <section class="cta-band">
+        <div class="container cta-band-inner">
+            <div>
+                <h2>Achou o serviço que precisa?</h2>
+                <p>Orçamento gratuito, sem compromisso, com resposta em até 2 horas úteis.</p>
+            </div>
+            <div class="cta-band-actions">
+                <a href="#contato" class="btn btn-success">
+                    <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
+                </a>
+                <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="cta-band-alt">
+                    ou fale direto no WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Why Choose Us -->
     <section id="diferenciais" class="section why-choose">
         <div class="container">
@@ -153,7 +183,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <Icon name="rocket" />
                     </div>
                     <div class="feature-content">
-                        <h4>Atendimento Local Rápido</h4>
+                        <h3>Atendimento Local Rápido</h3>
                         <p>Estamos na Zona Oeste. Orçamento em até 2 horas e atendimento no mesmo dia quando possível.</p>
                     </div>
                 </div>
@@ -162,7 +192,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <Icon name="user-tie" />
                     </div>
                     <div class="feature-content">
-                        <h4>Equipe Especializada</h4>
+                        <h3>Equipe Especializada</h3>
                         <p>Profissionais experientes e certificados para instalações seguras e de qualidade.</p>
                     </div>
                 </div>
@@ -171,7 +201,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <Icon name="certificate" />
                     </div>
                     <div class="feature-content">
-                        <h4>Garantia Total</h4>
+                        <h3>Garantia Total</h3>
                         <p>Todos os nossos serviços possuem garantia. Trabalhamos apenas com materiais de primeira.</p>
                     </div>
                 </div>
@@ -180,7 +210,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <Icon name="dollar-sign" />
                     </div>
                     <div class="feature-content">
-                        <h4>Orçamento Gratuito</h4>
+                        <h3>Orçamento Gratuito</h3>
                         <p>Fazemos orçamento sem compromisso. Medição e consultoria incluídas.</p>
                     </div>
                 </div>
@@ -189,7 +219,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <Icon name="map-marked-alt" />
                     </div>
                     <div class="feature-content">
-                        <h4>Cobertura Completa</h4>
+                        <h3>Cobertura Completa</h3>
                         <p>Atendemos Barra, Recreio, Jacarepaguá, Campo Grande, Realengo e toda Zona Oeste.</p>
                     </div>
                 </div>
@@ -198,7 +228,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <Icon name="crown" />
                     </div>
                     <div class="feature-content">
-                        <h4>Materiais Premium</h4>
+                        <h3>Materiais Premium</h3>
                         <p>Vidros temperados de alta qualidade e perfis de alumínio com acabamento superior.</p>
                     </div>
                 </div>
@@ -224,7 +254,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <div class="testimonial-author">
                             <div class="testimonial-avatar">MC</div>
                             <div class="testimonial-info">
-                                <h5>Mariana Costa</h5>
+                                <h3>Mariana Costa</h3>
                                 <p>Barra da Tijuca</p>
                                 <div class="testimonial-stars">★★★★★</div>
                             </div>
@@ -241,7 +271,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <div class="testimonial-author">
                             <div class="testimonial-avatar">RS</div>
                             <div class="testimonial-info">
-                                <h5>Ricardo Santos</h5>
+                                <h3>Ricardo Santos</h3>
                                 <p>Recreio dos Bandeirantes</p>
                                 <div class="testimonial-stars">★★★★★</div>
                             </div>
@@ -258,7 +288,7 @@ import QuoteForm from '../components/QuoteForm.astro';
                         <div class="testimonial-author">
                             <div class="testimonial-avatar">PL</div>
                             <div class="testimonial-info">
-                                <h5>Paula Lima</h5>
+                                <h3>Paula Lima</h3>
                                 <p>Jacarepaguá</p>
                                 <div class="testimonial-stars">★★★★★</div>
                             </div>

@@ -54,8 +54,13 @@ const faqSchema =
         <div class="hero-badge">
           <Icon name="map-marker-alt" /> Atendemos {n.name} e toda a Zona Oeste
         </div>
-        {/* palavra-chave primeiro, métrica depois — o index já usa essa fórmula */}
-        <h1>{n.h1} — Orçamento em até 2 Horas</h1>
+        {/* palavra-chave primeiro, métrica depois — o index já usa essa fórmula.
+            O travessão era um separador que só o olho enxergava: em blocos, a
+            métrica ganha o peso visual e o h1 fecha em duas linhas. */}
+        <h1 class="hero-h1">
+          <span class="hero-h1-lead">{n.h1}</span>
+          <span class="hero-h1-metric">Orçamento em até 2 Horas</span>
+        </h1>
         {n.heroSubtitle && <p class="hero-subtitle">{n.heroSubtitle}</p>}
         <div class="hero-cta">
           <a href="#contato" class="btn btn-success btn-lg">

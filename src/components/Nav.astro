@@ -54,7 +54,28 @@ const quoteHref = anchor('contato', hasForm);
       </a>
     </li>
   </ul>
-  <button class="mobile-menu-btn" aria-label="Abrir menu">
+  <button class="mobile-menu-btn" aria-label="Abrir menu" aria-expanded="false">
     <Icon name="bars" />
   </button>
 </nav>
+
+{/* Espelha no botão o estado do menu. Quem alterna o menu é o app.js, mexendo no
+    style do <ul> — então aqui a gente OBSERVA em vez de registrar um segundo
+    handler de clique, que se anularia com o primeiro. Sem isto o botão fica em 3
+    barras com o menu aberto e o leitor de tela não sabe que abriu. */}
+<script is:inline>
+  (() => {
+    const btn = document.querySelector('.mobile-menu-btn');
+    const menu = document.querySelector('.nav-menu');
+    if (!btn || !menu) return;
+    const sync = () => {
+      const usable = getComputedStyle(btn).display !== 'none';
+      const open = usable && getComputedStyle(menu).display !== 'none';
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    };
+    new MutationObserver(sync).observe(menu, { attributes: true, attributeFilter: ['style', 'class'] });
+    window.addEventListener('resize', sync);
+    sync();
+  })();
+</script>

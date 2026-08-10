@@ -1,5 +1,7 @@
 ---
+import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
+import { CONTACT } from '../data/site';
 ---
 
 <Base
@@ -10,12 +12,31 @@ import Base from '../layouts/Base.astro';
 >
 
     <!-- Navigation -->
-    
+
     <div style="height: 80px;"></div>
   <div class="thanks-box">
     <h1>Obrigado!</h1>
-    <p>Recebemos seu pedido de orçamento.<br>
-    Em breve nossa equipe entrará em contato.</p>
-    <a href="/" class="btn btn-primary btn-home">Voltar para o site</a>
+    <p>
+      Recebemos seu pedido de orçamento. Respondemos em até <strong>2 horas úteis</strong>.
+      Atendemos {CONTACT.hoursDisplay}.
+    </p>
+    {/* A página era um beco sem saída: só "voltar para o site", que é justamente o
+        que quem acabou de enviar o formulário não precisa. Abrir a conversa no
+        WhatsApp resolve o outro lado — quando a Verly ligar ou escrever, o número
+        já está no celular de quem pediu. */}
+    <a
+      href={CONTACT.whatsappDirect}
+      class="btn btn-success thanks-next"
+      target="_blank"
+      rel="noopener"
+      data-context="thank-you-page"
+    >
+      <Icon name="whatsapp" /> Adiantar pelo WhatsApp
+    </a>
+    <p class="thanks-meta">
+      Nosso número é <a href={`tel:+${CONTACT.mobile}`}>{CONTACT.mobileDisplay}</a> — salve
+      para reconhecer nosso contato.
+    </p>
+    <a href="/" class="thanks-back">Voltar para o site</a>
   </div>
 </Base>

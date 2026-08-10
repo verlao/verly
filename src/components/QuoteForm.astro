@@ -207,7 +207,9 @@ const {
                             <div class="form-help">Quanto mais detalhes, melhor será nosso orçamento</div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%;">
+                        {/* Cor de CTA, não azul de marca: o botão que fecha a conversão é o
+                            único que precisava do âmbar e era o único que não usava. */}
+                        <button type="submit" class="btn btn-success" id="submitBtn" style="width: 100%;">
                             <span id="btnText">
                                 <Icon name="paper-plane" /> Solicitar Orçamento Grátis
                             </span>
@@ -215,6 +217,11 @@ const {
 
                         <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--gray);">
                             <Icon name="clock" /> Responderemos em até 2 horas úteis
+                        </p>
+
+                        <p class="form-privacy">
+                            <Icon name="shield-alt" /> Usamos seu nome, telefone e bairro apenas para
+                            responder este pedido de orçamento.
                         </p>
                     </form>
                 </div>

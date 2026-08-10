@@ -13,6 +13,8 @@ export const CONTACT = {
   landline: '+552134216066',
   landlineDisplay: '(21) 3421-6066',
   email: 'contato@verlyvidracaria.com',
+  /** Mesmo horário que o rodapé e o LocalBusiness já publicam — 8h às 18h, Seg-Sáb. */
+  hoursDisplay: 'Seg a Sáb, 8h às 18h',
   // Todo link de WhatsApp passa por wa.me. É ele que escolhe entre o app instalado,
   // o WhatsApp Web e a loja de aplicativos; apontar direto para web.whatsapp.com/send
   // manda quem não tem sessão ativa no navegador para uma tela de QR code, o que

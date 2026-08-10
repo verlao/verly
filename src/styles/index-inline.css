@@ -169,6 +169,12 @@
             box-shadow: var(--shadow-lg);
         }
 
+        /* O spinner do submit era branco (herdado de ui-improvements.css) e sumia no
+           âmbar. Com o botão de envio agora na cor de CTA, ele acompanha o texto. */
+        #submitBtn.btn-loading::after {
+            border-top-color: var(--cta-text);
+        }
+
         /* Header/Navigation */
         .header {
             position: fixed;
@@ -269,16 +275,39 @@
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
+            line-height: 1.15;
+            margin-bottom: 1.25rem;
             animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        /* Manchete em dois blocos. A quebra é estrutural em vez de um <br>, e os dois
+           pedaços deixam de ler como frase corrida: primeiro o que somos e onde,
+           depois a métrica — que é o que faz clicar, então leva o corpo grande. */
+        .hero-h1 {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            text-wrap: balance;
+        }
+
+        .hero-h1-lead {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.25;
+            letter-spacing: 0.005em;
+        }
+
+        /* Corpo grande fecha melhor apertado — e ganha alguns pixels de largura, que
+           é o que mantém a métrica numa linha só. */
+        .hero-h1-metric {
+            letter-spacing: -0.015em;
         }
 
         .hero-subtitle {
             font-size: 1.25rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             opacity: 0.95;
             animation: fadeInUp 0.6s ease-out 0.4s both;
         }
@@ -287,41 +316,75 @@
             display: flex;
             gap: 1rem;
             justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
             animation: fadeInUp 0.6s ease-out 0.6s both;
         }
 
+        /* Hierarquia entre os dois CTAs. Antes eram do mesmo tamanho, lado a lado:
+           quem chega tem que ESCOLHER antes de saber o que quer. Agora o âmbar é
+           inequivocamente o primário e o WhatsApp fica como alternativa — mesmo
+           link, mesma cor de marca, menos peso. */
+        .hero-cta .btn-success {
+            font-size: 1.125rem;
+            padding: 18px 36px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-cta .btn-whatsapp {
+            font-size: 0.9375rem;
+            padding: 12px 20px;
+            min-height: 44px;
+        }
+
         .trust-badges {
-            display: flex;
-            gap: 2rem;
+            /* grid-auto-flow: column põe todos os selos numa linha só, seja lá quantos
+               forem — a home tem 5, as páginas de bairro 4. Com flex-wrap sobrava
+               órfão na segunda linha e, na home, o selo de avaliação (o de maior peso)
+               caía abaixo da dobra. */
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(0, 1fr);
+            gap: 0.875rem;
             justify-content: center;
-            margin-top: 3rem;
-            flex-wrap: wrap;
+            margin-top: 2rem;
             animation: fadeInUp 0.6s ease-out 0.8s both;
         }
 
         .trust-badge {
             display: flex;
-            flex-direction: column;
             align-items: center;
             gap: 0.5rem;
+            text-align: left;
+        }
+
+        /* A avaliação é a prova social mais forte da dobra, então entra primeiro.
+           Só a ordem visual muda: o texto e o DOM ficam como estão. */
+        .trust-badges > :nth-child(5) {
+            order: -1;
         }
 
         .trust-badge-icon {
-            font-size: 2rem;
+            font-size: 1.25rem;
+            line-height: 1;
+            flex-shrink: 0;
         }
 
         .trust-badge-text {
             font-size: 0.875rem;
             font-weight: 500;
+            line-height: 1.3;
         }
 
         /* Services Section */
+        /* Colunas explícitas por breakpoint em vez de auto-fit. Com minmax(280px) o
+           1440 dava 4 colunas para 6 cartões — 4+2, e o vazio à direita do tamanho de
+           dois cartões. 3 colunas fecham as duas linhas; ver o bloco de grades abaixo. */
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: minmax(0, 1fr);
             gap: 2rem;
-            margin-top: 3rem;
+            margin-top: 2.5rem;
         }
 
         /* Sem `cursor: pointer`: o card não tem handler nenhum. Quem clica no meio dele
@@ -372,9 +435,9 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: minmax(0, 1fr);
             gap: 2rem;
-            margin-top: 3rem;
+            margin-top: 2.5rem;
         }
 
         .feature-item {
@@ -396,7 +459,10 @@
             flex-shrink: 0;
         }
 
-        .feature-content h4 {
+        /* h3 e não h4: os diferenciais são filhos diretos do h2 da seção, e o salto
+           H2→H4 era um dos dois que sobravam na home. O corpo é o mesmo de antes: aqui
+           muda a hierarquia, não a aparência. */
+        .feature-content h3 {
             font-size: 1.125rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
@@ -411,9 +477,9 @@
         /* Testimonials Section */
         .testimonials-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: minmax(0, 1fr);
             gap: 2rem;
-            margin-top: 3rem;
+            margin-top: 2.5rem;
         }
 
         .testimonial-card {
@@ -465,7 +531,11 @@
             font-size: 1.25rem;
         }
 
-        .testimonial-info h5 {
+        /* h3 e não h5: o nome do cliente é filho direto do h2 da seção. O corpo agora é
+           explícito — com a tag antiga ele saía do default do <h5>, 13.3px, menor que a
+           própria legenda do bairro abaixo dele. */
+        .testimonial-info h3 {
+            font-size: 1rem;
             font-weight: 600;
             color: var(--dark);
         }
@@ -708,11 +778,21 @@
             padding: 3rem 0 1.5rem;
         }
 
+        /* Colunas explícitas: com auto-fit os 4 blocos do rodapé viravam 3+1 em 1024,
+           mesmo buraco das outras grades. */
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: minmax(0, 1fr);
             gap: 3rem;
             margin-bottom: 2rem;
+        }
+
+        @media (min-width: 481px) {
+            .footer-content { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (min-width: 1200px) {
+            .footer-content { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         }
 
         .footer-section h2 {
@@ -795,24 +875,191 @@
                 display: block;
             }
 
+            /* O header é fixed: o hero começa onde ele termina, mais uma folga pequena.
+               Cada pixel aqui empurra a foto e os selos para fora da primeira tela. */
             .hero {
-                padding: 120px 0 60px;
+                padding: calc(var(--header-height) + 8px) 0 32px;
             }
 
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.25rem;
+            }
+
+            .hero-h1-lead {
+                font-size: 1.25rem;
             }
 
             .hero-subtitle {
                 font-size: 1.125rem;
+                margin-bottom: 1.25rem;
             }
 
+            /* Ritmo vertical do celular. Com 80px de padding e um cartão por tela a home
+               tinha 10.449px de rolagem — 12 telas até o formulário. Aqui aperta-se o
+               ritmo; a densidade dos cartões vem nos blocos seguintes. */
             .section {
-                padding: 60px 0;
+                padding: 32px 0;
             }
 
             .section-title {
-                font-size: 2rem;
+                font-size: 1.625rem;
+                margin-bottom: 0.625rem;
+            }
+
+            .section-subtitle {
+                margin-bottom: 1rem;
+            }
+
+            .services-grid,
+            .features-grid,
+            .testimonials-grid {
+                margin-top: 1.25rem;
+                gap: 0.75rem;
+            }
+
+            /* Cartão de serviço deitado: o ícone de 80px empilhado sobre o texto gastava
+               uma tela inteira por cartão. Deitado cabem dois por tela, e nada sai —
+               mesmo ícone, mesmo título, mesma descrição. Grade em vez de flex porque o
+               cartão não tem wrapper de texto, e porque o whatsapp-cta.js anexa um <a>
+               nele em tempo de execução: qualquer filho novo cai na coluna do texto. */
+            .services-grid .service-card {
+                display: grid;
+                grid-template-columns: 44px minmax(0, 1fr);
+                column-gap: 0.75rem;
+                align-content: start;
+                text-align: left;
+                padding: 0.875rem 1rem;
+            }
+
+            .services-grid .service-card > * {
+                grid-column: 2;
+            }
+
+            .services-grid .service-card > .service-icon {
+                grid-column: 1;
+                grid-row: 1 / span 3; /* atravessa título, descrição e o CTA injetado */
+                width: 44px;
+                height: 44px;
+                font-size: 1.25rem;
+                margin: 0;
+            }
+
+            .services-grid .service-whatsapp-cta {
+                margin-top: 0.5rem;
+            }
+
+            .service-card h3 {
+                font-size: 1.125rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .service-card p {
+                line-height: 1.5;
+            }
+
+            .features-grid {
+                gap: 0.75rem;
+            }
+
+            .feature-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.125rem;
+            }
+
+            .testimonial-card {
+                padding: 0.875rem 1rem;
+            }
+
+            .testimonial-text {
+                line-height: 1.5;
+                margin-bottom: 0.75rem;
+            }
+
+            .testimonial-quote {
+                top: 0.25rem;
+            }
+
+            .testimonial-content {
+                margin-top: 0.25rem;
+            }
+
+            .testimonial-avatar {
+                width: 44px;
+                height: 44px;
+                font-size: 1.125rem;
+            }
+
+            .contact-info h3 {
+                font-size: 1.375rem;
+                margin-bottom: 1rem;
+            }
+
+            .contact-item {
+                margin-bottom: 0.75rem;
+            }
+
+            .contact-item-icon {
+                width: 36px;
+                height: 36px;
+            }
+
+            textarea.form-control {
+                min-height: 76px;
+            }
+
+            .footer-section h2 {
+                margin-bottom: 0.5rem;
+            }
+
+            .footer-section li {
+                margin-bottom: 0.25rem;
+            }
+
+            /* As duas listas do rodapé (serviços e bairros) têm 6 itens curtos cada e
+               ocupavam 12 linhas empilhadas depois do formulário. Em duas colunas são 6,
+               sem cortar link nenhum. */
+            .footer-section ul {
+                column-count: 2;
+                column-gap: 1rem;
+            }
+
+            .contact-form .form-group {
+                margin-bottom: 0.875rem;
+            }
+
+            /* A linha inteira do checkbox vira alvo de toque. Antes só o quadradinho e o
+               rótulo respondiam, e o input herdava min-height 44px de ui-improvements
+               esticando cada linha para ~72px: oito serviços comiam duas telas. */
+            .checkbox-group .checkbox-item {
+                padding: 0 0.5rem;
+                gap: 0.625rem;
+                min-height: 44px;
+            }
+
+            .checkbox-group .checkbox-item label {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                min-height: 44px;
+                margin: 0;
+            }
+
+            .checkbox-group .checkbox-item input[type="checkbox"] {
+                min-height: 20px;
+            }
+
+            .footer {
+                padding: 1.75rem 0 1rem;
+            }
+
+            .footer-bottom {
+                padding-top: 1rem;
+            }
+
+            .footer-content {
+                gap: 1rem;
+                margin-bottom: 1rem;
             }
 
             .contact-wrapper {
@@ -824,18 +1071,59 @@
             /* Formulário aparece primeiro no mobile */
             .contact-info {
                 order: 2;
-                margin-top: 2rem;
-                padding: 2rem;
+                margin-top: 1.25rem;
+                padding: 1rem;
             }
 
             /* Formulário tem prioridade visual no mobile */
             .contact-form {
                 order: 1;
-                padding: 2rem;
+                padding: 1.25rem;
             }
 
+            /* Oito serviços em duas colunas onde o rótulo caiba inteiro: em coluna única
+               o grupo sozinho tomava uma tela e meia, mas abaixo de 420px sobram ~78px
+               de texto e "Janelas de Alumínio" quebra em três linhas. O alvo de toque
+               continua sendo a linha inteira. */
             .checkbox-group {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            @media (min-width: 420px) {
+                .checkbox-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            }
+
+            /* Menu aberto: o gap de 2rem é do desktop e, empilhado, dava um painel de
+               ~620px que cobria o H1. Cada item continua com 44px de alvo de toque. */
+            .nav-menu {
+                gap: 0.125rem;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .nav-menu .nav-link {
+                display: block;
+                padding: 0.6875rem 0.25rem;
+            }
+
+            .nav-menu .btn {
+                width: 100%;
+                margin-top: 0.375rem;
+            }
+
+            /* O botão não mudava de estado: seguia em 3 barras com o menu aberto, sem
+               afordância de fechar. O toggle é do app.js; aqui só o reflexo visual do
+               aria-expanded (ver o script no Nav.astro). */
+            .mobile-menu-btn[aria-expanded="true"] .icon {
+                display: none;
+            }
+
+            .mobile-menu-btn[aria-expanded="true"]::before {
+                content: '\00d7';
+                font-size: 1.875rem;
+                line-height: 1;
             }
 
             /* Menor e mais colado no canto: cada pixel aqui é pixel de folga que o
@@ -852,7 +1140,29 @@
 
         @media (max-width: 480px) {
             .hero h1 {
-                font-size: 2rem;
+                font-size: 1.875rem;
+            }
+
+            /* 16px, o piso de corpo de texto. Em aparelhos de 360px as duas linhas que
+               isso economiza são a diferença entre os 5 selos caberem na dobra ou não. */
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            /* Rótulo de selo é micro-texto, não corpo: 13px mantém cada um em uma linha
+               na coluna estreita ao lado da foto. */
+            .trust-badge-text {
+                font-size: 0.8125rem;
+            }
+
+            /* O rótulo do primário quebrava em duas linhas com 18px. */
+            .hero-cta .btn-success {
+                font-size: 1.0625rem;
+                padding: 16px 24px;
+            }
+
+            .hero-h1-lead {
+                font-size: 1.0625rem;
             }
 
             .btn {
@@ -860,13 +1170,12 @@
                 padding: 14px 24px;
             }
 
-            .trust-badges {
-                gap: 1rem;
+            /* O primário ocupa a largura toda; o WhatsApp, não. Dois botões full-width
+               empilhados voltavam a pesar igual. */
+            .hero-cta .btn-whatsapp {
+                width: auto;
             }
 
-            .trust-badge {
-                flex: 1 1 calc(50% - 0.5rem);
-            }
         }
 
 /* FAQ nativo (<details>/<summary>) — substitui o accordion do Bootstrap, que saiu
@@ -961,8 +1270,9 @@
 }
 
 /* Hero em duas colunas a partir de 1024px: texto à esquerda, foto à direita.
-   Abaixo disso volta a coluna única e a foto vem depois dos selos — no celular
-   o CTA tem que aparecer antes da imagem, não depois dela. */
+   Abaixo disso volta a coluna única, e a foto sobe para o lado dos selos — no
+   celular o CTA continua aparecendo ANTES da imagem, mas a imagem passou a caber
+   na primeira tela: a prova visual não pode ficar a 1.000px de rolagem. */
 .hero-grid {
     position: relative;
     z-index: 1;
@@ -978,6 +1288,68 @@
     border-radius: 14px;
     box-shadow: var(--shadow-xl);
 }
+/* Abaixo de 1024px: foto e selos dividem a mesma faixa, logo depois dos CTAs.
+   display: contents dissolve .hero-content para que os selos (que estão dentro
+   dele) e a foto (que é irmã dele) possam ficar lado a lado sem duplicar markup
+   nem mover a foto no DOM — no desktop ela precisa continuar sendo a 2ª coluna.
+   Empilhados, foto (467px) + selos não cabiam na primeira tela junto com os CTAs;
+   lado a lado ocupam a altura de um só. */
+@media (max-width: 1023px) {
+    .hero-content { display: contents; }
+    .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 46%) minmax(0, 1fr);
+        column-gap: 0.875rem;
+        align-items: start;
+    }
+    .hero-badge,
+    .hero-h1,
+    .hero-subtitle,
+    .hero-cta {
+        grid-column: 1 / -1;
+    }
+    .hero-badge { justify-self: center; }
+    .hero-photo {
+        grid-column: 1;
+        margin: 1.25rem 0 0;
+        max-width: none;
+    }
+    /* Abaixo de 480px a foto cede um pouco de largura para os selos caberem em uma
+       linha cada: num aparelho de 360px o quinto selo saía da dobra por 15px. */
+    @media (max-width: 480px) {
+        .hero-grid { grid-template-columns: minmax(0, 42%) minmax(0, 1fr); }
+    }
+    .trust-badges {
+        grid-column: 2;
+        /* order manda os selos para DEPOIS da foto na ordem de posicionamento: eles
+           vêm antes no DOM (estão dentro do .hero-content) e, sem isto, o
+           auto-placement joga a foto para a linha seguinte em vez de ao lado. */
+        order: 1;
+        grid-auto-flow: row;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+        justify-content: stretch;
+    }
+}
+
+/* Abaixo de 1380px o .container reserva a faixa do botão flutuante e a coluna de
+   texto do hero cai de 672px para 582px, depois 406px em 1024. Com corpo fixo a
+   métrica voltava a quebrar em duas linhas; fluido ela fecha em uma em toda a
+   faixa. O medido: a métrica pede ~12.9px de largura por px de corpo. */
+@media (min-width: 1024px) and (max-width: 1380px) {
+    .hero h1 { font-size: clamp(1.875rem, 3vw, 2.8125rem); }
+    .hero-h1-lead { font-size: 1.25rem; }
+    /* Nessa faixa cada selo tem ~105px ou menos: com o ícone ao lado, o rótulo
+       encostava no selo vizinho. Ícone em cima devolve a largura inteira ao texto,
+       e os 5 continuam numa linha. */
+    .trust-badge {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.25rem;
+    }
+}
+
 @media (min-width: 1024px) {
     .hero-grid {
         display: grid;
@@ -997,4 +1369,132 @@
         justify-content: flex-start;
     }
     .hero-photo { margin: 0; max-width: none; }
+}
+
+/* Grades fechando em linhas cheias. auto-fit escolhia o número de colunas pela
+   largura e ignorava quantos itens existem: 6 cartões em 4 colunas = 4+2. Os
+   números abaixo dividem 6 exatamente em cada breakpoint. */
+@media (min-width: 1024px) {
+    .services-grid,
+    .features-grid,
+    .testimonials-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    /* 5 é primo: em 3 colunas sobra 3+2. A lista de razões das páginas de bairro tem
+       5 itens de uma linha, então lá as colunas viram 5. */
+    .services-grid:has(> :nth-child(5):last-child) {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+    .services-grid,
+    .features-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .services-grid:has(> :nth-child(5):last-child) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Faixa de conversão no meio da página. O formulário fica só no fim (~9.000px de
+   rolagem no celular): quem se decidiu ao ler os serviços tinha que rolar tudo de
+   novo. É uma faixa que ancora em #contato, não um segundo formulário — os ids do
+   QuoteForm são fixos e o app.js faz bind em #contactForm, então duas instâncias
+   quebrariam a validação. */
+.cta-band {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: var(--white);
+    padding: 2.5rem 0;
+}
+.cta-band-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+.cta-band h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+.cta-band p {
+    margin-top: 0.375rem;
+    opacity: 0.95;
+}
+.cta-band-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+.cta-band-actions .btn {
+    font-size: 1.0625rem;
+    padding: 16px 32px;
+    box-shadow: var(--shadow-lg);
+}
+.cta-band-alt {
+    color: var(--white);
+    font-size: 0.9375rem;
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .cta-band { padding: 1rem 0; }
+    .cta-band-inner { flex-direction: column; text-align: center; gap: 1rem; }
+    .cta-band h2 { font-size: 1.25rem; }
+    .cta-band-actions { width: 100%; }
+}
+
+/* Nota de privacidade junto do submit. O formulário coleta nome, telefone, e-mail,
+   bairro e UTMs e o site não dizia uma palavra sobre isso. Uma linha só, e só o que
+   dá para cumprir: nada de "não compartilhamos", porque os eventos de formulário
+   ainda vão para o GA4. */
+.form-privacy {
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--gray);
+    line-height: 1.5;
+}
+
+/* Página de obrigado. Não tinha estilo nenhum: o <div class="thanks-box"> caía
+   colado na esquerda, com um único link de volta. */
+.thanks-box {
+    max-width: 560px;
+    margin: 2.5rem auto 4rem;
+    padding: 0 20px;
+    text-align: center;
+}
+.thanks-box h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--dark);
+}
+.thanks-box > p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+.thanks-next {
+    display: block;
+    max-width: 340px;
+    margin: 0 auto;
+}
+.thanks-meta {
+    margin-top: 1rem;
+    font-size: 0.9375rem;
+    color: var(--gray);
+}
+.thanks-meta a {
+    color: var(--primary);
+    font-weight: 600;
+}
+.thanks-back {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--primary);
+    font-weight: 600;
 }

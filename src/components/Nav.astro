@@ -8,18 +8,27 @@ interface Props {
   home?: boolean;
   /** true quando a página tem o formulário — então #contato é local, não salta */
   hasForm?: boolean;
+  /** true quando a página tem a própria seção de serviços (#servicos) */
+  hasServices?: boolean;
+  /** true quando a página tem a própria seção de diferenciais (#diferenciais) */
+  hasDifferentials?: boolean;
 }
-const { home = false, hasForm = false } = Astro.props;
-const base = home ? '' : '/index.html';
-const contactBase = home || hasForm ? '' : '/index.html';
+const { home = false, hasForm = false, hasServices = false, hasDifferentials = false } = Astro.props;
+
+// Mesma regra para cada item: âncora local quando a seção existe AQUI, salto para o
+// index quando não existe. As páginas de bairro têm serviços, diferenciais e
+// formulário próprios — mandar o visitante para o index era tirá-lo de uma landing
+// page que já respondia à pergunta dele. Depoimentos só existem no index, então esse
+// continua saltando.
+const anchor = (id: string, isLocal: boolean) => `${home || isLocal ? '' : '/index.html'}#${id}`;
 
 const links = [
-  { href: `${base}#servicos`, label: 'Serviços' },
-  { href: `${base}#diferenciais`, label: 'Diferenciais' },
-  { href: `${base}#depoimentos`, label: 'Depoimentos' },
-  { href: `${contactBase}#contato`, label: 'Contato' },
+  { href: anchor('servicos', hasServices), label: 'Serviços' },
+  { href: anchor('diferenciais', hasDifferentials), label: 'Diferenciais' },
+  { href: anchor('depoimentos', false), label: 'Depoimentos' },
+  { href: anchor('contato', hasForm), label: 'Contato' },
 ];
-const quoteHref = `${contactBase}#contato`;
+const quoteHref = anchor('contato', hasForm);
 ---
 
 <nav class="navbar">

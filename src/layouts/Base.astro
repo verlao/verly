@@ -25,6 +25,10 @@ interface Props {
   home?: boolean;
   /** a página traz o formulário? decide se o nav aponta #contato local */
   hasForm?: boolean;
+  /** a página traz seção de serviços própria? decide se o nav aponta #servicos local */
+  hasServices?: boolean;
+  /** a página traz seção de diferenciais própria? idem para #diferenciais */
+  hasDifferentials?: boolean;
   bodyClass?: string;
   /** paridade: blog/obrigado/404/500 não carregam LocalBusiness hoje */
   schema?: boolean;
@@ -45,6 +49,8 @@ const {
   ogImage,
   home = false,
   hasForm = false,
+  hasServices = false,
+  hasDifferentials = false,
   bodyClass,
   schema = true,
   includeRating = true,
@@ -132,7 +138,7 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
   <body class={bodyClass}>
     <header class="header">
       <div class="container">
-        <Nav home={home} hasForm={hasForm} />
+        <Nav home={home} hasForm={hasForm} hasServices={hasServices} hasDifferentials={hasDifferentials} />
       </div>
     </header>
 

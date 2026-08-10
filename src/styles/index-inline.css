@@ -39,6 +39,24 @@
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Altura do cabeçalho. Ele é `position: fixed`, então tudo o que também
+               se prende ao topo da viewport precisa começar exatamente onde ele
+               termina. Enquanto esse número vivia só na cabeça de quem escreveu o
+               CSS, a barra do sticky CTA nasceu com `top: 0` e o cabeçalho a cobriu
+               inteira. O token é honrado por `min-height` no .header logo abaixo,
+               então não é uma suposição: é a altura real. 80px é o que o conteúdo do
+               header já mede no desktop (o botão "Orçamento Grátis" tem min-height 48
+               mais 2x16 de padding do .navbar); no mobile o min-height completa. */
+            --header-height: 80px;
+
+            /* Área morta do botão flutuante do WhatsApp: diâmetro + folga da borda.
+               O botão é fixed, logo a página inteira desliza por baixo dele — sem
+               reservar essa faixa, texto e checkbox terminam embaixo de um alvo de
+               toque que está sempre por cima. */
+            --float-size: 60px;
+            --float-inset: 30px;
+            --float-safe-area: calc(var(--float-size) + var(--float-inset));
         }
 
         * {
@@ -59,6 +77,27 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+        }
+
+        /* 1380px = 1200 do container + 2x a área do flutuante: acima disso a margem
+           lateral que sobra já é maior que o botão e o conteúdo nunca o alcança.
+           Abaixo, o container encosta na borda direita e precisa da folga — senão o
+           flutuante fica em cima do selo "Parcelamos em até 12x", do 3º depoimento e
+           dos checkboxes do formulário, que foi o que acontecia. */
+        @media (max-width: 1380px) {
+            .container {
+                /* A folga é medida da borda da viewport, e os 20px de padding já estão
+                   dentro dela — daí max() e não soma. */
+                padding-right: max(20px, var(--float-safe-area));
+            }
+
+            /* O cabeçalho está preso no topo e o flutuante no rodapé da viewport: eles
+               nunca se cruzam, então o header não paga a folga. Pagando, o menu não
+               cabia entre 769 e ~820px e o botão de orçamento quebrava em duas linhas
+               (header de 100px em vez de 80px). */
+            .header .container {
+                padding-right: 20px;
+            }
         }
 
         .section {
@@ -140,6 +179,9 @@
             box-shadow: var(--shadow);
             z-index: 1000;
             transition: var(--transition);
+            /* Garante que --header-height seja a altura de verdade, e não um palpite
+               que outro arquivo copia. */
+            min-height: var(--header-height);
         }
 
         .navbar {
@@ -282,6 +324,8 @@
             margin-top: 3rem;
         }
 
+        /* Sem `cursor: pointer`: o card não tem handler nenhum. Quem clica no meio dele
+           não acontece nada — o que é clicável é o botão "Pedir Orçamento" dentro. */
         .service-card {
             background: var(--white);
             border-radius: 12px;
@@ -289,7 +333,6 @@
             box-shadow: var(--shadow);
             transition: var(--transition);
             text-align: center;
-            cursor: pointer;
         }
 
         .service-card:hover {
@@ -520,10 +563,13 @@
             background: var(--white);
         }
 
+        /* O anel de foco sai do próprio --primary. Antes era rgba(30, 64, 175, .1),
+           que é o indigo do Tailwind da paleta v1 — a borda já tinha virado azul da
+           placa e o halo continuava do azul antigo. */
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
         }
 
         .form-control.is-valid {
@@ -627,13 +673,14 @@
             animation: spin 0.6s linear infinite;
         }
 
-        /* WhatsApp Floating Button */
+        /* WhatsApp Floating Button — tamanho e posição vêm dos tokens porque a folga
+           reservada no .container é calculada a partir deles. */
         .whatsapp-float {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
+            bottom: var(--float-inset);
+            right: var(--float-inset);
+            width: var(--float-size);
+            height: var(--float-size);
             background: #25d366;
             border-radius: 50%;
             display: flex;
@@ -791,12 +838,15 @@
                 grid-template-columns: 1fr;
             }
 
+            /* Menor e mais colado no canto: cada pixel aqui é pixel de folga que o
+               conteúdo tem que abrir mão no lado direito. */
+            :root {
+                --float-size: 52px;
+                --float-inset: 14px;
+            }
+
             .whatsapp-float {
-                bottom: 20px;
-                right: 20px;
-                width: 56px;
-                height: 56px;
-                font-size: 1.75rem;
+                font-size: 1.6rem;
             }
         }
 

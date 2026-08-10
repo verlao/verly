@@ -41,9 +41,7 @@ const ToastManager = {
                 <div class="toast-title">${this.getTitle(type)}</div>
                 <div class="toast-message">${message}</div>
             </div>
-            <button class="toast-close" aria-label="Fechar notificação">
-                <i class="fas fa-times"></i>
-            </button>
+            <button class="toast-close" aria-label="Fechar notificação">&times;</button>
         `;
         
         // Add close button handler
@@ -76,13 +74,19 @@ const ToastManager = {
     
     /**
      * Get icon for toast type
+     *
+     * Caractere, não ícone: aqui havia `<i class="fas fa-…">`, que virou retângulo
+     * vazio quando o Font Awesome saiu do site. O estado do toast já é dito três
+     * vezes — cor da borda, título ("Erro", "Atenção") e a própria mensagem —, então
+     * o desenho é redundância decorativa e não vale um path novo em icons.json. O
+     * glifo herda a cor de .toast.<tipo> .toast-icon como o <i> herdava.
      */
     getIcon(type) {
         const icons = {
-            success: '<i class="fas fa-check-circle"></i>',
-            error: '<i class="fas fa-exclamation-circle"></i>',
-            warning: '<i class="fas fa-exclamation-triangle"></i>',
-            info: '<i class="fas fa-info-circle"></i>'
+            success: '✓',
+            error: '✕',
+            warning: '!',
+            info: 'i'
         };
         return icons[type] || icons.info;
     },
@@ -157,13 +161,20 @@ const ValidationIcons = {
         
         field.classList.add('has-icon');
         
-        // Create icons
-        const successIcon = document.createElement('i');
-        successIcon.className = 'fas fa-check-circle form-validation-icon success-icon';
-        
-        const errorIcon = document.createElement('i');
-        errorIcon.className = 'fas fa-times-circle form-validation-icon error-icon';
-        
+        // Marca de validação em caractere. Eram dois <i class="fas fa-…"> por campo —
+        // 8 numa página com o formulário — e nenhum desenhava nada sem o Font Awesome:
+        // o campo ficava verde/vermelho e o selo ao lado, vazio. A cor continua vindo
+        // de .is-valid/.is-invalid, então o significado não depende do glifo.
+        const successIcon = document.createElement('span');
+        successIcon.className = 'form-validation-icon success-icon';
+        successIcon.setAttribute('aria-hidden', 'true');
+        successIcon.textContent = '✓';
+
+        const errorIcon = document.createElement('span');
+        errorIcon.className = 'form-validation-icon error-icon';
+        errorIcon.setAttribute('aria-hidden', 'true');
+        errorIcon.textContent = '✕';
+
         // Add after field
         field.parentElement.appendChild(successIcon);
         field.parentElement.appendChild(errorIcon);

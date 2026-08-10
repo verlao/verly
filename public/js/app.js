@@ -209,11 +209,13 @@ function showAlert(message, type = 'success') {
     } else {
         // Fallback to original behavior
         const alertDiv = document.getElementById('formAlert');
-        const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-        
+        // Caractere no lugar do `<i class="fas fa-…">` que não desenha mais nada sem o
+        // Font Awesome. A cor de .form-alert.success/.error já diz o estado.
+        const icon = type === 'success' ? '✓' : '!';
+
         alertDiv.innerHTML = `
             <div class="form-alert ${type}">
-                <i class="fas ${iconClass}"></i>
+                <span aria-hidden="true">${icon}</span>
                 <span>${message}</span>
             </div>
         `;
@@ -415,7 +417,12 @@ async function handleFormSubmit(event) {
     const messageField = document.getElementById('message');
     const submitBtn = document.getElementById('submitBtn');
     const btnText = document.getElementById('btnText');
-    
+    // Guardar o rótulo que o servidor renderizou (com o SVG do ícone) em vez de
+    // reescrevê-lo à mão depois do envio: a versão escrita à mão trazia um
+    // `<i class="fas fa-paper-plane">`, que desde a saída do Font Awesome não desenha
+    // nada — o botão voltava do "Enviando..." sem ícone.
+    const btnTextInitialHTML = btnText.innerHTML;
+
     // Validate all fields
     let isValid = true;
     
@@ -590,12 +597,12 @@ async function handleFormSubmit(event) {
     } finally {
         // Reset button state (use ButtonLoader if available)
         if (typeof ButtonLoader !== 'undefined') {
+            // stop() já devolve o innerHTML inteiro do botão que start() guardou.
             ButtonLoader.stop(submitBtn);
-            btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis';
         } else {
             submitBtn.disabled = false;
             submitBtn.classList.remove('btn-loading');
-            btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Orçamento Grátis';
+            btnText.innerHTML = btnTextInitialHTML;
         }
     }
 }

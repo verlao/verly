@@ -13,13 +13,24 @@ import Base from '../layouts/Base.astro';
 
 
     <!-- Blog Content -->
-    <section class="page-section">
+    {/* A página não tinha <h1> nenhum: o assunto vivia só no <title>, e cada post
+        abria em <h3> — hierarquia começando no terceiro nível. Agora o <h1> nomeia a
+        página e os posts são <h2>, sem pular degrau. A classe é `section` (e não
+        `page-section`, que morreu com o tema Bootstrap e hoje não estiliza nada) e o
+        padding do topo sai do token do cabeçalho: sem isso o <h1> nasce atrás do
+        header, que é fixo. */}
+    <section class="section" style="padding-top: calc(var(--header-height) + 3rem);">
         <div class="container">
+            <h1 class="section-title">Dicas sobre Vidros e Alumínio</h1>
+            <p class="section-subtitle">
+                Guias práticos de escolha, instalação e manutenção, escritos por quem
+                instala vidro temperado na Zona Oeste todos os dias.
+            </p>
             <div class="row">
                 <!-- Blog Post 1 -->
                 <div class="col-lg-8 mx-auto">
                     <article class="blog-post">
-                        <h3>Como escolher o vidro temperado ideal para sua casa</h3>
+                        <h2>Como escolher o vidro temperado ideal para sua casa</h2>
                         <div class="date">19 de Março, 2024</div>
                         <img src="/img/portfolio/janela.jpg" alt="Vidro temperado para residências" class="img-fluid">
                         <p>O vidro temperado é uma excelente escolha para quem busca segurança e beleza em sua residência. Neste artigo, vamos explicar os diferentes tipos de vidros temperados e como escolher o ideal para cada ambiente...</p>
@@ -27,7 +38,7 @@ import Base from '../layouts/Base.astro';
                     </article>
 
                     <article class="blog-post">
-                        <h3>Manutenção e limpeza do box blindex: guia completo</h3>
+                        <h2>Manutenção e limpeza do box blindex: guia completo</h2>
                         <div class="date">18 de Março, 2024</div>
                         <img src="/img/portfolio/box.jpg" alt="Manutenção de box blindex" class="img-fluid">
                         <p>O box blindex é uma solução prática e elegante para o banheiro, mas requer cuidados específicos para manter sua beleza e durabilidade. Aprenda as melhores práticas de limpeza e manutenção...</p>
@@ -35,7 +46,7 @@ import Base from '../layouts/Base.astro';
                     </article>
 
                     <article class="blog-post">
-                        <h3>Cortinas de vidro: tendências e dicas de instalação</h3>
+                        <h2>Cortinas de vidro: tendências e dicas de instalação</h2>
                         <div class="date">17 de Março, 2024</div>
                         <img src="/img/portfolio/cortina.jpg" alt="Cortinas de vidro modernas" class="img-fluid">
                         <p>As cortinas de vidro são uma tendência em arquitetura moderna. Descubra as últimas tendências e aprenda como escolher e instalar a cortina de vidro perfeita para seu espaço...</p>

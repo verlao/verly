@@ -13,10 +13,15 @@ export const CONTACT = {
   landline: '+552134216066',
   landlineDisplay: '(21) 3421-6066',
   email: 'contato@verlyvidracaria.com',
-  whatsappWeb:
-    'https://web.whatsapp.com/send?phone=5521987926578&text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!',
+  // Todo link de WhatsApp passa por wa.me. É ele que escolhe entre o app instalado,
+  // o WhatsApp Web e a loja de aplicativos; apontar direto para web.whatsapp.com/send
+  // manda quem não tem sessão ativa no navegador para uma tela de QR code, o que
+  // custava o clique exatamente onde a intenção de compra era maior.
+  // O sufixo do nome é a origem do clique, não a plataforma de destino.
+  whatsappFooter:
+    'https://wa.me/5521987926578?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!',
   whatsappFloat:
-    'https://web.whatsapp.com/send?phone=5521987926578&text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20vidra%C3%A7aria!',
+    'https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20vidra%C3%A7aria!',
   whatsappDirect:
     'https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20de%20vidra%C3%A7aria!',
   mapsUrl:

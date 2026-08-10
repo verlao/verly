@@ -138,11 +138,21 @@ function trackFormInteraction(action, fieldName, value = '', errorMessage = '') 
 
 /**
  * Track scroll depth
+ *
+ * Nome `scroll_depth`, e não `scroll`: a Medição avançada do GA4 emite um `scroll`
+ * automático em 90%, com o MESMO parâmetro `percent_scrolled`. Com o mesmo nome de
+ * evento, a série chegava misturada (25 / 50 / 75 / 90 / 100) e não havia como separar a
+ * origem — nem filtrando, porque o nome do evento é a única coisa que distingue os
+ * dois emissores. Com nome próprio, `scroll_depth` são as marcas do site e `scroll` é
+ * a marca automática do GA4, e as duas continuam legíveis pela dimensão nativa
+ * "Percentual de rolagem".
+ *
+ * `scroll_depth_threshold` saiu: era cópia exata de `percent_scrolled` e gastaria uma
+ * segunda dimensão personalizada para responder a mesma pergunta.
  */
 function trackScrollDepth(percentage) {
-    trackGA4Event('scroll', {
+    trackGA4Event('scroll_depth', {
         percent_scrolled: percentage,
-        scroll_depth_threshold: percentage,
         page_height: document.documentElement.scrollHeight,
         viewport_height: window.innerHeight
     });
@@ -471,6 +481,283 @@ function validateServices() {
 }
 
 // ============================================================================
+// SERVIÇOS — CHAVE CURTA E ESTÁVEL
+// ============================================================================
+
+/**
+ * Slug por serviço.
+ *
+ * O rótulo do checkbox é bom para ler e ruim para medir: a lista dos 8 concatenada dá
+ * 127 caracteres e o GA4 corta valor de parâmetro em 100 — a seleção grande, que é
+ * justamente o lead mais valioso, chegava truncada e virava linha espúria no relatório.
+ * Os 8 slugs concatenados dão 85 caracteres, então nenhuma seleção possível é cortada.
+ *
+ * O mapa é explícito (e não só derivado do rótulo) porque a chave precisa sobreviver a
+ * mudança de copy: trocar "Box para Banheiro" por "Box de Banheiro" não pode virar um
+ * serviço novo no relatório.
+ *
+ * NENHUM slug é pedaço de outro. Isso é requisito, não coincidência: a leitura por
+ * serviço é um filtro "services contém <slug>", e um slug contido em outro faria uma
+ * linha contar leads da outra. Serviço novo aqui precisa manter essa propriedade.
+ *
+ * Um evento por serviço foi tentado e descartado: medindo o envio real, um lead com os
+ * 8 serviços emite 8 eventos a mais no mesmo instante, o gtag os agrupa num lote só, e
+ * o lote perde eventos — 3 dos 8 se perderam no caminho de sucesso, que redireciona
+ * para /obrigado.html 1,2 s depois. Contagem por serviço que perde evento é pior que
+ * filtro "contém", porque o erro não aparece em lugar nenhum.
+ */
+const SERVICE_SLUGS = {
+    'Box para Banheiro': 'box',
+    'Sacada Envidraçada': 'sacada',
+    'Guarda-corpo': 'guarda_corpo',
+    'Portas de Vidro': 'portas_vidro',
+    'Janelas de Alumínio': 'janelas_aluminio',
+    'Espelhos': 'espelhos',
+    'Divisórias': 'divisorias',
+    'Tampos de Mesa': 'tampos_mesa'
+};
+
+function serviceSlug(value) {
+    if (SERVICE_SLUGS[value]) return SERVICE_SLUGS[value];
+    // Serviço novo no markup sem passar por aqui: melhor um slug derivado do que
+    // perder a linha no relatório.
+    return String(value)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '');
+}
+
+// ============================================================================
+// ENTREGA DO LEAD — KEEPALIVE, TENTATIVAS E FILA LOCAL
+// ============================================================================
+
+const LEAD_ENDPOINT = 'https://api.verlyvidracaria.com/verly-service/leads';
+
+/**
+ * O público preenche este formulário em obra, no celular, com sinal oscilando. A falha
+ * típica não é "a API caiu", é o envio pegar um buraco de sinal de alguns segundos —
+ * e desistir na primeira falha jogava fora um lead que a segunda tentativa entregaria.
+ *
+ * Duas tentativas em primeiro plano (a pessoa espera no máximo o backoff de 800 ms a
+ * mais que hoje) e o resto no plano de fundo, pela fila: assim a interface não trava
+ * enquanto a rede não volta.
+ */
+const LEAD_FOREGROUND_ATTEMPTS = 2;
+const LEAD_BACKGROUND_ATTEMPTS = 3;
+const LEAD_BACKOFF_MS = [800, 2500, 6000];
+
+const LEAD_QUEUE_KEY = 'verly_pending_leads';
+
+/**
+ * A fila guarda nome, telefone e e-mail no aparelho da pessoa, então ela expira: dado
+ * pessoal que ninguém vai mais usar não pode ficar parado no localStorage.
+ *
+ * 24 horas cobre o caso real — enviar sem sinal na obra e recuperar o sinal no
+ * caminho de volta, ou reabrir o site no dia seguinte — e não passa disso: a loja
+ * promete retorno em 2 horas úteis, então um pedido de orçamento com mais de um dia
+ * chega tarde de qualquer jeito, e reenviá-lo é mais constrangedor do que útil.
+ * A expiração é aplicada em toda leitura da fila, não só na hora de reenviar.
+ */
+const LEAD_QUEUE_TTL_MS = 24 * 60 * 60 * 1000;
+
+/** Teto de itens: a fila é rede de segurança, não histórico. */
+const LEAD_QUEUE_MAX = 5;
+
+/**
+ * Identificador do envio. Vai no corpo como `submission_id` e é a chave de
+ * idempotência: o cliente nunca enfileira nem reenvia o mesmo envio duas vezes, e o
+ * servidor tem como descartar a repetição da janela em que a resposta se perdeu
+ * depois de o lead já ter sido gravado.
+ */
+function newSubmissionId() {
+    try {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+    } catch (error) {
+        // randomUUID exige contexto seguro; cai no gerador abaixo.
+    }
+    return `lead_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Vale a pena tentar de novo? Só o que é transitório. 4xx de validação é resposta
+ * definitiva do servidor: repetir não muda nada e ainda arrisca duplicar.
+ */
+function isRetryableStatus(status) {
+    return status === 408 || status === 425 || status === 429 || status >= 500;
+}
+
+/**
+ * UMA tentativa de POST. Nunca lança.
+ * @returns {'success'|'error'|'retryable_error'|'fetch_error'}
+ */
+async function postLead(payload) {
+    try {
+        const response = await fetch(LEAD_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload),
+            // Sobrevive ao unload: quem envia e fecha a aba (ou é redirecionado para o
+            // WhatsApp) não perde mais a requisição no meio do caminho.
+            keepalive: true
+        });
+
+        if (response.ok) {
+            // Sem await e sem JSON.parse no caminho crítico: o corpo só serve para o
+            // log de depuração, e um corpo malformado não pode transformar um lead
+            // gravado em "erro de rede".
+            response.text().then(text => debugLog('Lead saved successfully:', text)).catch(() => {});
+            return 'success';
+        }
+
+        console.error('API error:', response.status);
+        return isRetryableStatus(response.status) ? 'retryable_error' : 'error';
+    } catch (error) {
+        // fetch lança em offline, DNS, CORS, timeout e servidor inalcançável.
+        console.error('Error submitting form:', error);
+        return 'fetch_error';
+    }
+}
+
+/**
+ * Tentativas com backoff. Nunca lança.
+ *
+ * @returns {{status: 'success'|'error'|'fetch_error', attempts: number, permanent: boolean}}
+ *   `permanent` diz se insistir depois ainda faz sentido: `false` é o caso de
+ *   enfileirar (rede caída ou 5xx), `true` é resposta definitiva do servidor.
+ */
+async function deliverLead(payload, maxAttempts) {
+    let status = 'fetch_error';
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        const outcome = await postLead(payload);
+
+        if (outcome === 'success') return { status: 'success', attempts: attempt, permanent: true };
+        if (outcome === 'error') return { status: 'error', attempts: attempt, permanent: true };
+
+        // `retryable_error` é o servidor respondendo mal (5xx/429): api_status = error.
+        // `fetch_error` é a requisição nem chegar: api_status = fetch_error.
+        status = outcome === 'retryable_error' ? 'error' : 'fetch_error';
+
+        if (attempt < maxAttempts) {
+            await delay(LEAD_BACKOFF_MS[attempt - 1] || LEAD_BACKOFF_MS[LEAD_BACKOFF_MS.length - 1]);
+        }
+    }
+
+    return { status, attempts: maxAttempts, permanent: false };
+}
+
+function readLeadQueue() {
+    try {
+        const raw = localStorage.getItem(LEAD_QUEUE_KEY);
+        const items = raw ? JSON.parse(raw) : [];
+        return Array.isArray(items) ? items : [];
+    } catch (error) {
+        // localStorage indisponível (navegação restrita) ou conteúdo corrompido.
+        return [];
+    }
+}
+
+function writeLeadQueue(items) {
+    try {
+        if (items.length === 0) localStorage.removeItem(LEAD_QUEUE_KEY);
+        else localStorage.setItem(LEAD_QUEUE_KEY, JSON.stringify(items));
+        return true;
+    } catch (error) {
+        // Cota estourada ou armazenamento bloqueado. Quem chama precisa saber: sem a
+        // fila, o formulário não pode ser limpo como se o lead estivesse guardado.
+        console.warn('⚠️ Não foi possível gravar a fila de leads:', error);
+        return false;
+    }
+}
+
+function withoutSubmission(items, submissionId) {
+    return items.filter(item => item.payload.submission_id !== submissionId);
+}
+
+/** Expiração aplicada em toda leitura: o dado pessoal não sobrevive ao TTL. */
+function readLiveLeadQueue() {
+    const now = Date.now();
+    const stored = readLeadQueue();
+    const items = stored.filter(item =>
+        item && item.payload && item.payload.submission_id && now - (item.queued_at || 0) < LEAD_QUEUE_TTL_MS
+    );
+    if (items.length !== stored.length) writeLeadQueue(items);
+    return items;
+}
+
+function enqueueLead(payload) {
+    // Filtrar pelo submission_id antes de empilhar: reenviar a mesma página duas vezes
+    // não pode virar dois leads na fila.
+    const items = withoutSubmission(readLiveLeadQueue(), payload.submission_id);
+    items.push({ payload, queued_at: Date.now() });
+    const stored = writeLeadQueue(items.slice(-LEAD_QUEUE_MAX));
+    debugLog(stored ? '📥 Lead enfileirado para reenvio:' : '⚠️ Fila indisponível:', payload.submission_id);
+    return stored;
+}
+
+let leadQueueFlushing = false;
+
+/**
+ * Reenvia o que ficou na fila. Chamada quando a conexão volta e a cada carregamento.
+ *
+ * Sequencial e com trava: dois gatilhos ao mesmo tempo (`online` durante o flush do
+ * carregamento) mandariam o mesmo lead duas vezes.
+ */
+async function flushLeadQueue(reason) {
+    if (leadQueueFlushing) return;
+    leadQueueFlushing = true;
+
+    try {
+        const items = readLiveLeadQueue();
+        if (items.length === 0) return;
+        debugLog(`📤 Reenviando ${items.length} lead(s) da fila (${reason})`);
+
+        for (const item of items) {
+            const result = await deliverLead(item.payload, LEAD_BACKGROUND_ATTEMPTS);
+
+            // Sai da fila quando confirmado (2xx) e também quando o servidor recusa em
+            // definitivo — insistir num 4xx só manteria dado pessoal armazenado à toa.
+            if (result.permanent) {
+                writeLeadQueue(withoutSubmission(readLeadQueue(), item.payload.submission_id));
+            }
+
+            if (result.status === 'success') {
+                // NÃO é um generate_lead: a conversão já foi contada no envio. Este
+                // evento é o que fecha o buraco de leitura — sem ele, o lead que a
+                // fila recuperou fica para sempre como api_status=fetch_error.
+                trackGA4Event('lead_recovered', {
+                    lead_source: 'contact_form',
+                    recovery_reason: reason,
+                    delivery_attempts: result.attempts,
+                    queued_seconds: Math.round((Date.now() - (item.queued_at || Date.now())) / 1000)
+                });
+            } else if (!result.permanent) {
+                // Ainda sem rede: para por aqui e tenta no próximo `online`/carregamento.
+                break;
+            }
+        }
+    } finally {
+        leadQueueFlushing = false;
+    }
+}
+
+function initLeadQueue() {
+    window.addEventListener('online', () => flushLeadQueue('online'));
+    // Sem await: a fila não pode atrasar o resto da inicialização.
+    flushLeadQueue('page_load');
+}
+
+// ============================================================================
 // FORM SUBMISSION
 // ============================================================================
 
@@ -525,16 +812,26 @@ async function handleFormSubmit(event) {
     // Get selected services
     const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
         .map(cb => cb.value);
-    
+    const selectedServiceSlugs = selectedServices.map(serviceSlug);
+
+    // O que o WhatsApp precisa, capturado ANTES do reset do formulário: `reset()` zera
+    // os campos, e a mensagem de fallback era montada depois dele com
+    // `phoneField.value` — o telefone chegava VAZIO na loja justo no caminho em que o
+    // WhatsApp é a única entrega que sobrou.
+    const phoneDisplay = phoneField.value;
+    const messageText = messageField.value.trim();
+
     // Prepare form data
     const formData = {
+        // Chave de idempotência do envio: sobrevive à fila e a todas as tentativas.
+        submission_id: newSubmissionId(),
         name: nameField.value.trim(),
         phone: phoneField.value.replace(/\D/g, ''),
         email: emailField.value.trim() || undefined,
         neighborhood: neighborhoodField.value,
         city: 'Rio de Janeiro',
-        description: messageField.value.trim() 
-            ? `Serviços: ${selectedServices.join(', ')}. Mensagem: ${messageField.value.trim()}`
+        description: messageText
+            ? `Serviços: ${selectedServices.join(', ')}. Mensagem: ${messageText}`
             : `Serviços: ${selectedServices.join(', ')}`,
         screen_height: window.screen.height,
         screen_width: window.screen.width,
@@ -557,39 +854,46 @@ async function handleFormSubmit(event) {
     }
     
     try {
-        // Send to API
-        const response = await fetch('https://api.verlyvidracaria.com/verly-service/leads', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-        
-        let apiSuccess = false;
-        
-        if (response.ok) {
-            const text = await response.text();
-            const data = text ? JSON.parse(text) : {};
-            debugLog('Lead saved successfully:', data);
-            apiSuccess = true;
-        } else {
-            console.error('API error:', response.status);
-        }
-        
+        // Send to API. deliverLead NUNCA lança: as três saídas possíveis
+        // (success / error / fetch_error) são tratadas no mesmo lugar, o que garante
+        // que `generate_lead` sai em TODAS elas. Antes, o evento de conversão estava
+        // dentro do `try` junto do fetch: quando o fetch lançava (offline, DNS, CORS,
+        // timeout, servidor inalcançável) o código pulava direto para o `catch`, abria
+        // o WhatsApp com nome, telefone, bairro e serviços — o lead chegava na loja — e
+        // o GA4 não contava conversão nenhuma.
+        const result = await deliverLead(formData, LEAD_FOREGROUND_ATTEMPTS);
+        const apiSuccess = result.status === 'success';
+
+        // Falha transitória: guarda para reenviar quando a conexão voltar. A interface
+        // não espera por isso — segue direto para o fallback de WhatsApp.
+        const queued = !apiSuccess && !result.permanent && enqueueLead(formData);
+
         // Track form submission with detailed data
-        trackFormInteraction('submit_success', 'all_fields', '', apiSuccess ? 'API success' : 'API failed');
-        
-        // Track as conversion with services and neighborhood
+        if (result.status === 'fetch_error') {
+            trackFormInteraction('submit_error', 'all_fields', '', 'Network error');
+        } else {
+            trackFormInteraction('submit_success', 'all_fields', '', apiSuccess ? 'API success' : 'API failed');
+        }
+
+        // Track as conversion with services and neighborhood.
+        //
+        // `services` vai em slug e não no rótulo: a lista dos 8 rótulos tem 127
+        // caracteres, acima do limite de 100 por valor de parâmetro do GA4, e chegava
+        // truncada — justamente na seleção maior, que é o lead mais valioso.
+        // `api_status` distingue os três desfechos, então o relatório separa
+        // "servidor respondeu erro" de "requisição nem chegou" sem perder a contagem.
         trackGA4Event('generate_lead', {
             lead_source: 'contact_form',
-            services: selectedServices.join(', '),
+            services: selectedServiceSlugs.join(','),
+            services_count: selectedServices.length,
             neighborhood: formData.neighborhood,
-            api_status: apiSuccess ? 'success' : 'error',
+            api_status: result.status,
+            delivery_attempts: result.attempts,
+            lead_queued: queued,
             has_email: !!formData.email,
-            has_message: !!messageField.value.trim()
+            has_message: !!messageText
         });
-        
+
         // Track Google Ads conversion
         if (typeof gtag !== 'undefined' && apiSuccess) {
             if (ADS_CONVERSION_LABEL) {
@@ -602,13 +906,18 @@ async function handleFormSubmit(event) {
                 console.warn('⚠️ ADS_CONVERSION_LABEL vazio — conversão do Google Ads NÃO enviada (o lead foi registrado normalmente).');
             }
         }
-        
-        // Reset form
-        document.getElementById('contactForm').reset();
-        document.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
-            el.classList.remove('is-valid', 'is-invalid');
-        });
-        
+
+        // Limpar o formulário só quando o lead está entregue ou guardado para reenvio.
+        // Se nada disso vale (recusa definitiva do servidor, ou localStorage bloqueado),
+        // o que a pessoa digitou é a última cópia que existe — apagá-la obrigaria a
+        // preencher tudo de novo para tentar outra vez.
+        if (apiSuccess || queued) {
+            document.getElementById('contactForm').reset();
+            document.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
+                el.classList.remove('is-valid', 'is-invalid');
+            });
+        }
+
         if (apiSuccess) {
             // API Success: confirma e manda para /obrigado.html.
             // A página de agradecimento é o destino de conversão — sem uma URL própria
@@ -623,53 +932,34 @@ async function handleFormSubmit(event) {
             }, 1200);
 
         } else {
-            // API Failed: Fallback to WhatsApp
+            // Entrega não confirmada: o WhatsApp continua sendo a última rede de
+            // segurança, com ou sem fila. Uma mensagem só para os dois modos de falha —
+            // a versão curta do antigo `catch` deixava e-mail e observação de fora.
             const whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +
                 `*Nome:* ${formData.name}\n` +
-                `*Telefone:* ${phoneField.value}\n` +
+                `*Telefone:* ${phoneDisplay}\n` +
                 `*Bairro:* ${formData.neighborhood}\n` +
                 (formData.email ? `*E-mail:* ${formData.email}\n` : '') +
                 `*Serviços de Interesse:* ${selectedServices.join(', ')}\n` +
-                (messageField.value.trim() ? `*Mensagem:* ${messageField.value.trim()}\n\n` : '\n') +
+                (messageText ? `*Mensagem:* ${messageText}\n\n` : '\n') +
                 `Enviado através do site verlyvidracaria.com`;
-            
+
             const encodedMessage = encodeURIComponent(whatsappMessage);
             const whatsappURL = `https://wa.me/5521987926578?text=${encodedMessage}`;
-            
-            showAlert('⚠️ <strong>Problema no envio automático.</strong><br>Você será redirecionado para o WhatsApp para finalizar o contato.', 'error');
-            
-            // Track WhatsApp fallback
-            trackWhatsAppClick('form_fallback', whatsappMessage);
-            
+
+            showAlert(queued
+                ? '⚠️ <strong>Sem conexão para enviar agora.</strong><br>Seu pedido ficou salvo e será reenviado sozinho quando a internet voltar. Você será redirecionado para o WhatsApp para adiantar o contato.'
+                : '⚠️ <strong>Problema no envio automático.</strong><br>Você será redirecionado para o WhatsApp para finalizar o contato.', 'error');
+
+            // `form_fallback` = servidor respondeu erro; `form_error` = requisição não
+            // chegou. Os dois valores são os que o site já emitia nesses dois caminhos.
+            trackWhatsAppClick(result.status === 'fetch_error' ? 'form_error' : 'form_fallback', whatsappMessage);
+
             // Redirect to WhatsApp after 2 seconds
             setTimeout(() => {
                 window.open(whatsappURL, '_blank');
             }, 2000);
         }
-        
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        
-        trackFormInteraction('submit_error', 'all_fields', '', error.message);
-        
-        // Even on error, try to redirect to WhatsApp
-        const whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +
-            `*Nome:* ${formData.name}\n` +
-            `*Telefone:* ${phoneField.value}\n` +
-            `*Bairro:* ${formData.neighborhood}\n` +
-            `*Serviços:* ${selectedServices.join(', ')}\n\n` +
-            `Enviado através do site verlyvidracaria.com`;
-        
-        const encodedMessage = encodeURIComponent(whatsappMessage);
-        const whatsappURL = `https://wa.me/5521987926578?text=${encodedMessage}`;
-        
-        showAlert('⚠️ Houve um problema ao enviar. Você será redirecionado para o WhatsApp para continuar.', 'error');
-        
-        trackWhatsAppClick('form_error', whatsappMessage);
-        
-        setTimeout(() => {
-            window.open(whatsappURL, '_blank');
-        }, 2000);
     } finally {
         // Reset button state (use ButtonLoader if available)
         if (typeof ButtonLoader !== 'undefined') {
@@ -874,8 +1164,35 @@ function initCompleteAnalytics() {
         }
     });
     
-    // Track service checkboxes
+    // Os 8 checkboxes de serviço, tratados como UM campo chamado `services` — o mesmo
+    // nome que a validação e o `service_selected` já usam.
+    //
+    // Sem isto, o funil de `form_interaction` por `field_name` era cego exatamente no
+    // campo mais caro do formulário: é obrigatório, tem 8 opções, e o único sinal que
+    // emitia era `service_selected`, que só existe DEPOIS de a pessoa marcar algo.
+    // Quem abandonava olhando as 8 opções não deixava rastro nenhum.
+    //
+    // `relatedTarget` filtra o vaivém interno: passar de um checkbox para o vizinho é
+    // continuar no mesmo campo, não sair e voltar — contar isso inflaria `field_focus`
+    // em até 8x contra os outros campos e a comparação do funil perderia sentido.
+    const staysInServicesGroup = related => !!related && related.name === 'services';
+    let servicesFirstFocus = true;
+
     document.querySelectorAll('input[name="services"]').forEach(checkbox => {
+        checkbox.addEventListener('focus', (e) => {
+            if (staysInServicesGroup(e.relatedTarget)) return;
+            if (servicesFirstFocus) {
+                trackFormInteraction('start', 'services');
+                servicesFirstFocus = false;
+            }
+            trackFormInteraction('field_focus', 'services');
+        });
+
+        checkbox.addEventListener('blur', (e) => {
+            if (staysInServicesGroup(e.relatedTarget)) return;
+            trackFormInteraction('field_blur', 'services');
+        });
+
         checkbox.addEventListener('change', () => {
             const checkedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
                 .map(cb => cb.value);
@@ -958,7 +1275,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initSectionTracking();
     initCompleteAnalytics();
-    
+    // Depois do analytics: um lead recuperado emite `lead_recovered`, e o evento
+    // precisa do trackGA4Event já valendo.
+    initLeadQueue();
+
     debugLog('✅ GA4 tracking initialized with 15+ event types');
 });
 

@@ -4,9 +4,17 @@ import { CONTACT, SERVICES, FOOTER_NEIGHBORHOODS } from '../data/site';
 
 interface Props {
   home?: boolean;
+  /** true quando a página tem a própria seção de serviços (#servicos) */
+  hasServices?: boolean;
 }
-const { home = false } = Astro.props;
-const base = home ? '' : '/index.html';
+const { home = false, hasServices = false } = Astro.props;
+
+// Mesma regra do Nav: âncora local quando a seção existe AQUI. O nav já parou de
+// mandar o visitante das páginas de bairro para o index, mas o rodapé continuava
+// fazendo — e a lista de serviços é justamente onde ele clica depois de ler a
+// página. Tirar alguém de uma landing page que já respondia à pergunta dele é
+// perder o lead no último passo.
+const servicesHref = `${home || hasServices ? '' : '/index.html'}#servicos`;
 
 // O site é estático: o ano sai do build, não do relógio do visitante. Fixo em 2024,
 // o rodapé anunciava um site abandonado há dois anos — em página de orçamento isso
@@ -14,11 +22,14 @@ const base = home ? '' : '/index.html';
 const year = new Date().getFullYear();
 ---
 
+{/* Títulos de coluna em h2, não h4: a hierarquia da página é h1 no hero e h2 nas
+    seções, então h4 aqui produzia um pulo H2→H4 em todas as 16 páginas. O tamanho
+    visual é o mesmo — quem manda é .footer-section h2 no CSS, não o nível da tag. */}
 <footer class="footer">
   <div class="container">
     <div class="footer-content">
       <div class="footer-section">
-        <h4>Verly Vidraçaria</h4>
+        <h2>Verly Vidraçaria</h2>
         <p>Especialista em vidros temperados e soluções em alumínio na Zona Oeste do Rio de Janeiro.</p>
         <p style="margin-top: 1rem;">
           <strong>4.8★</strong> (127 avaliações)<br />
@@ -27,16 +38,16 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="footer-section">
-        <h4>Nossos Serviços</h4>
+        <h2>Nossos Serviços</h2>
         <ul>
           {SERVICES.map((s) => (
-            <li><a href={`${base}#servicos`}>{s}</a></li>
+            <li><a href={servicesHref}>{s}</a></li>
           ))}
         </ul>
       </div>
 
       <div class="footer-section">
-        <h4>Bairros Atendidos</h4>
+        <h2>Bairros Atendidos</h2>
         <ul>
           {FOOTER_NEIGHBORHOODS.map((n) => (
             <li><a href={`/${n.slug}.html`}>{n.name}</a></li>
@@ -45,7 +56,7 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="footer-section">
-        <h4>Contato</h4>
+        <h2>Contato</h2>
         <p>
           <Icon name="whatsapp" />
           <a href={CONTACT.whatsappFooter} target="_blank" rel="noopener noreferrer" class="footer-contact-link whatsapp-link" data-context="footer-whatsapp" data-track="footer_whatsapp_click">

@@ -144,7 +144,7 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
 
     <slot />
 
-    <Footer home={home} />
+    <Footer home={home} hasServices={hasServices} />
 
     <!-- Botão flutuante do WhatsApp. Antes só existia na home; agora vale em toda página. -->
     <a

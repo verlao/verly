@@ -9,52 +9,32 @@
  * - Mensagens contextualizadas aumentam engajamento em 40%
  */
 
+/**
+ * Todo evento daqui passa pelo trackGA4Event do app.js: é ele que carimba
+ * page_type/neighborhood_page e decide se o log sai. Um lugar só enriquece, então
+ * nenhum evento escapa sem o contexto da página.
+ *
+ * app.js carrega DEPOIS deste arquivo (ver a ordem em Base.astro), mas tudo aqui só
+ * dispara a partir do DOMContentLoaded, quando window.VerlyAnalytics já existe.
+ *
+ * Prefixo `cta` porque os três scripts de /public são clássicos e dividem o MESMO
+ * escopo global — um `track`/`log` solto aqui esbarraria no vizinho sem avisar.
+ */
+function ctaTrack(eventName, eventParams) {
+    if (window.VerlyAnalytics) {
+        window.VerlyAnalytics.track(eventName, eventParams);
+    } else {
+        console.warn('⚠️ VerlyAnalytics indisponível — evento não enviado:', eventName);
+    }
+}
+
+function ctaLog(...args) {
+    if (window.VerlyAnalytics) window.VerlyAnalytics.log(...args);
+}
+
 const WhatsAppCTA = {
     phone: '5521987926578',
-    
-    /**
-     * Detectar informações do dispositivo e navegador
-     */
-    getDeviceInfo() {
-        const ua = navigator.userAgent;
-        
-        // Detectar tipo de dispositivo
-        const isIOS = /iPhone|iPad|iPod/i.test(ua);
-        const isAndroid = /Android/i.test(ua);
-        const isMobile = isIOS || isAndroid || /Mobile/i.test(ua);
-        
-        let deviceType = 'Desktop';
-        if (isIOS) deviceType = 'iOS';
-        else if (isAndroid) deviceType = 'Android';
-        else if (isMobile) deviceType = 'Mobile';
-        
-        // Detectar navegador
-        let browser = 'Unknown';
-        if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
-        else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
-        else if (ua.includes('Firefox')) browser = 'Firefox';
-        else if (ua.includes('Edg')) browser = 'Edge';
-        else if (ua.includes('Opera') || ua.includes('OPR')) browser = 'Opera';
-        
-        // Detectar sistema operacional
-        let os = 'Unknown';
-        if (ua.includes('Windows')) os = 'Windows';
-        else if (ua.includes('Mac')) os = 'macOS';
-        else if (ua.includes('Linux')) os = 'Linux';
-        else if (isIOS) os = 'iOS';
-        else if (isAndroid) os = 'Android';
-        
-        return {
-            deviceType,
-            browser,
-            os,
-            isMobile,
-            isIOS,
-            isAndroid,
-            userAgent: ua
-        };
-    },
-    
+
     /**
      * Link do WhatsApp com a mensagem já preenchida.
      *
@@ -202,14 +182,14 @@ const WhatsAppCTA = {
         window.addEventListener('scroll', schedule, { passive: true });
         window.addEventListener('resize', schedule);
         test();
-        console.log('✓ Flutuante recua quando há conteúdo embaixo dele');
+        ctaLog('✓ Flutuante recua quando há conteúdo embaixo dele');
     },
 
     /**
      * Inicializar otimizações de CTA
      */
     init() {
-        console.log('🚀 WhatsApp CTA Optimization iniciado');
+        ctaLog('🚀 WhatsApp CTA Optimization iniciado');
 
         // Os links que o Astro renderiza já saem prontos (src/data/site.ts). O que
         // existia aqui era um passe reescrevendo TODOS eles para web.whatsapp.com;
@@ -229,7 +209,7 @@ const WhatsAppCTA = {
         // 4. Track conversions
         this.trackConversions();
 
-        console.log('✅ Otimizações aplicadas');
+        ctaLog('✅ Otimizações aplicadas');
     },
 
     /**
@@ -280,7 +260,7 @@ const WhatsAppCTA = {
             lastScroll = currentScroll;
         });
         
-        console.log('✓ Sticky CTA adicionado');
+        ctaLog('✓ Sticky CTA adicionado');
     },
 
     /**
@@ -324,7 +304,7 @@ const WhatsAppCTA = {
             }
         });
         
-        console.log(`✓ ${addedCount} CTAs de serviços adicionados (incluindo Espelhos e Divisórias)`);
+        ctaLog(`✓ ${addedCount} CTAs de serviços adicionados (incluindo Espelhos e Divisórias)`);
     },
 
     /**
@@ -360,76 +340,76 @@ const WhatsAppCTA = {
             tooltip.classList.remove('visible');
         });
         
-        console.log('✓ Botão flutuante melhorado');
+        ctaLog('✓ Botão flutuante melhorado');
     },
 
     /**
-     * Track conversions para analytics com informações de dispositivo
+     * Track conversions para analytics
+     *
+     * O evento `page_view_with_device` que saía daqui no carregamento foi removido:
+     * ele existia só para carregar device_type/browser/os, que são atributo do acesso
+     * e não evento próprio — e o GA4 já publica os três como dimensões nativas
+     * (Categoria do dispositivo, Navegador, Sistema operacional) em TODO hit. Como
+     * evento separado ele só inflava a contagem e não cruzava com nada. Por isso os
+     * três também saíram dos eventos abaixo: eram cópia do que o GA4 mede sozinho.
      */
     trackConversions() {
-        const deviceInfo = this.getDeviceInfo();
-        
-        // Enviar informações de dispositivo para GA4 no carregamento da página
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'page_view_with_device', {
-                device_type: deviceInfo.deviceType,
-                browser: deviceInfo.browser,
-                os: deviceInfo.os,
-                is_mobile: deviceInfo.isMobile,
-                page_location: window.location.href
-            });
-            
-            console.log('📊 Device info enviado para GA4:', deviceInfo);
-        }
-        
-        // Rastrear cliques em WhatsApp
+        /**
+         * ÚNICO emissor de whatsapp_click do site. O app.js também ligava um ouvinte em
+         * cada `a[href*="wa.me"]`, então um clique saía como DOIS whatsapp_click com
+         * parâmetros disjuntos — um só com `click_source`, outro só com `context` — o que
+         * dobra o volume e joga metade de qualquer tabela por origem em "(não definido)".
+         *
+         * Ficou o delegado, e não o por elemento, porque ele alcança os CTAs criados em
+         * runtime (a sticky e os 6 dos cards de serviço) e lê o `data-context` que o
+         * markup já traz. Os DOIS parâmetros continuam saindo: `context` é a origem
+         * nomeada na página, `click_source` é a categoria que o ouvinte do app.js
+         * calculava — nada se perde na consolidação.
+         */
         document.addEventListener('click', (e) => {
             const target = e.target.closest('a[href*="whatsapp"], a[href*="wa.me"]');
-            
+
             if (target) {
                 const context = target.dataset.context || 'unknown';
-                const buttonText = target.textContent.trim();
-                
-                // Google Analytics 4
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'whatsapp_click', {
-                        context: context,
-                        button_text: buttonText,
-                        device_type: deviceInfo.deviceType,
-                        browser: deviceInfo.browser,
-                        os: deviceInfo.os,
-                        page_location: window.location.href,
-                        timestamp: new Date().toISOString()
-                    });
-                }
-                
-                console.log(`📊 WhatsApp click tracked: ${context} (${deviceInfo.deviceType})`);
+                const clickSource = target.classList.contains('whatsapp-float')
+                    ? 'floating_button'
+                    : target.closest('.hero')
+                        ? 'hero_cta'
+                        : 'inline_button';
+
+                ctaTrack('whatsapp_click', {
+                    context: context,
+                    click_source: clickSource,
+                    button_text: target.textContent.trim()
+                });
+
+                ctaLog(`📊 WhatsApp click tracked: ${context} (${clickSource})`);
             }
         });
-        
-        // Rastrear cliques em links com data-track (telefone, endereço, email)
+
+        // Rastrear cliques em links com data-track (endereço, email)
         document.addEventListener('click', (e) => {
             const target = e.target.closest('[data-track]');
-            
+
             if (target) {
+                const href = target.getAttribute('href') || '';
+                // Um clique = um evento. WhatsApp já sai como whatsapp_click e telefone
+                // como phone_click (app.js); sem este corte, um data-track nesses links
+                // faz o mesmo clique contar duas vezes — era o caso do WhatsApp e do
+                // telefone do rodapé.
+                if (/wa\.me|whatsapp/.test(href) || href.startsWith('tel:')) return;
+
                 const trackEvent = target.dataset.track;
-                const linkType = target.getAttribute('href')?.split(':')[0] || 'unknown';
+                const linkType = href.split(':')[0] || 'unknown';
                 const linkText = target.textContent.trim();
-                
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'contact_link_click', {
-                        event_name: trackEvent,
-                        link_type: linkType,
-                        link_text: linkText,
-                        device_type: deviceInfo.deviceType,
-                        browser: deviceInfo.browser,
-                        os: deviceInfo.os,
-                        page_location: window.location.href,
-                        timestamp: new Date().toISOString()
-                    });
-                }
-                
-                console.log(`📊 Contact link tracked: ${trackEvent} (${linkType}) - ${deviceInfo.deviceType}`);
+
+                ctaTrack('contact_link_click', {
+                    event_name: trackEvent,
+                    link_type: linkType,
+                    link_text: linkText
+                });
+
+                ctaLog(`📊 Contact link tracked: ${trackEvent} (${linkType})`);
             }
         });
     }

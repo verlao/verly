@@ -21,6 +21,19 @@ interface Props {
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
+  /**
+   * Tipo de página no analytics. Desce para `<body data-page-type>` — o mesmo caminho
+   * que home/hasForm/hasServices já usam — e de lá app.js carimba TODO evento, que é
+   * o que permite perguntar "as páginas de bairro convertem melhor que a home?".
+   *
+   * Vem daqui e não de regex em window.location porque o Astro já sabe o tipo quando
+   * gera o HTML, e as 11 páginas de bairro nascem de um único [slug].astro.
+   * Obrigatório de propósito: o build quebra se uma página nova esquecer, o que é
+   * melhor que descobrir o buraco no relatório meses depois.
+   */
+  pageType: 'home' | 'bairro' | 'blog' | 'obrigado' | 'erro';
+  /** nome do bairro; só as páginas de bairro preenchem */
+  neighborhoodPage?: string;
   /** true só na home — decide se as âncoras do nav são locais ou saltam pro index */
   home?: boolean;
   /** a página traz o formulário? decide se o nav aponta #contato local */
@@ -47,6 +60,8 @@ const {
   ogTitle,
   ogDescription,
   ogImage,
+  pageType,
+  neighborhoodPage,
   home = false,
   hasForm = false,
   hasServices = false,
@@ -58,6 +73,12 @@ const {
 } = Astro.props;
 
 const canonical = `${SITE_URL}${canonicalPath}`;
+
+// Gate de build: sem pageType, todo evento da página sairia como 'unknown' e a
+// segmentação por tipo de página morreria em silêncio.
+if (!pageType) {
+  throw new Error(`Base.astro: pageType é obrigatório (página ${canonicalPath}).`);
+}
 
 // O thumb de compartilhamento sai da MESMA imagem que a página exibe. Antes era
 // `/img/logo.png` fixo: trocar a foto da loja não mudava o preview no WhatsApp, e o
@@ -103,15 +124,36 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
 
     <!-- Google Analytics 4 + Google Ads (carregado verbatim do site atual) -->
     <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS.ga4}`}></script>
-    <script is:inline define:vars={{ ga4: ANALYTICS.ga4, ads: ANALYTICS.googleAds }}>
+    {/* Duas coisas neste bloco não são óbvias, e o comentário fica AQUI (comentário
+        Astro não vai para o HTML) porque este script viaja em todas as 16 páginas.
+
+        1. `window.gtag`: `define:vars` faz o Astro embrulhar o script num IIFE, então
+           `function gtag()` ficava presa na closure e window.gtag nunca existia.
+           Resultado: todo `typeof gtag !== 'undefined'` dos scripts de /public dava
+           falso e NENHUM evento customizado saía do site — só o page_view automático.
+        2. page_type/neighborhood_page no config, além do trackGA4Event: quem manda o
+           page_view é a biblioteca (send_page_view), e parâmetro de config é o único
+           jeito de ele sair com o contexto da página. Esse evento é o denominador de
+           toda taxa de conversão, então é o que mais precisa da segmentação. */}
+    <script
+      is:inline
+      define:vars={{
+        ga4: ANALYTICS.ga4,
+        ads: ANALYTICS.googleAds,
+        pageType,
+        neighborhoodPage: neighborhoodPage ?? '',
+      }}
+    >
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
+      window.gtag = function gtag() {
+        window.dataLayer.push(arguments);
+      };
       gtag('js', new Date());
       gtag('config', ga4, {
         send_page_view: true,
         cookie_flags: 'SameSite=None;Secure',
+        page_type: pageType,
+        ...(neighborhoodPage ? { neighborhood_page: neighborhoodPage } : {}),
       });
       gtag('config', ads);
     </script>
@@ -135,7 +177,11 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
     <slot name="head" />
   </head>
 
-  <body class={bodyClass}>
+  <body
+    class={bodyClass}
+    data-page-type={pageType}
+    data-neighborhood-page={neighborhoodPage || undefined}
+  >
     <header class="header">
       <div class="container">
         <Nav home={home} hasForm={hasForm} hasServices={hasServices} hasDifferentials={hasDifferentials} />

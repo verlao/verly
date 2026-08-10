@@ -21,40 +21,92 @@ const ADS_CONVERSION_LABEL = '';
 // ============================================================================
 
 /**
+ * Contexto da página, lido UMA vez do <body data-page-type> que o Base.astro escreve
+ * em tempo de build. Vai em todo evento: sem isso não há como responder "as páginas
+ * de bairro convertem melhor que a home?", porque nenhum evento dizia onde aconteceu.
+ *
+ * Vem do servidor, e não de regex em window.location, porque o Astro já sabe o tipo
+ * da página quando gera o HTML — as 11 páginas de bairro saem de um [slug].astro só,
+ * e uma URL nova não pode virar dado errado.
+ */
+const PAGE_CONTEXT = (() => {
+    const data = document.body ? document.body.dataset : {};
+    if (!data.pageType) {
+        console.warn('⚠️ <body data-page-type> ausente — eventos sairão como page_type=unknown');
+    }
+    const context = { page_type: data.pageType || 'unknown' };
+    // Ausente (não vazio) fora das páginas de bairro: parâmetro vazio ainda ocupa
+    // linha no relatório.
+    if (data.neighborhoodPage) context.neighborhood_page = data.neighborhoodPage;
+    return context;
+})();
+
+/**
+ * Interruptor do log de evento. Ligado por `?analytics_debug=1` na URL (vale para o
+ * acesso) ou por `localStorage.setItem('verly_debug', '1')` (fica no aparelho).
+ * Desligado, o visitante não vê nada no console; console.warn/console.error de
+ * condição anormal continuam saindo sempre.
+ */
+const ANALYTICS_DEBUG = (() => {
+    try {
+        if (new URLSearchParams(window.location.search).has('analytics_debug')) return true;
+        return localStorage.getItem('verly_debug') === '1';
+    } catch (error) {
+        // localStorage lança em navegação restrita/iframe de terceiro.
+        return false;
+    }
+})();
+
+function debugLog(...args) {
+    if (ANALYTICS_DEBUG) console.log(...args);
+}
+
+/**
  * Track events to Google Analytics 4
  * @param {string} eventName - GA4 event name (use snake_case)
  * @param {object} eventParams - Event parameters
  */
 function trackGA4Event(eventName, eventParams = {}) {
-    if (typeof gtag !== 'undefined') {
-        // Add common parameters to all events
-        const enrichedParams = {
-            ...eventParams,
-            timestamp: new Date().toISOString(),
-            page_location: window.location.href,
-            page_title: document.title
-        };
-        
-        gtag('event', eventName, enrichedParams);
-        console.log('📊 GA4 Event:', eventName, enrichedParams);
-    } else {
+    if (typeof gtag === 'undefined') {
         console.warn('⚠️ gtag not loaded yet');
+        return;
     }
+    // Sem `timestamp`: o GA4 datava o hit no servidor de qualquer jeito, então o
+    // parâmetro não respondia nenhuma pergunta e gastava cota de dimensão
+    // personalizada em TODO evento.
+    // PAGE_CONTEXT por último: nenhum chamador sobrescreve o tipo da página.
+    const enrichedParams = {
+        ...eventParams,
+        page_location: window.location.href,
+        page_title: document.title,
+        ...PAGE_CONTEXT
+    };
+
+    gtag('event', eventName, enrichedParams);
+    debugLog('📊 GA4 Event:', eventName, enrichedParams);
 }
 
+// O page_view customizado que existia aqui foi removido: junto com o
+// `send_page_view: true` do Base.astro ele contava TODO acesso duas vezes, e
+// pageview é o denominador de toda taxa de conversão. Ficou o automático do GA4,
+// que já traz page_location, page_title e page_referrer.
+// Do que o customizado mandava a mais, nada se perde: user_agent, device_type e
+// screen_resolution são dimensões que o GA4 coleta sozinho em todo hit, e page_path
+// sai de page_location. Só viewport_size não tem equivalente nativo — e não vale uma
+// dimensão personalizada, já que "Resolução da tela" e "Categoria do dispositivo"
+// respondem a mesma pergunta.
+
 /**
- * Track page view (custom implementation)
+ * Exposto para os outros dois scripts de /public. Eles carregam ANTES deste, mas só
+ * chamam depois do DOMContentLoaded, quando isto já existe. Um lugar só enriquece o
+ * evento e um lugar só decide se o log sai.
  */
-function trackPageView() {
-    trackGA4Event('page_view', {
-        page_path: window.location.pathname,
-        page_referrer: document.referrer || 'direct',
-        user_agent: navigator.userAgent,
-        screen_resolution: `${window.screen.width}x${window.screen.height}`,
-        viewport_size: `${window.innerWidth}x${window.innerHeight}`,
-        device_type: getDeviceType()
-    });
-}
+window.VerlyAnalytics = {
+    track: trackGA4Event,
+    log: debugLog,
+    debug: ANALYTICS_DEBUG,
+    pageContext: PAGE_CONTEXT
+};
 
 /**
  * Track CTA button clicks
@@ -121,10 +173,19 @@ function trackServiceClick(serviceName, servicePosition) {
 
 /**
  * Track WhatsApp interaction
+ *
+ * Só os desvios para o WhatsApp que NÃO são clique (fallback e erro do formulário)
+ * passam por aqui. O clique em si tem um emissor só, o ouvinte delegado do
+ * whatsapp-cta.js — ver o comentário em initCompleteAnalytics.
+ *
+ * `context` e `click_source` saem com o mesmo valor de propósito: o evento tem UM
+ * formato só, então uma tabela por qualquer um dos dois parâmetros mostra o
+ * fallback junto dos cliques em vez de "(não definido)".
  */
 function trackWhatsAppClick(source, message = '') {
     trackGA4Event('whatsapp_click', {
-        click_source: source, // 'floating_button', 'hero_cta', 'form_success', 'form_fallback'
+        context: source, // 'form_fallback', 'form_error'
+        click_source: source,
         has_pre_filled_message: !!message,
         message_length: message ? message.length : 0
     });
@@ -138,6 +199,21 @@ function trackPhoneClick(phoneNumber, location) {
         phone_number: phoneNumber,
         click_location: location // 'header', 'contact_section', 'footer'
     });
+}
+
+/**
+ * O clique neste link já tem um evento mais específico que navigation_click?
+ *
+ * navigation_click é para navegação. Contato tem evento próprio: whatsapp_click
+ * (wa.me), phone_click (tel:) e contact_link_click (data-track, hoje e-mail e
+ * endereço). Sem essa regra o mesmo clique aparecia em dois ou três eventos.
+ */
+function hasDedicatedEvent(link) {
+    const href = link.getAttribute('href') || '';
+    return /wa\.me|whatsapp/.test(href)
+        || href.startsWith('tel:')
+        || href.startsWith('mailto:')
+        || link.hasAttribute('data-track');
 }
 
 /**
@@ -495,7 +571,7 @@ async function handleFormSubmit(event) {
         if (response.ok) {
             const text = await response.text();
             const data = text ? JSON.parse(text) : {};
-            console.log('Lead saved successfully:', data);
+            debugLog('Lead saved successfully:', data);
             apiSuccess = true;
         } else {
             console.error('API error:', response.status);
@@ -689,23 +765,21 @@ function initSectionTracking() {
 // ============================================================================
 
 function initCompleteAnalytics() {
-    // Track page load
-    trackPageView();
-    
+    // O page_view sai do gtag('config') no Base.astro, não daqui.
+
     // Track time on page milestones
     setTimeout(() => trackEngagementMilestone('time_30s', 30), 30000);
     setTimeout(() => trackEngagementMilestone('time_60s', 60), 60000);
     setTimeout(() => trackEngagementMilestone('time_120s', 120), 120000);
-    
-    // Track WhatsApp clicks
-    document.querySelectorAll('a[href*="wa.me"], .whatsapp-float').forEach(element => {
-        element.addEventListener('click', () => {
-            const source = element.classList.contains('whatsapp-float') ? 'floating_button' : 
-                          element.closest('.hero') ? 'hero_cta' : 'inline_button';
-            trackWhatsAppClick(source);
-        });
-    });
-    
+
+    // O clique em WhatsApp era rastreado DUAS vezes: este arquivo ligava um ouvinte em
+    // cada `a[href*="wa.me"]` e o whatsapp-cta.js ligava um ouvinte delegado no
+    // document, então cada clique mandava dois `whatsapp_click` com parâmetros
+    // diferentes — e whatsapp_click é o proxy de conversão mais usado do site.
+    // Ficou o delegado: ele lê o `data-context` que o markup já traz (floating-button,
+    // sticky-cta, service-*, footer-whatsapp, thank-you-page), o que é mais preciso que
+    // o hero/inline deduzido aqui, e alcança os CTAs criados em runtime.
+
     // Track ALL CTA clicks with detailed info
     document.querySelectorAll('.btn-primary, .btn-success, .btn-secondary').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -739,6 +813,10 @@ function initCompleteAnalytics() {
     
     // Track footer links
     document.querySelectorAll('.footer a').forEach(link => {
+        // O rodapé mistura navegação (serviços, bairros) com links de contato, e os de
+        // contato já têm evento próprio. Sem este corte, um clique no WhatsApp do rodapé
+        // saía como whatsapp_click + contact_link_click + navigation_click.
+        if (hasDedicatedEvent(link)) return;
         link.addEventListener('click', () => {
             const linkText = link.textContent.trim();
             const linkTarget = link.getAttribute('href');
@@ -819,8 +897,13 @@ function initSmoothScroll() {
             
             e.preventDefault();
             smoothScrollTo(href);
-            
-            // Track internal navigation
+
+            // Só reporta o que mais ninguém reportou: os itens de menu e os links do
+            // rodapé já saem como navigation_click 'menu'/'footer', e uma âncora nos
+            // dois lugares gerava DOIS navigation_click com navigation_type diferente
+            // para um clique só.
+            if (this.classList.contains('nav-link') || this.closest('.footer')) return;
+
             const linkText = this.textContent.trim();
             trackNavigationClick(linkText, href, 'internal_link');
         });
@@ -832,7 +915,7 @@ function initSmoothScroll() {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Verly Vidraçaria - App initialized with complete GA4 tracking');
+    debugLog('🚀 Verly Vidraçaria - App initialized with complete GA4 tracking');
     
     // Form validation and submission
     const contactForm = document.getElementById('contactForm');
@@ -876,7 +959,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSectionTracking();
     initCompleteAnalytics();
     
-    console.log('✅ GA4 tracking initialized with 15+ event types');
+    debugLog('✅ GA4 tracking initialized with 15+ event types');
 });
 
 // ============================================================================

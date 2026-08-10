@@ -40,6 +40,8 @@ const faqSchema =
   robots={n.robots ?? undefined}
   ogImage={n.ogImage ?? undefined}
   includeRating={n.hasRating}
+  pageType="bairro"
+  neighborhoodPage={n.name}
   hasForm={true}
   hasServices={true}
   hasDifferentials={true}
@@ -66,7 +68,7 @@ const faqSchema =
           <a href="#contato" class="btn btn-success btn-lg">
             <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
           </a>
-          <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg">
+          <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg" data-context="hero-whatsapp">
             <Icon name="whatsapp" /> WhatsApp Direto
           </a>
         </div>

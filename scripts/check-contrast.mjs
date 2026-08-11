@@ -6,7 +6,13 @@
 // desatualizar.
 import { readFileSync } from 'node:fs';
 
-const CSS = readFileSync(new URL('../src/styles/index-inline.css', import.meta.url), 'utf8');
+// Os tokens vivem no index-inline.css; whatsapp-cta.css entra na leitura porque os
+// componentes de lá (barra sticky, botão do card de serviço) fixavam o verde em hex e
+// escapavam desta verificação por isso mesmo — o rótulo saía com 1,98:1 e o CI passava
+// verde. Agora eles consomem os tokens, e um hex solto neles é pego abaixo.
+const CSS = ['../src/styles/index-inline.css', '../src/styles/whatsapp-cta.css']
+  .map((path) => readFileSync(new URL(path, import.meta.url), 'utf8'))
+  .join('\n');
 
 const tokens = Object.fromEntries(
   [...CSS.matchAll(/--([a-z-]+):\s*(#[0-9a-fA-F]{6})/g)].map((m) => [m[1], m[2]])
@@ -37,6 +43,13 @@ const PAIRS = [
   ['Estrelas de avaliação', 'star', 'white', false],
   ['Marca — nome no cabeçalho', 'primary', 'white', false],
   ['Marca — descritor "Vidraçaria"', 'secondary', 'white', false],
+  // Componentes de whatsapp-cta.css. Repetem pares já cobertos acima de propósito: o
+  // que interessa aqui é o relatório NOMEAR o componente, porque foram estes dois que
+  // erraram na prática.
+  ['Barra sticky — botão', 'whatsapp-text', 'whatsapp', false],
+  ['Barra sticky — texto de apoio', 'gray', 'white', false],
+  ['Card de serviço — botão em repouso', 'dark', 'white', false],
+  ['Card de serviço — botão em hover', 'whatsapp-text', 'whatsapp', false],
 ];
 
 const MIN = { normal: 4.5, large: 3.0 };
@@ -66,6 +79,27 @@ console.log(
   `\n${pop >= POP_MIN ? '✓' : '✗'} Separação de luminância CTA vs hero: ${pop.toFixed(2)}:1 (mínimo ${POP_MIN})`
 );
 if (pop < POP_MIN) failed++;
+
+// A tabela acima só enxerga o que passa pelos tokens. O defeito real foi outro: dois
+// componentes escreveram o verde da marca em hex, então nenhum par aqui os descrevia e o
+// CI passava verde com um rótulo de 1,98:1 no ar. Este guard fecha essa porta.
+const WHATSAPP_LITERALS = /#25d366|#128c7e/gi;
+const COMPONENTES = readFileSync(new URL('../src/styles/whatsapp-cta.css', import.meta.url), 'utf8')
+  // Sem os comentários: eles CITAM os hex antigos para registrar por que saíram, e um
+  // guard que proíbe explicar o defeito empurra a explicação para fora do arquivo.
+  .replace(/\/\*[\s\S]*?\*\//g, '');
+const literais = [...COMPONENTES.matchAll(WHATSAPP_LITERALS)].map((m) => m[0]);
+// rgba() de sombra é aceitável — cor de sombra não é par texto/fundo. Hex é que não.
+if (literais.length) {
+  console.error(
+    `\n✗ whatsapp-cta.css escreve o verde da marca em hex (${[...new Set(literais)].join(', ')}).` +
+      `\n  Use var(--whatsapp) / var(--whatsapp-dark) com var(--whatsapp-text), senão o par` +
+      `\n  texto/fundo fica fora desta verificação — foi assim que 1,98:1 chegou à produção.`
+  );
+  failed++;
+} else {
+  console.log('\n✓ Nenhum verde de marca em hex nos componentes de CTA');
+}
 
 if (failed) {
   console.error(`\n${failed} verificação(ões) de contraste falharam.`);

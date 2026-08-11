@@ -7,22 +7,32 @@
    STICKY CTA BAR (aparece após scroll)
    ============================================================================ */
 
-/* Começa onde o cabeçalho termina. Com `top: 0` a barra ficava ATRÁS do header
-   (fixed, z-index 1000, opaco): no desktop desaparecia inteira e no mobile sobrava
-   só o botão, sem a frase que justifica o clique. A altura vem do token definido
-   junto do .header, então não há um segundo número para desencontrar. */
+/* Barra embaixo, e não sob o cabeçalho.
+   No topo ela empilhava com o header: os dois juntos comiam 144px de uma tela de 844,
+   17% coberto por moldura antes de qualquer conteúdo. Embaixo não empilha com nada e
+   cai na área do polegar.
+   De quebra, mata uma classe de bug por construção. A barra nasceu com `top: 0` e
+   ficava ATRÁS do header (fixed, z-index 1000, opaco); a correção seguinte a ancorou
+   em `--header-height`, o que resolvia a sobreposição e mantinha as duas molduras.
+   Naquela borda não há nada fixo além do flutuante, que já se esconde quando ela sobe.
+
+   Superfície NEUTRA de propósito: a barra verde inteira punha o verde competindo com o
+   próprio botão dela, e obrigava texto branco sobre verde — 1,98:1 no início do
+   gradiente, reprovando AA por quase três vezes. Agora o verde aparece uma vez, no
+   botão, com texto escuro. */
 .whatsapp-sticky-cta {
     position: fixed;
-    top: var(--header-height);
+    bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+    background: var(--white);
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
     padding: 12px 20px;
     z-index: 999;
-    transform: translateY(-100%);
-    /* Escondida também no visibility: só o transform deixaria a sombra verde
-       vazando por baixo do cabeçalho enquanto a barra está recolhida. */
+    transform: translateY(100%);
+    /* Escondida também no visibility: só o transform deixaria a sombra vazando pela
+       borda inferior enquanto a barra está recolhida. */
     visibility: hidden;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
 }
@@ -44,7 +54,7 @@
 .sticky-cta-text {
     display: flex;
     flex-direction: column;
-    color: white;
+    color: var(--dark);
 }
 
 .sticky-cta-text strong {
@@ -54,28 +64,31 @@
 
 .sticky-cta-text span {
     font-size: 0.875rem;
-    opacity: 0.95;
+    color: var(--gray);
 }
 
+/* Verde OFICIAL com texto escuro (7,40:1). Era verde #25D366 sobre branco, que dá os
+   mesmos 1,98:1 do caso invertido: o rótulo do botão mais clicável da barra era o
+   menos legível dela. */
 .sticky-cta-button {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: white;
-    color: #25D366;
+    background: var(--whatsapp);
+    color: var(--whatsapp-text);
     padding: 12px 24px;
     border-radius: 50px;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.3s ease;
     white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow);
 }
 
 .sticky-cta-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    color: #128C7E;
+    background: var(--whatsapp-dark);
+    color: var(--whatsapp-text);
+    box-shadow: var(--shadow-lg);
 }
 
 .sticky-cta-button .icon {
@@ -113,13 +126,23 @@
    SERVICE CARD CTA BUTTONS
    ============================================================================ */
 
+/* Peso secundário, e é decisão de hierarquia com um defeito medido por baixo.
+   Eram seis pílulas verdes sólidas com brilho verde, e o rótulo saía branco sobre
+   #25D366: 1,98:1. Reprova AA por quase três vezes, e a verificação do CI não pegava
+   porque estas duas regras fixavam o hex em vez de usar os tokens.
+   A repetição já é o que chama o olho num card que aparece seis vezes — peso sólido
+   também, não. Com o contorno, a página fica com UM verde sólido (o WhatsApp do hero)
+   e UM âmbar sólido (o orçamento), que é a hierarquia que a paleta v2 desenhou.
+   Se `whatsapp_click` com `context` começando em `service-` cair depois disso, é uma
+   classe para voltar — e agora dá para medir, porque os eventos passaram a chegar. */
 .service-whatsapp-cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    color: white;
+    background: var(--white);
+    color: var(--dark);
+    border: 2px solid var(--whatsapp);
     padding: 12px 24px;
     border-radius: 50px;
     text-decoration: none;
@@ -127,17 +150,25 @@
     font-size: 0.95rem;
     margin-top: 15px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
 }
 
 .service-whatsapp-cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-    color: white;
+    background: var(--whatsapp);
+    color: var(--whatsapp-text);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
+/* O glifo carrega o verde no estado de repouso — é ele que diz "WhatsApp" sem o botão
+   precisar do preenchimento inteiro. No hover o fundo vira verde, então o ícone
+   acompanha o texto escuro. */
 .service-whatsapp-cta .icon {
     font-size: 1.2rem;
+    color: var(--whatsapp);
+}
+
+.service-whatsapp-cta:hover .icon {
+    color: var(--whatsapp-text);
 }
 
 /* Ajustar service-card para incluir botão */
@@ -159,14 +190,15 @@
     z-index: 1000;
 }
 
-/* Tooltip do botão flutuante */
+/* Tooltip do botão flutuante. Texto escuro sobre o verde oficial (7,40:1); era branco
+   sobre #25D366, os mesmos 1,98:1 dos botões de card. */
 .whatsapp-float-tooltip {
     position: absolute;
     right: 75px;
     top: 50%;
     transform: translateY(-50%) translateX(10px);
-    background: #25D366;
-    color: white;
+    background: var(--whatsapp);
+    color: var(--whatsapp-text);
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 14px;
@@ -186,7 +218,7 @@
     top: 50%;
     transform: translateY(-50%);
     border: 8px solid transparent;
-    border-left-color: #25D366;
+    border-left-color: var(--whatsapp);
 }
 
 .whatsapp-float-tooltip.visible {
@@ -237,94 +269,23 @@
 }
 
 /* ============================================================================
-   HERO CTA IMPROVEMENTS
+   CSS MORTO REMOVIDO — 96 linhas
+   ============================================================================
+
+   Três blocos saíram daqui, e o motivo de estarem documentados em vez de apenas
+   apagados é que eram esconderijo do mesmo defeito: gradiente verde com texto branco,
+   ou seja 1,98:1, fora do alcance da verificação de contraste.
+
+   - `.hero-cta a[href*="whatsapp"]` + `.hero-cta .btn-secondary`: `.hero-cta` existe
+     (index.astro, [slug].astro), mas o link do hero é `wa.me/...`, que NÃO contém
+     "whatsapp", e nenhum hero tem `.btn-secondary`. O seletor não casava com nada — é
+     por isso que o botão do hero aparece verde chapado, e não em gradiente. Mantê-lo
+     seria deixar armada uma regra que passa a valer no dia em que alguém trocar o
+     href por api.whatsapp.com.
+   - `.contact-whatsapp-cta` e `.quick-response-badge`: as classes não aparecem em
+     nenhum .astro nem em nenhum script de /public. O badge, de quebra, tinha 3,67:1.
+
    ============================================================================ */
-
-/* Melhorar visual do botão WhatsApp no hero */
-.hero-cta a[href*="whatsapp"],
-.hero-cta .btn-secondary {
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    border: none;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-cta a[href*="whatsapp"]::before,
-.hero-cta .btn-secondary::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.hero-cta a[href*="whatsapp"]:hover::before,
-.hero-cta .btn-secondary:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
-.hero-cta a[href*="whatsapp"]:hover,
-.hero-cta .btn-secondary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-}
-
-/* ============================================================================
-   CONTACT SECTION CTA
-   ============================================================================ */
-
-/* Adicionar estilo para CTA na seção de contato */
-.contact-whatsapp-cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    color: white;
-    padding: 16px 32px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin: 20px 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
-}
-
-.contact-whatsapp-cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
-    color: white;
-}
-
-.contact-whatsapp-cta i {
-    font-size: 1.5rem;
-}
-
-/* Badge "Resposta Rápida" */
-.quick-response-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(37, 211, 102, 0.15);
-    color: #128C7E;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-top: 8px;
-}
-
-.quick-response-badge i {
-    color: #25D366;
-}
 
 /* ============================================================================
    MOBILE OPTIMIZATIONS
@@ -340,12 +301,6 @@
     .service-whatsapp-cta {
         width: 100%;
     }
-    
-    /* Contact CTA */
-    .contact-whatsapp-cta {
-        font-size: 1rem;
-        padding: 14px 24px;
-    }
 }
 
 /* ============================================================================
@@ -355,7 +310,6 @@
 /* Focus states */
 .sticky-cta-button:focus,
 .service-whatsapp-cta:focus,
-.contact-whatsapp-cta:focus,
 .whatsapp-float:focus {
     outline: 3px solid #FFD700;
     outline-offset: 3px;
@@ -380,7 +334,6 @@
 @media print {
     .whatsapp-sticky-cta,
     .service-whatsapp-cta,
-    .contact-whatsapp-cta,
     .whatsapp-float {
         display: none !important;
     }
@@ -399,13 +352,13 @@
 }
 
 .footer-contact-link:hover {
-    color: #25D366 !important;
+    color: var(--whatsapp) !important;
     transform: translateX(5px);
 }
 
 /* WhatsApp Link no Footer */
 .footer-contact-link.whatsapp-link:hover {
-    color: #25D366 !important;
+    color: var(--whatsapp) !important;
 }
 
 /* Phone Link no Footer */

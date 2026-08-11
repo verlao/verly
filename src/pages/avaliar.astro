@@ -1,0 +1,696 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { SERVICES, GOOGLE_REVIEWS, CONTACT } from '../data/site';
+
+// A página que o cliente abre pelo link do WhatsApp. O verly-service monta a URL
+// como `<review-link-base-url>?t=<token>` e o default dele é exatamente
+// https://verlyvidracaria.com/avaliar.html — o `build.format: 'file'` do
+// astro.config.mjs é o que preserva esse `.html`.
+//
+// Não existe sistema de pedido ainda, então o link não nasce de um pedido concluído:
+// o dono dispara `/avaliar <telefone>` no Telegram e manda o link à mão. Nada nesta
+// página depende disso mudar — quando o pedido existir, muda quem chama
+// POST /reviews/link, não esta tela.
+//
+// O TOKEN É A ÚNICA AUTORIZAÇÃO. Ele fica na query porque foi assim que chegou ao
+// cliente (um link em conversa), mas nunca é enviado em path: os dois POSTs levam
+// o token no CORPO, para não parar em log de acesso, log de proxy nem histórico.
+//
+// Os tipos aceitos espelham a whitelist do StorageService (ALLOWED_IMAGE_TYPES) de
+// propósito. HEIC está na lista porque é o que um iPhone produz por default, e um
+// `accept` mais estreito que o servidor esconderia do cliente uma foto que o
+// servidor aceitaria.
+const ACCEPTED_TYPES = 'image/jpeg,image/png,image/webp,image/heic,image/heif';
+
+// Espelha MAX_PHOTOS_PER_TOKEN do ReviewService. O servidor recusa acima disso; aqui
+// o limite serve para avisar ANTES de gastar o 4G do cliente subindo o que vai ser
+// recusado.
+const MAX_PHOTOS = 10;
+
+const RATING_LABELS = ['Muito ruim', 'Ruim', 'Regular', 'Bom', 'Ótimo'];
+---
+
+<Base
+  title="Avaliar o serviço — Verly Vidraçaria"
+  description="Conte como foi o seu serviço com a Verly Vidraçaria. Leva menos de um minuto."
+  canonicalPath="/avaliar.html"
+  pageType="avaliar"
+  robots="noindex, nofollow"
+  schema={false}
+>
+  <section class="avaliacao" data-state="loading" data-max-photos={MAX_PHOTOS}>
+    <div class="container avaliacao-wrap">
+      <!-- Estado de carregamento: o token só é conferido no cliente, então nasce
+           neutro. Sem isso o formulário pisca antes de um link inválido cair no
+           aviso, e piscar formulário em link morto parece falha do site. -->
+      <p class="avaliacao-loading">Carregando…</p>
+
+      <div class="avaliacao-invalido" hidden>
+        <h1>Este link não é válido</h1>
+        <p>
+          O endereço parece incompleto. Abra o link exatamente como recebeu na conversa —
+          ele termina com um código depois de <code>?t=</code>.
+        </p>
+        <a class="btn btn-whatsapp avaliacao-botao" href={CONTACT.whatsappDirect} data-context="avaliar-link-invalido">
+          <Icon name="whatsapp" /> Pedir um link novo
+        </a>
+      </div>
+
+      <div class="avaliacao-form-bloco" hidden>
+        <header class="avaliacao-cabecalho">
+          <h1>Como foi o seu serviço?</h1>
+          <p>
+            Leva menos de um minuto. Sua avaliação ajuda quem está decidindo agora — e é o
+            que aparece no site em vez de depoimento genérico.
+          </p>
+        </header>
+
+        <form class="avaliacao-form" novalidate>
+          <!-- Nota primeiro, e obrigatória: é o único campo que o cliente sempre
+               consegue responder, e a avaliação existe por causa dela. -->
+          <fieldset class="campo-nota" data-rating="0">
+            <legend>Sua nota <span class="obrigatorio" aria-hidden="true">*</span></legend>
+            <div class="estrelas">
+              {
+                [1, 2, 3, 4, 5].map((valor) => (
+                  <>
+                    <input
+                      type="radio"
+                      name="rating"
+                      id={`nota-${valor}`}
+                      value={valor}
+                      class="estrela-input"
+                      required
+                    />
+                    <label for={`nota-${valor}`} class="estrela-label">
+                      <Icon name="star" />
+                      <span class="sr-only">{`${valor} de 5 — ${RATING_LABELS[valor - 1]}`}</span>
+                    </label>
+                  </>
+                ))
+              }
+            </div>
+            <p class="nota-legenda" aria-live="polite"></p>
+          </fieldset>
+
+          <label class="campo">
+            <span class="campo-rotulo">O que você achou?</span>
+            <textarea
+              name="comment"
+              rows="4"
+              maxlength="4000"
+              placeholder="Ex.: instalaram o box no dia seguinte, ficou impecável."
+            ></textarea>
+            <span class="campo-ajuda">Opcional — mas é o que outras pessoas leem.</span>
+          </label>
+
+          <label class="campo">
+            <span class="campo-rotulo">Seu nome</span>
+            <input type="text" name="customerName" maxlength="160" autocomplete="name" placeholder="Como quer aparecer no site" />
+            <span class="campo-ajuda">Opcional. Só o nome aparece — telefone nunca.</span>
+          </label>
+
+          <label class="campo">
+            <span class="campo-rotulo">Qual serviço?</span>
+            <select name="serviceType">
+              <option value="">Selecione (opcional)</option>
+              {SERVICES.map((servico) => <option value={servico}>{servico}</option>)}
+            </select>
+          </label>
+
+          <div class="campo campo-fotos">
+            <span class="campo-rotulo">Fotos do resultado</span>
+            <label class="fotos-botao">
+              <input type="file" name="photos" accept={ACCEPTED_TYPES} multiple />
+              <span><Icon name="clipboard-check" /> Escolher fotos</span>
+            </label>
+            <span class="campo-ajuda">
+              Opcional, até {MAX_PHOTOS}. Foto do serviço instalado é o que mais convence
+              quem está em dúvida.
+            </span>
+            <ul class="fotos-lista"></ul>
+          </div>
+
+          <p class="avaliacao-erro" role="alert" hidden></p>
+
+          <button type="submit" class="btn btn-primary avaliacao-botao avaliacao-enviar">
+            <Icon name="paper-plane" /> Enviar avaliação
+          </button>
+
+          <p class="avaliacao-moderacao">
+            Conferimos cada avaliação antes de publicar, então ela não aparece no site na
+            hora.
+          </p>
+        </form>
+      </div>
+
+      <div class="avaliacao-pronto" hidden>
+        <p class="pronto-selo"><Icon name="check" /></p>
+        <h1>Recebemos, obrigado!</h1>
+        <p class="pronto-detalhe"></p>
+        <!-- O convite para o Google vem DEPOIS de enviar, nunca antes: pedir as duas
+             coisas de uma vez custa a que já estava sendo respondida. E avaliação no
+             perfil do Google é o que move o ranking local, que este site não controla. -->
+        <p>
+          Se puder repetir no Google, ajuda a loja a aparecer para os vizinhos:
+        </p>
+        <a class="btn btn-primary avaliacao-botao" href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener">
+          <Icon name="star" /> Avaliar no Google
+        </a>
+        <p class="pronto-voltar"><a href="/">Voltar para o site</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<!--
+  `is:global` de propósito, com tudo prefixado por `.avaliacao`.
+
+  O escopo do Astro carimba uma classe hash nos elementos que ESTÃO neste arquivo, e
+  os itens da lista de fotos nascem em runtime — sem o hash, uma regra escopada não
+  os alcançaria e a lista sairia sem estilo nenhum. O prefixo faz o trabalho que o
+  escopo faria, e só esta página tem esse elemento raiz.
+-->
+<style is:global>
+  .avaliacao {
+    /* O cabeçalho é fixed; a página começa onde ele termina. O token existe para
+       isso e é honrado por min-height no .header. */
+    padding: calc(var(--header-height) + 2rem) 0 4rem;
+    background: var(--light-gray);
+    min-height: 100vh;
+  }
+
+  .avaliacao-wrap {
+    max-width: 560px;
+  }
+
+  .avaliacao-loading {
+    text-align: center;
+    color: var(--gray);
+    padding: 3rem 0;
+  }
+
+  .avaliacao[data-state='loading'] .avaliacao-form-bloco,
+  .avaliacao[data-state='loading'] .avaliacao-invalido,
+  .avaliacao[data-state='loading'] .avaliacao-pronto {
+    display: none;
+  }
+
+  .avaliacao:not([data-state='loading']) .avaliacao-loading {
+    display: none;
+  }
+
+  .avaliacao h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    color: var(--dark);
+    margin-bottom: 0.75rem;
+  }
+
+  .avaliacao-cabecalho {
+    margin-bottom: 1.75rem;
+  }
+
+  .avaliacao-cabecalho p {
+    color: var(--gray);
+  }
+
+  .avaliacao-form,
+  .avaliacao-invalido,
+  .avaliacao-pronto {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .avaliacao-invalido p,
+  .avaliacao-pronto p {
+    color: var(--gray);
+    margin-bottom: 1rem;
+  }
+
+  .avaliacao-invalido code {
+    background: var(--light-gray);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+  }
+
+  /* --- nota --- */
+
+  .campo-nota {
+    border: 0;
+    padding: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .campo-nota legend {
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .obrigatorio {
+    color: var(--danger);
+  }
+
+  .estrelas {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .estrela-input {
+    /* Fora da tela, não `display: none`: o radio continua focável pelo teclado e o
+       leitor de tela continua anunciando o grupo. */
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .estrela-label {
+    /* 44px é o alvo de toque mínimo; a estrela é o primeiro gesto da página no
+       celular, então é o último lugar onde vale economizar espaço. */
+    min-width: 48px;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .estrela-input:focus-visible + .estrela-label {
+    outline: 3px solid var(--secondary);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* Pinta até a nota escolhida. `--star` é o âmbar escuro que já passa AA no branco
+     (o amarelo claro de estrela não passaria, e a nota é informação, não enfeite). */
+  .campo-nota[data-rating='1'] .estrela-label:nth-of-type(-n + 1),
+  .campo-nota[data-rating='2'] .estrela-label:nth-of-type(-n + 2),
+  .campo-nota[data-rating='3'] .estrela-label:nth-of-type(-n + 3),
+  .campo-nota[data-rating='4'] .estrela-label:nth-of-type(-n + 4),
+  .campo-nota[data-rating='5'] .estrela-label:nth-of-type(-n + 5) {
+    color: var(--star);
+  }
+
+  .nota-legenda {
+    min-height: 1.5em;
+    font-weight: 600;
+    color: var(--star);
+  }
+
+  /* --- campos --- */
+
+  .avaliacao .campo {
+    display: block;
+    margin-bottom: 1.25rem;
+  }
+
+  .avaliacao .campo-rotulo {
+    display: block;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.4rem;
+  }
+
+  .avaliacao .campo-ajuda {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-top: 0.35rem;
+  }
+
+  .avaliacao input[type='text'],
+  .avaliacao textarea,
+  .avaliacao select {
+    width: 100%;
+    /* 16px: abaixo disso o Safari do iPhone dá zoom no foco e desalinha a página. */
+    font-size: 1rem;
+    font-family: inherit;
+    padding: 0.85rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--dark);
+  }
+
+  .avaliacao input[type='text']:focus,
+  .avaliacao textarea:focus,
+  .avaliacao select:focus {
+    outline: none;
+    border-color: var(--secondary);
+  }
+
+  /* --- fotos --- */
+
+  .fotos-botao {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0.7rem 1.1rem;
+    border: 2px dashed var(--secondary);
+    border-radius: 10px;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .fotos-botao input[type='file'] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .fotos-botao input[type='file']:focus-visible + span {
+    outline: 3px solid var(--secondary);
+    outline-offset: 4px;
+  }
+
+  .fotos-lista {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+  }
+
+  .fotos-lista li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--dark);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--light-gray);
+  }
+
+  .fotos-lista li[data-erro] {
+    color: var(--danger);
+  }
+
+  /* --- envio --- */
+
+  /* `.btn` do site é inline-block; aqui o rótulo tem ícone ao lado, então precisa ser
+     flex para alinhar os dois. `btn-lg` não foi usado de propósito: a classe aparece
+     em quatro lugares do site e não existe em CSS nenhum. */
+  .avaliacao-botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .avaliacao-enviar {
+    width: 100%;
+  }
+
+  .avaliacao-enviar[disabled] {
+    opacity: 0.65;
+    cursor: progress;
+  }
+
+  .avaliacao-erro {
+    background: #fef2f2;
+    border-left: 4px solid var(--danger);
+    color: #991b1b;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .avaliacao-moderacao {
+    font-size: 0.85rem;
+    color: var(--gray);
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  /* --- fim --- */
+
+  .avaliacao-pronto {
+    text-align: center;
+  }
+
+  /* Precisa do ancestral no seletor: `.avaliacao-pronto p` acima é mais específico
+     que `.pronto-selo` sozinho e pintava o ✓ de cinza. */
+  .avaliacao-pronto .pronto-selo {
+    font-size: 3rem;
+    color: var(--success);
+    margin-bottom: 0.5rem;
+  }
+
+  .pronto-voltar {
+    margin: 1.25rem 0 0;
+  }
+
+  .avaliacao .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  import { API_BASE } from '../data/site';
+
+  const root = document.querySelector<HTMLElement>('.avaliacao');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('.avaliacao-form')!;
+    const blocoForm = root.querySelector<HTMLElement>('.avaliacao-form-bloco')!;
+    const blocoInvalido = root.querySelector<HTMLElement>('.avaliacao-invalido')!;
+    const blocoPronto = root.querySelector<HTMLElement>('.avaliacao-pronto')!;
+    const notaCampo = root.querySelector<HTMLElement>('.campo-nota')!;
+    const notaLegenda = root.querySelector<HTMLElement>('.nota-legenda')!;
+    const fotosInput = root.querySelector<HTMLInputElement>('input[type="file"]')!;
+    const fotosLista = root.querySelector<HTMLUListElement>('.fotos-lista')!;
+    const botao = root.querySelector<HTMLButtonElement>('.avaliacao-enviar')!;
+    const erro = root.querySelector<HTMLElement>('.avaliacao-erro')!;
+    const prontoDetalhe = root.querySelector<HTMLElement>('.pronto-detalhe')!;
+
+    const MAX_PHOTOS = Number(root.dataset.maxPhotos) || 10;
+    // 25MB por arquivo. O teto real é a Cloudflare (100MB por requisição), mas foto
+    // de celular passa longe disso: acima de 25MB é quase sempre vídeo renomeado, e
+    // recusar aqui é mais honesto que deixar o upload morrer no meio do 4G.
+    const MAX_BYTES = 25 * 1024 * 1024;
+    const LEGENDAS = ['Muito ruim', 'Ruim', 'Regular', 'Bom', 'Ótimo'];
+
+    const track = (evento: string, params: Record<string, unknown> = {}) => {
+      // VerlyAnalytics é o único lugar que enriquece evento (page_type etc.). Ele vem
+      // de app.js, que carrega no fim do body; todo evento daqui parte de gesto do
+      // cliente, então já existe. O optional chaining é só para não derrubar o envio
+      // se um bloqueador matar o script de analytics.
+      (window as any).VerlyAnalytics?.track?.(evento, params);
+    };
+
+    const mostrarErro = (mensagem: string) => {
+      erro.textContent = mensagem;
+      erro.hidden = false;
+      erro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    // --- token ---------------------------------------------------------------
+
+    // 24 bytes em base64url sem padding = 32 caracteres; o servidor aceita até 64.
+    // Conferir o formato aqui evita mandar lixo para a API e, mais importante, dá ao
+    // cliente uma mensagem clara quando o link chegou cortado pela conversa.
+    const token = new URLSearchParams(window.location.search).get('t') ?? '';
+    if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) {
+      root.dataset.state = 'invalido';
+      blocoInvalido.hidden = false;
+      track('review_link_invalid');
+    } else {
+      root.dataset.state = 'formulario';
+      blocoForm.hidden = false;
+    }
+
+    // --- nota ----------------------------------------------------------------
+
+    let primeiroToque = true;
+    notaCampo.addEventListener('change', (evento) => {
+      const alvo = evento.target as HTMLInputElement;
+      if (alvo.name !== 'rating') return;
+      notaCampo.dataset.rating = alvo.value;
+      notaLegenda.textContent = LEGENDAS[Number(alvo.value) - 1] ?? '';
+      if (primeiroToque) {
+        primeiroToque = false;
+        track('review_started', { rating: Number(alvo.value) });
+      }
+    });
+
+    // --- fotos ---------------------------------------------------------------
+
+    /** Arquivos aceitos, na ordem em que o cliente escolheu. */
+    let selecionadas: File[] = [];
+
+    const desenharLista = () => {
+      fotosLista.textContent = '';
+      selecionadas.forEach((arquivo) => {
+        const item = document.createElement('li');
+        const nome = document.createElement('span');
+        nome.textContent = arquivo.name;
+        const tamanho = document.createElement('span');
+        tamanho.textContent = `${(arquivo.size / 1024 / 1024).toFixed(1)} MB`;
+        item.append(nome, tamanho);
+        fotosLista.append(item);
+      });
+    };
+
+    fotosInput.addEventListener('change', () => {
+      const escolhidas = Array.from(fotosInput.files ?? []);
+      const grandes = escolhidas.filter((arquivo) => arquivo.size > MAX_BYTES);
+      selecionadas = escolhidas.filter((arquivo) => arquivo.size <= MAX_BYTES).slice(0, MAX_PHOTOS);
+
+      erro.hidden = true;
+      if (grandes.length) {
+        mostrarErro(
+          `${grandes.length === 1 ? 'Uma foto passa' : `${grandes.length} fotos passam`} de 25 MB e ${grandes.length === 1 ? 'ficou' : 'ficaram'} de fora. As outras seguem normalmente.`
+        );
+      } else if (escolhidas.length > MAX_PHOTOS) {
+        mostrarErro(`Dá para enviar até ${MAX_PHOTOS} fotos — mantive as ${MAX_PHOTOS} primeiras.`);
+      }
+      desenharLista();
+    });
+
+    /**
+     * Sobe uma foto e devolve o objectKey, ou null se falhar.
+     *
+     * Duas etapas: a aplicação assina um PUT e o NAVEGADOR sobe direto para o bucket
+     * — os bytes nunca passam pelo verly-service. A chave vem do servidor, então não
+     * há como apontar o upload para o objeto de outra pessoa.
+     *
+     * Nunca lança: foto é opcional e uma avaliação escrita não pode ser perdida
+     * porque o storage está fora. Hoje isso é o caminho provável, e não a exceção —
+     * `s3.verlyvidracaria.com` ainda não resolve.
+     */
+    const subirFoto = async (arquivo: File): Promise<string | null> => {
+      try {
+        const assinatura = await fetch(`${API_BASE}/review-photo-uploads`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, contentType: arquivo.type }),
+        });
+        if (!assinatura.ok) return null;
+
+        const { uploadUrl, objectKey } = await assinatura.json();
+        // O Content-Type tem de ser o MESMO que foi assinado, senão a assinatura não
+        // fecha e o Garage recusa.
+        const envio = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': arquivo.type },
+          body: arquivo,
+        });
+        return envio.ok ? objectKey : null;
+      } catch {
+        return null;
+      }
+    };
+
+    // --- envio ---------------------------------------------------------------
+
+    form.addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      erro.hidden = true;
+
+      const escolhida = form.querySelector<HTMLInputElement>('input[name="rating"]:checked');
+      if (!escolhida) {
+        mostrarErro('Escolha de 1 a 5 estrelas para enviar.');
+        track('review_validation_error', { error_message: 'sem nota' });
+        return;
+      }
+
+      botao.disabled = true;
+      const rotuloOriginal = botao.innerHTML;
+      const dizer = (texto: string) => {
+        botao.textContent = texto;
+      };
+
+      const chaves: string[] = [];
+      let falhas = 0;
+      // Se a PRIMEIRA foto falha, o problema é do serviço de storage e não daquele
+      // arquivo — insistir nas outras nove gastaria o 4G do cliente para colecionar a
+      // mesma recusa. Hoje esse é o caminho garantido: o endpoint de upload só existe
+      // em prod depois do verly-service#56, e a URL assinada só é alcançável depois
+      // que `s3.verlyvidracaria.com` resolver.
+      let storageFora = false;
+      for (const [indice, arquivo] of selecionadas.entries()) {
+        const item = fotosLista.children[indice] as HTMLElement | undefined;
+        if (storageFora) {
+          falhas++;
+          if (item) item.dataset.erro = 'true';
+          continue;
+        }
+        dizer(`Enviando foto ${indice + 1} de ${selecionadas.length}…`);
+        const chave = await subirFoto(arquivo);
+        if (chave) {
+          chaves.push(chave);
+        } else {
+          falhas++;
+          if (item) item.dataset.erro = 'true';
+          if (indice === 0) storageFora = true;
+        }
+      }
+
+      dizer('Enviando avaliação…');
+      const dados = new FormData(form);
+      const texto = (campo: string) => String(dados.get(campo) ?? '').trim();
+
+      try {
+        const resposta = await fetch(`${API_BASE}/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token,
+            rating: Number(escolhida.value),
+            // Campo vazio sai como undefined e não como '': o servidor tem fallback
+            // para o nome que já está no token, e '' venceria esse fallback.
+            customerName: texto('customerName') || undefined,
+            comment: texto('comment') || undefined,
+            serviceType: texto('serviceType') || undefined,
+            objectKeys: chaves,
+          }),
+        });
+
+        if (!resposta.ok) {
+          const corpo = await resposta.json().catch(() => null);
+          // `message` é o campo que o GlobalExceptionHandler preenche com o texto da
+          // BusinessException — "Link expirado", "Este link já foi usado para
+          // avaliar". São mensagens escritas para o cliente ler, então mostro a do
+          // servidor em vez de uma genérica minha.
+          mostrarErro(corpo?.message ?? 'Não conseguimos registrar sua avaliação. Tente de novo em alguns minutos.');
+          botao.innerHTML = rotuloOriginal;
+          botao.disabled = false;
+          track('review_failed', { error_message: corpo?.message ?? `http_${resposta.status}` });
+          return;
+        }
+
+        root.dataset.state = 'pronto';
+        blocoForm.hidden = true;
+        blocoPronto.hidden = false;
+        prontoDetalhe.textContent = falhas
+          ? 'Sua avaliação foi registrada, mas não conseguimos anexar as fotos agora. Se quiser, mande por WhatsApp que a gente junta.'
+          : 'Vamos conferir e publicar no site em breve.';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        track('review_submitted', {
+          rating: Number(escolhida.value),
+          photo_count: chaves.length,
+          photo_failures: falhas,
+          has_comment: texto('comment').length > 0,
+        });
+      } catch {
+        mostrarErro('Sem conexão com o servidor. Confira a internet e tente de novo.');
+        botao.innerHTML = rotuloOriginal;
+        botao.disabled = false;
+        track('review_failed', { error_message: 'rede' });
+      }
+    });
+  }
+</script>

@@ -11,7 +11,7 @@ Complementa `GA4_TRACKING_GUIDE.md`, que lista os eventos mas não trata de regi
 dimensão nem de leitura — e é justamente o registro que hoje bloqueia todo insight:
 **parâmetro não registrado é invisível em relatório**.
 
-**Execute nesta ordem:** registrar as 14 dimensões (§2, ~15 min) → retenção 14 meses (§2)
+**Execute nesta ordem:** registrar as 15 dimensões (§2, ~15 min) → retenção 14 meses (§2)
 → marcar `generate_lead` como evento-chave (§3) → esperar dados → montar funil (§4) e as
 4 explorações (§5) → religar o Ads por importação (§7). Antes de concluir qualquer coisa,
 ler §6.
@@ -41,6 +41,17 @@ log aparece, e não há evento que escape da segmentação.
 | `engagement_milestone` | `app.js:158` ← `:696` | 30s / 60s / 120s após `DOMContentLoaded` | `milestone_name: "time_60s"`, `milestone_value: 60` | baixa (3) |
 | `generate_lead` | `app.js` | submit válido **e** resposta da API — inclusive quando a API falha | `lead_source: "contact_form"`, `services: "box,espelhos"` (**slugs**, ver `SERVICE_SLUGS`), `services_count: 2`, `neighborhood: "Realengo"`, `api_status`, `delivery_attempts`, `lead_queued`, `has_email`, `has_message` | `services` combinatória mas **curta** — 8 slugs somam bem menos que o limite de 100 caracteres do GA4; `neighborhood` baixa (11) |
 | `conversion` (Ads) | `app.js:520` | **nunca hoje**: `ADS_CONVERSION_LABEL` é `''` (`app.js:17`) | `send_to`, `value: 1.0`, `currency: "BRL"` | — |
+| `review_started` | `avaliar.astro` | primeira estrela escolhida, 1x por acesso | `rating: 5` | baixa (5) |
+| `review_submitted` | `avaliar.astro` | 202 do `POST /reviews` | `rating: 5`, `photo_count: 3`, `photo_failures: 0`, `has_comment: true` | `rating` baixa; as contagens são numéricas |
+| `review_failed` | `avaliar.astro` | erro da API ou de rede no envio | `error_message: "Link expirado"` | baixa |
+| `review_link_invalid` | `avaliar.astro` | `?t=` ausente ou fora do formato | — | — |
+
+Os quatro últimos só acontecem em `page_type = avaliar`, e essa página é `noindex`:
+tráfego dela vem de link em conversa, nunca de busca. **A leitura que eles habilitam é
+uma só, e é operacional, não de marketing:** quantos links enviados viram avaliação
+(`review_started` ÷ `review_submitted` ÷ links criados no Telegram). Enquanto o volume
+for de dezenas, leia contagem bruta — taxa em amostra desse tamanho não afirma nada
+(§6c).
 
 Valores de `form_action`, com a linha que os emite:
 
@@ -77,7 +88,7 @@ dimensões personalizadas** → preencher *Nome da dimensão* (livre), *Escopo* 
 
 Registro **não é retroativo**: só aparece dado coletado a partir da criação. Registre
 tudo hoje, mesmo o que só for usar depois. Limite da propriedade: 50 dimensões de escopo
-de evento; a lista usa 14.
+de evento; a lista usa 15.
 
 | Parâmetro | Escopo | Por que é necessária | Onde aparece depois |
 |---|---|---|---|
@@ -95,6 +106,7 @@ de evento; a lista usa 14.
 | `button_text` | Evento | desambigua dois CTAs no mesmo `button_location` | §5.4 |
 | `service_name` | Evento | card de serviço clicado | §5.2 (sinal de interesse) |
 | `api_status` | Evento | separa lead salvo de lead com falha de API | §4 (etapa 6), §6 |
+| `rating` | Evento | nota da avaliação (1-5); é o que separa elogio de reclamação | §1, eventos `review_*` |
 
 **Zero dimensões de escopo de usuário.** Nada na instrumentação descreve atributo
 persistente da pessoa. `neighborhood` é candidato, mas só existe no momento da conversão —

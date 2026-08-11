@@ -217,6 +217,14 @@ const WhatsAppCTA = {
      * Aparece após usuário rolar 30% da página
      */
     addStickyCTA() {
+        // Na página de avaliação, não. O cliente já é cliente e a única coisa que se
+        // quer dele ali é terminar a avaliação; uma barra oferecendo orçamento no meio
+        // do formulário compete com o próprio envio e custa a avaliação.
+        if (document.body.dataset.pageType === 'avaliar') {
+            ctaLog('↷ Sticky CTA fora da página de avaliação');
+            return;
+        }
+
         // Criar sticky bar
         const stickyBar = document.createElement('div');
         stickyBar.className = 'whatsapp-sticky-cta';

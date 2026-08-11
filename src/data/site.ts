@@ -2,6 +2,14 @@
 
 export const SITE_URL = 'https://verlyvidracaria.com';
 
+/**
+ * Base do verly-service. O formulário de orçamento tem a URL dele literal em
+ * `public/js/app.js` (`LEAD_ENDPOINT`), que é script de /public e não pode importar
+ * daqui — por isso a duplicação existe e fica anotada em vez de escondida. Quem
+ * mudar o host precisa mudar nos dois lugares.
+ */
+export const API_BASE = 'https://api.verlyvidracaria.com/verly-service';
+
 export const ANALYTICS = {
   ga4: 'G-GDQV6C1NWH',
   googleAds: 'AW-17336857529',

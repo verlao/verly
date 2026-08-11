@@ -5,6 +5,14 @@ import Base from '../layouts/Base.astro';
 import lojaFrente from '../assets/loja-verly-realengo.png';
 import QuoteForm from '../components/QuoteForm.astro';
 import { CONTACT, GOOGLE_REVIEWS } from '../data/site';
+import { fetchPublishedReviews, idadeRelativa } from '../data/published-reviews';
+
+// Lidas no build. Devolve [] em qualquer falha, de propósito: o deploy da LP não pode
+// depender do Orange Pi estar no ar. Ver o comentário longo em published-reviews.ts.
+const verlyReviews = await fetchPublishedReviews();
+// A data do build ancora os "há N semanas" das avaliações da Verly, do mesmo jeito que
+// GOOGLE_REVIEWS.snapshotDate ancora as do Google. Uma página estática não tem "agora".
+const geradoEm = new Date();
 
 // Iniciais do avatar DERIVADAS do nome do autor. Antes eram três strings digitadas à
 // mão ao lado de três nomes inventados; com nomes reais, digitar de novo só cria uma
@@ -269,12 +277,63 @@ const initials = (name: string): string =>
                 127 era a contagem falsa de avaliações reaproveitada como contagem de obras. O
                 que o visitante pode conferir não é quantos, é onde as falas estão publicadas —
                 e em que data foram lidas, senão os "há N semanas" envelhecem calados. */}
+            {/* O subtítulo é condicional porque a procedência mudou de uma fonte para
+                duas. Enquanto só houver as do Google, ele afirma exatamente o que
+                afirmava; com avaliações vindas do link, dizer "publicadas no perfil do
+                Google" passaria a ser falso para parte dos cartões da mesma grade. */}
             <p class="section-subtitle">
-                Avaliações publicadas por clientes
-                <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">no perfil do Google da loja</a>,
-                reproduzidas aqui na íntegra — como estavam em {GOOGLE_REVIEWS.snapshotDate}
+                {verlyReviews.length > 0 ? (
+                    <>
+                        Avaliações de clientes atendidos pela loja, enviadas por eles e
+                        reproduzidas na íntegra. As três últimas vêm
+                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">do perfil do Google</a>,
+                        como estavam em {GOOGLE_REVIEWS.snapshotDate}
+                    </>
+                ) : (
+                    <>
+                        Avaliações publicadas por clientes
+                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">no perfil do Google da loja</a>,
+                        reproduzidas aqui na íntegra — como estavam em {GOOGLE_REVIEWS.snapshotDate}
+                    </>
+                )}
             </p>
+            {/* As da Verly vêm primeiro: são as únicas que podem trazer FOTO do serviço
+                instalado, e foto do resultado é o que a página inteira não tem para
+                mostrar. Ficam na mesma grade para não sugerir duas categorias de
+                cliente. */}
             <div class="testimonials-grid">
+                {verlyReviews.map((review) => (
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">{review.comment}</p>
+                        {review.photoUrls.length > 0 && (
+                            <ul class="testimonial-photos">
+                                {review.photoUrls.map((url) => (
+                                    <li>
+                                        {/* Não passa por astro:assets: o arquivo mora no
+                                            Garage e não na árvore do repo, então não há
+                                            o que otimizar em tempo de build. `loading`
+                                            e `decoding` porque a seção fica abaixo da
+                                            dobra, e aspect-ratio no CSS porque as
+                                            dimensões só o arquivo conhece — sem ela, a
+                                            imagem empurraria o texto ao carregar. */}
+                                        <img src={url} alt={`Serviço realizado pela Verly${review.serviceType ? ` — ${review.serviceType}` : ''}`} loading="lazy" decoding="async" />
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">{initials(review.customerName ?? 'Cliente')}</div>
+                            <div class="testimonial-info">
+                                <h3>{review.customerName ?? 'Cliente Verly'}</h3>
+                                <p>{[idadeRelativa(review.publishedAt, geradoEm), review.serviceType].filter(Boolean).join(' · ')}</p>
+                                <div class="testimonial-stars">{'★'.repeat(review.rating)}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ))}
                 {GOOGLE_REVIEWS.featured.map((review) => (
                 <div class="testimonial-card">
                     <div class="testimonial-quote">"</div>

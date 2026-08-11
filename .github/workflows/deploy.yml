@@ -16,6 +16,13 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # As avaliações aprovadas são lidas em tempo de BUILD (src/data/published-reviews.ts),
+  # então sem isto aprovar uma no Telegram não publicaria nada até alguém dar push — e
+  # quem aprova não é quem faz deploy. Uma vez por dia basta: a avaliação já esperou a
+  # moderação, e um build diário custa menos que um webhook do Pi para o GitHub, que
+  # exigiria segredo, endpoint público e um caminho novo para falhar.
+  schedule:
+    - cron: '17 9 * * *'
 
 permissions:
   contents: read

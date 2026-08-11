@@ -511,6 +511,30 @@
             line-height: 1.8;
         }
 
+        /* Fotos que o próprio cliente mandou junto da avaliação. Só as avaliações vindas
+           do link têm isso — são as primeiras imagens de serviço INSTALADO do site.
+           `aspect-ratio` fixo com `object-fit: cover` porque a dimensão real só o
+           arquivo conhece: sem reservar a caixa, cada foto empurraria o depoimento para
+           baixo ao terminar de carregar, e isso acontece exatamente enquanto a pessoa
+           está lendo. */
+        .testimonial-photos {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+            gap: 0.5rem;
+            margin: 0 0 1.25rem;
+            padding: 0;
+        }
+
+        .testimonial-photos img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+            background: var(--light-gray);
+        }
+
         .testimonial-author {
             display: flex;
             align-items: center;

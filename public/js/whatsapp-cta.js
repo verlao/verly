@@ -223,8 +223,8 @@ const WhatsAppCTA = {
         stickyBar.innerHTML = `
             <div class="sticky-cta-content">
                 <div class="sticky-cta-text">
-                    <strong>🎉 Orçamento Grátis em 2 Horas!</strong>
-                    <span>Fale com nossos especialistas agora</span>
+                    <strong>Ficou com dúvida?</strong>
+                    <span>Chame no WhatsApp e a gente responde</span>
                 </div>
                 <a href="${this.waLink(this.messages.urgente)}"
                    class="sticky-cta-button"

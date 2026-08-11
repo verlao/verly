@@ -418,10 +418,6 @@ function validateField(field) {
             errorMessage = 'E-mail inválido';
         }
     }
-    else if (fieldId === 'neighborhood' && field.value === '') {
-        isValid = false;
-        errorMessage = 'Selecione seu bairro';
-    }
     
     // Update UI based on validation
     if (!isValid) {
@@ -462,23 +458,20 @@ function validateField(field) {
 /**
  * Validate services checkboxes
  */
-function validateServices() {
-    const checkboxes = document.querySelectorAll('input[name="services"]:checked');
-    const errorElement = document.getElementById('servicesError');
-    
-    if (checkboxes.length === 0) {
-        if (errorElement) {
-            errorElement.textContent = 'Selecione pelo menos um serviço';
-        }
-        trackFormInteraction('validation_error', 'services', '', 'Nenhum serviço selecionado');
-        return false;
-    }
-    
-    if (errorElement) {
-        errorElement.textContent = '';
-    }
-    return true;
-}
+/*
+ * `validateServices()` foi removida daqui.
+ *
+ * Ela existia para barrar o envio sem serviço marcado, e o bloco de serviços deixou de
+ * ser obrigatório: eram oito decisões antes do botão, num campo cuja resposta o
+ * atendimento obtém na primeira pergunta da conversa.
+ *
+ * Consequência no analytics, de propósito: `validation_error` com
+ * `field_name = services` para de existir, e `generate_lead` passa a poder sair com
+ * `services` vazio e `services_count: 0`. Isso não é perda de sinal — é o sinal novo:
+ * a fração de leads que não quis detalhar o serviço é exatamente o que dizia se o
+ * campo obrigatório valia a pena, e antes ela era inobservável porque ninguém
+ * conseguia enviar sem responder.
+ */
 
 // ============================================================================
 // SERVIÇOS — CHAVE CURTA E ESTÁVEL
@@ -793,7 +786,6 @@ async function handleFormSubmit(event) {
     if (!validateField(phoneField)) isValid = false;
     if (!validateField(emailField)) isValid = false;
     if (!validateField(neighborhoodField)) isValid = false;
-    if (!validateServices()) isValid = false;
     
     if (!isValid) {
         showAlert('Por favor, corrija os campos destacados em vermelho.', 'error');
@@ -935,12 +927,16 @@ async function handleFormSubmit(event) {
             // Entrega não confirmada: o WhatsApp continua sendo a última rede de
             // segurança, com ou sem fila. Uma mensagem só para os dois modos de falha —
             // a versão curta do antigo `catch` deixava e-mail e observação de fora.
+            // Bairro e serviços viraram opcionais, então as duas linhas passam a ser
+            // condicionais como a do e-mail já era. Sem isso a mensagem chegaria com
+            // "*Bairro:* " e "*Serviços de Interesse:* " vazios — rótulo sem resposta
+            // parece campo perdido no caminho, e é o dono lendo isso no WhatsApp.
             const whatsappMessage = `*Solicitação de Orçamento - Verly Vidraçaria*\n\n` +
                 `*Nome:* ${formData.name}\n` +
                 `*Telefone:* ${phoneDisplay}\n` +
-                `*Bairro:* ${formData.neighborhood}\n` +
+                (formData.neighborhood ? `*Bairro:* ${formData.neighborhood}\n` : '') +
                 (formData.email ? `*E-mail:* ${formData.email}\n` : '') +
-                `*Serviços de Interesse:* ${selectedServices.join(', ')}\n` +
+                (selectedServices.length ? `*Serviços de Interesse:* ${selectedServices.join(', ')}\n` : '') +
                 (messageText ? `*Mensagem:* ${messageText}\n\n` : '\n') +
                 `Enviado através do site verlyvidracaria.com`;
 
@@ -1258,11 +1254,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
-        });
-        
-        // Validate services on change
-        document.querySelectorAll('input[name="services"]').forEach(checkbox => {
-            checkbox.addEventListener('change', validateServices);
         });
         
         // Form submission

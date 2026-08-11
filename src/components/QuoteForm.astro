@@ -139,15 +139,19 @@ const {
                             <div class="form-help">Opcional, mas nos ajuda a enviar o orçamento</div>
                         </div>
 
+                        {/* Deixou de ser obrigatório. Nas 11 páginas de bairro ele já vem
+                            preenchido, então exigir não custava nada ali — mas na home
+                            custava, e era o terceiro obstáculo antes do envio. Quem atende
+                            pergunta o bairro na primeira frase da conversa; o formulário
+                            não precisa ser o lugar onde isso é decidido. */}
                         <div class="form-group">
                             <label class="form-label" for="neighborhood">
-                                Seu Bairro <span class="required">*</span>
+                                Seu Bairro
                             </label>
-                            <select 
-                                id="neighborhood" 
+                            <select
+                                id="neighborhood"
                                 name="neighborhood"
                                 class="form-control"
-                                required
                             >
                                 <option value="">Selecione seu bairro</option>
                                 {NEIGHBORHOOD_OPTIONS.map((o) => (
@@ -157,10 +161,20 @@ const {
                             <div class="form-error" id="neighborhoodError"></div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">
-                                Serviços de Interesse <span class="required">*</span>
-                            </label>
+                        {/* Oito checkboxes obrigatórios eram, medindo a seção no celular, o
+                            maior pedaço dos 2.226px de altura do formulário — 2,6 telas — e
+                            o campo mais caro dele: obrigatório, com oito decisões, e o único
+                            cuja resposta o atendimento descobre em uma pergunta.
+                            Fechado num <details>, some da altura de quem não quer detalhar e
+                            continua inteiro para quem quer. Nenhuma opção foi removida: um
+                            <select> de serviço principal encurtaria mais, mas perderia o
+                            pedido de duas coisas ao mesmo tempo, que é comum aqui (box +
+                            espelho no mesmo banheiro).
+                            <details> nativo é o mesmo recurso que o FAQ já usa — zero JS. */}
+                        <details class="form-group services-details">
+                            <summary class="form-label services-summary">
+                                Serviços de interesse <span class="form-optional">(opcional)</span>
+                            </summary>
                             <div class="checkbox-group">
                                 <div class="checkbox-item">
                                     <input type="checkbox" id="service1" name="services" value="Box para Banheiro">
@@ -195,8 +209,7 @@ const {
                                     <label for="service8">Tampos de Mesa</label>
                                 </div>
                             </div>
-                            <div class="form-error" id="servicesError"></div>
-                        </div>
+                        </details>
 
                         <div class="form-group">
                             <label class="form-label" for="message">
@@ -224,8 +237,11 @@ const {
                             <Icon name="clock" /> Responderemos em até 2 horas úteis
                         </p>
 
+                        {/* Não lista mais os campos um a um: com bairro e serviços opcionais,
+                            a lista ficaria falando de dado que talvez nem seja preenchido. A
+                            promessa que importa é a de finalidade, e ela vale para tudo. */}
                         <p class="form-privacy">
-                            <Icon name="shield-alt" /> Usamos seu nome, telefone e bairro apenas para
+                            <Icon name="shield-alt" /> Usamos o que você preencher apenas para
                             responder este pedido de orçamento.
                         </p>
                     </form>

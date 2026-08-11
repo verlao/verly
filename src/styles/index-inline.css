@@ -1207,6 +1207,38 @@
 .faq-item[open] > summary::after { content: '\2212'; }
 .faq-item > p { margin: 0.75rem 0 0; color: #4b5563; }
 
+/* Bloco de serviços do formulário, no mesmo mecanismo do FAQ acima — nativo, sem JS.
+   O `+`/`−` é o que diz que existe conteúdo dobrado ali: sem o affordance, "Serviços
+   de interesse (opcional)" pareceria só um rótulo, e quem QUERIA detalhar não acharia
+   as oito opções. O alvo de toque cobre a linha inteira, não só o texto. */
+.services-details > .services-summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    min-height: 44px;
+    margin-bottom: 0;
+}
+.services-details > .services-summary::-webkit-details-marker { display: none; }
+.services-details > .services-summary::after {
+    content: '+';
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    color: var(--gray);
+}
+.services-details[open] > .services-summary::after { content: '\2212'; }
+.services-details[open] > .checkbox-group { margin-top: 0.75rem; }
+
+/* "(opcional)" em peso normal: o rótulo é negrito, e a palavra que mais importa aqui é
+   justamente a que dispensa o visitante de responder. */
+.form-optional {
+    font-weight: 400;
+    color: var(--gray);
+}
+
 /* WhatsApp com a cor da própria marca. Antes o botão era outline azul enquanto o
    VERDE estava no botão do formulário — no Brasil verde lê "WhatsApp", então as
    duas cores estavam trocadas de função. */

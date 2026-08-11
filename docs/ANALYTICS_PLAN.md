@@ -20,27 +20,26 @@ ler §6.
 
 ## 1. Inventário de eventos
 
-Todos os eventos passam por `trackGA4Event` (`public/js/app.js:28`), **exceto** os três
-emitidos direto por `gtag` em `whatsapp-cta.js` — marcados com ⚠, porque não recebem
-`page_type`/`neighborhood_page` de graça.
+**Todos** os eventos passam por `trackGA4Event` (`public/js/app.js`), inclusive os de
+`whatsapp-cta.js` — que hoje chamam `ctaTrack` → `window.VerlyAnalytics.track`, o mesmo
+enriquecedor. Um lugar só carimba `page_type`/`neighborhood_page`, um lugar só decide se o
+log aparece, e não há evento que escape da segmentação.
 
 | Evento | Arquivo:linha | Quando dispara | Parâmetros próprios (exemplo) | Cardinalidade |
 |---|---|---|---|---|
 | `page_view` | `Base.astro:113` | 1x por carregamento (`send_page_view: true`) | automáticos: `page_location`, `page_title`, `page_referrer` | baixa — 14 URLs (`/`, 11 `/<bairro>.html`, `/blog.html`, `/obrigado.html`) mais `/404.html` e `/500.html` |
 | `session_start`, `first_visit`, `user_engagement` | GA4 automático | início de sessão / 1ª visita | — | — |
-| `scroll` | `app.js:91` ← `:764` | cruza 25 / 50 / 75 / 100% | `percent_scrolled: 50`, `scroll_depth_threshold: 50`, `page_height: 9840`, `viewport_height: 844` | `percent_scrolled` baixa (4); `page_height`/`viewport_height` altas (numéricas) |
+| `scroll_depth` | `app.js` | cruza 25 / 50 / 75 / 100% | `percent_scrolled: 50`, `page_height: 9840`, `viewport_height: 844` | `percent_scrolled` baixa (4); `page_height`/`viewport_height` altas (numéricas). **Nome próprio para não colidir com o `scroll` automático do GA4, que dispara a 90%** |
 | `section_view` | `app.js:103` ← `:672` | 50% da seção visível, 1x por seção por pageview | `section_name: "Nossos Serviços"`, `section_id: "servicos"`, `scroll_position: 2140`, `time_on_page: 18` | `section_id` baixa (`servicos`, `diferenciais`, `depoimentos`, `contato`, `faq`); `section_name` instável (vem do `<h2>`); `scroll_position`/`time_on_page` altas |
 | `cta_click` | `app.js:63` ← `:710` | clique em `.btn-primary` / `.btn-success` / `.btn-secondary` | `button_text: "Solicitar Orçamento Grátis"`, `button_location: "hero"` (`hero`\|`menu`\|`contact_form`\|`other`), `target_section: "#contato"`, `click_position_y: 0` | `button_text`/`button_location` baixas; `click_position_y` alta |
 | `service_interaction` | `app.js:115` ← `:724` | clique em qualquer ponto de `.service-card` | `service_name: "Box para Banheiro"`, `service_position: 1`, `interaction_type: "click"` | baixa (6 cards) |
 | `navigation_click` | `app.js:147` ← `:623`, `:732`, `:741`, `:825` | `.nav-link`, links do rodapé, âncoras `#`, toggle do menu mobile | `link_text: "Serviços"`, `link_target: "#servicos"`, `navigation_type: "menu"` (`menu`\|`footer`\|`internal_link`\|`mobile_menu_toggle`) | média (~30 combinações de texto/alvo) |
 | `phone_click` | `app.js:136` ← `:750` | clique em `a[href^="tel:"]` | `phone_number: "+552134216066"` (número **da loja**), `click_location: "footer"` | baixa |
-| `whatsapp_click` (A) | `app.js:126` ← `:701` | clique em `a[href*="wa.me"]` ou `.whatsapp-float` | `click_source: "floating_button"` (`floating_button`\|`hero_cta`\|`inline_button`), `has_pre_filled_message: true`, `message_length: 62` | baixa — **não tem `context`** |
-| `whatsapp_click` (B) ⚠ | `whatsapp-cta.js:395` ← `:386` | **o mesmo clique** (listener delegado no `document`) | `context: "service-sacada"`, `button_text: "Pedir Orçamento"`, `device_type`, `browser`, `os` | `context` baixa (11 valores; ver §5.4) |
-| `contact_link_click` ⚠ | `whatsapp-cta.js:420` | clique em `[data-track]` — 4 links do rodapé (`Footer.astro:62,67,72,78`) | `event_name: "footer_phone_click"`, `link_type: "tel"`, `link_text`, `device_type`, `browser`, `os` | baixa (4) |
-| `page_view_with_device` ⚠ | `whatsapp-cta.js:374` | todo carregamento | `device_type: "Android"`, `browser: "Chrome"`, `os: "Android"`, `is_mobile: true` | baixa — **redundante**, ver §6 |
+| `whatsapp_click` | `whatsapp-cta.js` (listener delegado no `document`) | clique em qualquer link de WhatsApp — **um** por clique | `context: "service-sacada"`, `click_source`, `button_text: "Pedir Orçamento"` | `context` baixa (11 valores; ver §5.4) |
+| `contact_link_click` | `whatsapp-cta.js` | clique em `[data-track]` — **2** links do rodapé, e-mail e endereço (`Footer.astro:78,84`); WhatsApp e telefone saem como os próprios eventos | `link_id: "footer_email_click"`, `link_type: "mailto"`, `link_text` | baixa (2) |
 | `form_interaction` | `app.js:84` | 10 gatilhos, ver tabela abaixo | `form_name: "contact_form"`, `form_action: "field_focus"`, `field_name: "phone"`, `field_value_length: 15` (só quando há valor), `error_message: "Telefone inválido…"` (só em erro) | `form_action` baixa (10); `field_name` baixa (7: `name`, `phone`, `email`, `neighborhood`, `message`, `services`, `all_fields`) |
 | `engagement_milestone` | `app.js:158` ← `:696` | 30s / 60s / 120s após `DOMContentLoaded` | `milestone_name: "time_60s"`, `milestone_value: 60` | baixa (3) |
-| `generate_lead` | `app.js:508` | submit válido **e** resposta da API — inclusive quando a API falha | `lead_source: "contact_form"`, `services: "Box para Banheiro, Espelhos"`, `neighborhood: "Realengo"`, `api_status: "success"` (`success`\|`error`), `has_email: false`, `has_message: true` | `services` **alta** (até 255 combinações, até 127 caracteres); `neighborhood` baixa (11) |
+| `generate_lead` | `app.js` | submit válido **e** resposta da API — inclusive quando a API falha | `lead_source: "contact_form"`, `services: "box,espelhos"` (**slugs**, ver `SERVICE_SLUGS`), `services_count: 2`, `neighborhood: "Realengo"`, `api_status`, `delivery_attempts`, `lead_queued`, `has_email`, `has_message` | `services` combinatória mas **curta** — 8 slugs somam bem menos que o limite de 100 caracteres do GA4; `neighborhood` baixa (11) |
 | `conversion` (Ads) | `app.js:520` | **nunca hoje**: `ADS_CONVERSION_LABEL` é `''` (`app.js:17`) | `send_to`, `value: 1.0`, `currency: "BRL"` | — |
 
 Valores de `form_action`, com a linha que os emite:
@@ -52,14 +51,16 @@ Valores de `form_action`, com a linha que os emite:
 | `field_blur` | `app.js:794` | passa o valor; sai só `field_value_length` |
 | `field_complete` | `app.js:359` | campo válido e preenchido |
 | `validation_error` | `app.js:349`, `:387` | `:387` é o bloco de serviços (`error_message: "Nenhum serviço selecionado"`) |
-| `service_selected` | `app.js:804` | **único sinal dos 8 checkboxes**; `field_name` é sempre `services` |
+| `service_selected` | `app.js` | dispara a cada marcação; `field_name` é sempre `services` |
 | `submit_attempt` | `app.js:410` | antes de validar |
 | `validation_failed` | `app.js:445` | submit barrado na validação |
 | `submit_success` | `app.js:505` | dispara também quando a API falhou (`error_message: "API failed"`) |
 | `submit_error` | `app.js:577` | exceção de rede |
 
-Campos que emitem `field_focus`: `name`, `phone`, `email`, `neighborhood`, `message`
-(`app.js:778`). **Os checkboxes de serviços não estão nessa lista** — consequência em §5.3.
+Campos que emitem `field_focus`: `name`, `phone`, `email`, `neighborhood`, `message` e
+**`services`** — o bloco dos 8 checkboxes conta como UM campo, e o vaivém entre checkboxes
+vizinhos não gera focus novo (senão `services` inflaria até 8x contra os outros campos e a
+comparação do funil perderia sentido).
 
 Sem PII: `trackFormInteraction` recebe o valor do campo e emite apenas
 `field_value_length` (`app.js:81`).
@@ -198,15 +199,18 @@ principais por sessão", que só existe depois de §3.
 
 - **Pergunta:** os 6 cards têm peso igual na página; têm peso igual na demanda?
 - **Tipo:** formato livre.
-- **Cardinalidade — leia antes de montar:** `services` é lista concatenada
-  (`app.js:451` + `:509`). São até 255 combinações, e a string completa dos 8 serviços tem
-  **127 caracteres**, acima do limite de 100 caracteres por valor de parâmetro do GA4 —
-  seleções de 7 ou 8 serviços chegam **cortadas** e viram linhas espúrias. Detalhar por
-  `services` produz uma tabela de combinações, não um ranking de serviços.
-- **Como montar mesmo assim:** uma consulta **por serviço**, 8 no total. Métrica: Contagem
-  de eventos; filtros: Nome do evento exatamente `generate_lead` **e** `services` **contém**
-  o nome do serviço. A soma das 8 passa do total de leads — é esperado, cada linha é
-  "% dos leads que citaram X", não uma partição.
+- **Cardinalidade — leia antes de montar:** `services` é lista de **slugs**
+  (`box,sacada,guarda_corpo,portas_vidro,janelas_aluminio,espelhos,divisorias,tampos_mesa`).
+  Continua sendo combinação, então detalhar por `services` dá uma tabela de combinações e
+  não um ranking de serviços — mas já não estoura os 100 caracteres do GA4, que era o que
+  cortava justamente a seleção maior, o lead mais valioso.
+- **Como montar:** uma consulta **por serviço**, 8 no total. Métrica: Contagem de eventos;
+  filtros: Nome do evento exatamente `generate_lead` **e** `services` **contém** o *slug*
+  (não o nome exibido). Os slugs foram escolhidos para que nenhum seja pedaço de outro, o
+  que é o que torna o "contém" confiável. A soma das 8 passa do total de leads — esperado,
+  cada linha é "% dos leads que citaram X", não uma partição.
+  Atalho para ranking grosseiro sem 8 consultas: `services_count` responde "quantos
+  serviços por lead", que é outra pergunta, mas de graça.
 - **Sinal de interesse (limpo, já disponível):** `service_interaction.service_name`
   (cliques nos 6 cards) e `whatsapp_click` com `context` começando em `service-` — por
   serviço, sem concatenação. Use-os para *interesse* e `generate_lead` para *demanda
@@ -216,10 +220,11 @@ principais por sessão", que só existe depois de §3.
   **8** serviços e a página tem **6** cards — `Janelas de Alumínio` e `Tampos de Mesa` não
   têm card. Se aparecerem bem no ranking, falta card.
 - **Decide:** ordem e conteúdo dos cards; qual serviço merece página própria.
-- **Follow-up de código (fora deste PR):** emitir um `service_selected` por checkbox com
-  `service_name` singular. Hoje `app.js:804` manda a lista concatenada e só o
-  `field_value_length` sobrevive — não dá para saber *qual* serviço marcou quem desistiu.
-  Trocaria 8 consultas por um detalhamento.
+- **Tentado e descartado:** um evento por serviço, que trocaria as 8 consultas por um
+  detalhamento. Medindo o envio real, um lead com os 8 serviços emite 8 eventos no mesmo
+  instante, o gtag os junta num lote e **o lote perde eventos** — 3 dos 8 se perderam no
+  caminho de sucesso, que redireciona 1,2 s depois. Oito consultas chatas valem mais que uma
+  contagem que perde evento sem avisar.
 
 ### 5.3 Onde o formulário perde gente
 
@@ -236,14 +241,15 @@ principais por sessão", que só existe depois de §3.
 | 6 | `form_interaction` | `form_action` = `submit_attempt` |
 | 7 | `generate_lead` | — |
 
-- **Correção à hipótese:** os 8 checkboxes **não emitem `field_focus`** — não estão na lista
-  de `app.js:778`. Um funil de `field_focus` por `field_name` é cego para eles. O único sinal
-  do bloco é `service_selected` (`app.js:804`), que só dispara quando **já** marcaram algo.
-  O custo dos checkboxes se mede de duas formas indiretas: (a) queda da etapa 4 para a 5 —
-  chegou no bairro e nunca marcou serviço; (b) tabela de formato livre com filtro
-  `form_action` = `validation_error`, linhas `field_name` e `error_message`. Se
-  `services` / `"Nenhum serviço selecionado"` (`app.js:387`) for a maior linha, a hipótese
-  está confirmada.
+- **O bloco de serviços agora é mensurável direto.** Ele emite `field_focus` com
+  `field_name = services`, então cabe uma etapa própria no funil, entre a 4 e a 5:
+  `form_action` = `field_focus` e `field_name` = `services`. A queda dessa etapa para
+  `service_selected` é literalmente "olhou as 8 opções e não marcou nenhuma" — antes esse
+  abandono não deixava rastro.
+- **Confirmação independente:** tabela de formato livre com filtro `form_action` =
+  `validation_error`, linhas `field_name` e `error_message`. Se
+  `services` / `"Nenhum serviço selecionado"` for a maior linha, o bloco obrigatório é o
+  gargalo, e aí a decisão abaixo se sustenta em dois sinais e não em um.
 - **Armadilha de contagem:** `field_focus` dispara em **todo** focus (`app.js:789`). Em
   funil (por usuário) não distorce; em Contagem de eventos, distorce — nunca compare
   `field_focus` com `field_complete` por contagem.
@@ -336,16 +342,28 @@ usuários e a tabela de bairros pode esconder exatamente o bairro que você quer
 propriedade de baixo volume, não ative. E `section_view` é 1x por seção por pageview: taxa
 de "quem viu serviços" é por pageview, não por pessoa.
 
-**(d) Ruído a limpar (follow-up de código, não deste PR).** `page_view_with_device`
-(`whatsapp-cta.js:374`) duplica em todo carregamento dados que o GA4 já coleta — remover.
-O evento `scroll` custom (`app.js:91`) colide com o `scroll` automático da Medição
-avançada, que dispara a 90%: o mesmo nome de evento passa a ter `percent_scrolled` de
-25/50/75/**90**/100 misturados — ou renomeie para `scroll_depth`, ou desligue o `scroll` em
-**Administrador → Fluxos de dados → Medição avançada**. E `contact_link_click` tem um
-parâmetro chamado `event_name` (`whatsapp-cta.js:421`), que no painel colide de nome com a
-dimensão "Nome do evento" — renomear para `link_id`. Por fim, o link de WhatsApp do rodapé
-tem `data-context` **e** `data-track` (`Footer.astro:62`): um clique gera três eventos
-(`whatsapp_click` x2 + `contact_link_click`).
+**(d) Ruído a limpar — resolvido em código, uma coisa sobra para o painel.**
+
+| ruído | estado |
+|---|---|
+| `page_view_with_device` duplicando em todo carregamento | ✅ removido |
+| `contact_link_click` com parâmetro `event_name`, que colide com a dimensão nativa "Nome do evento" | ✅ virou `link_id` |
+| WhatsApp do rodapé com `data-context` **e** `data-track`: um clique = 3 eventos | ✅ um clique = um evento, escolhido por especificidade |
+| `page_view` duplicado (`Base.astro` + `app.js`) | ✅ sobrou o automático |
+| `timestamp` em todo evento, gastando cota de dimensão | ✅ removido |
+| `services` cortando em 100 caracteres na seleção grande | ✅ virou lista de slugs + `services_count` |
+
+⚠️ **O que sobra é seu, e é no painel:** o evento `scroll` **automático** da Medição
+avançada dispara a 90%. O do site agora se chama `scroll_depth` (25/50/75/100), então os
+dois não se misturam mais — mas o automático continua existindo e vai aparecer na lista de
+eventos. Não confunda um com o outro ao montar relatório; se preferir só um, desligue em
+**Administrador → Fluxos de dados → Medição avançada**.
+
+Uma tentação medida e **descartada**: emitir um evento por serviço marcado, em vez do
+filtro "`services` contém o slug". Medindo o envio real, um lead com os 8 serviços emite 8
+eventos no mesmo instante, o gtag os agrupa num lote e **o lote perde eventos** — 3 dos 8
+se perderam no caminho de sucesso, que redireciona 1,2 s depois. Contagem que perde evento
+em silêncio é pior que filtro "contém". Ver `app.js` (`SERVICE_SLUGS`).
 
 ---
 

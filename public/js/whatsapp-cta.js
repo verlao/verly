@@ -403,8 +403,11 @@ const WhatsAppCTA = {
                 const linkType = href.split(':')[0] || 'unknown';
                 const linkText = target.textContent.trim();
 
+                // `link_id`, e não `event_name`: no painel do GA4 existe uma dimensão
+                // nativa chamada "Nome do evento", e um parâmetro com esse nome fica
+                // indistinguível dela na hora de escolher a dimensão do relatório.
                 ctaTrack('contact_link_click', {
-                    event_name: trackEvent,
+                    link_id: trackEvent,
                     link_type: linkType,
                     link_text: linkText
                 });

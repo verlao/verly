@@ -123,107 +123,103 @@ const {
                             <div class="form-error" id="phoneError"></div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label" for="email">
-                                E-mail
-                            </label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email"
-                                class="form-control" 
-                                placeholder="seu@email.com"
-                                autocomplete="email"
-                            >
-                            <div class="form-error" id="emailError"></div>
-                            <div class="form-help">Opcional, mas nos ajuda a enviar o orçamento</div>
-                        </div>
-
-                        {/* Deixou de ser obrigatório. Nas 11 páginas de bairro ele já vem
-                            preenchido, então exigir não custava nada ali — mas na home
-                            custava, e era o terceiro obstáculo antes do envio. Quem atende
-                            pergunta o bairro na primeira frase da conversa; o formulário
-                            não precisa ser o lugar onde isso é decidido. */}
-                        <div class="form-group">
-                            <label class="form-label" for="neighborhood">
-                                Seu Bairro
-                            </label>
-                            <select
-                                id="neighborhood"
-                                name="neighborhood"
-                                class="form-control"
-                            >
-                                <option value="">Selecione seu bairro</option>
-                                {NEIGHBORHOOD_OPTIONS.map((o) => (
-                                  <option value={o} selected={o === neighborhood}>{o}</option>
-                                ))}
-                            </select>
-                            <div class="form-error" id="neighborhoodError"></div>
-                        </div>
-
-                        {/* Oito checkboxes obrigatórios eram, medindo a seção no celular, o
-                            maior pedaço dos 2.226px de altura do formulário — 2,6 telas — e
-                            o campo mais caro dele: obrigatório, com oito decisões, e o único
-                            cuja resposta o atendimento descobre em uma pergunta.
-                            Fechado num <details>, some da altura de quem não quer detalhar e
-                            continua inteiro para quem quer. Nenhuma opção foi removida: um
-                            <select> de serviço principal encurtaria mais, mas perderia o
-                            pedido de duas coisas ao mesmo tempo, que é comum aqui (box +
-                            espelho no mesmo banheiro).
-                            <details> nativo é o mesmo recurso que o FAQ já usa — zero JS. */}
-                        <details class="form-group services-details">
-                            <summary class="form-label services-summary">
-                                Serviços de interesse <span class="form-optional">(opcional)</span>
+                        {/* Tudo que não é necessário para iniciar o atendimento fica numa
+                            única decisão opcional. O bairro também fica aqui: nas páginas
+                            locais ele já vem preenchido e será enviado sem pedir confirmação;
+                            quem estiver pedindo para outro endereço ainda pode abrir e editar.
+                            Na home, continua vazio e opcional. */}
+                        <details class="form-group optional-details">
+                            <summary class="form-label optional-details-summary">
+                                Adicionar detalhes <span class="form-optional">(opcional)</span>
                             </summary>
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service1" name="services" value="Box para Banheiro">
-                                    <label for="service1">Box para Banheiro</label>
+
+                            <div class="optional-details-content">
+                                <div class="form-group">
+                                    <label class="form-label" for="email">
+                                        E-mail
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        class="form-control"
+                                        placeholder="seu@email.com"
+                                        autocomplete="email"
+                                    >
+                                    <div class="form-error" id="emailError"></div>
+                                    <div class="form-help">Nos ajuda a enviar o orçamento</div>
                                 </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service2" name="services" value="Sacada Envidraçada">
-                                    <label for="service2">Sacada Envidraçada</label>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="neighborhood">
+                                        Seu Bairro
+                                    </label>
+                                    <select
+                                        id="neighborhood"
+                                        name="neighborhood"
+                                        class="form-control"
+                                    >
+                                        <option value="">Selecione seu bairro</option>
+                                        {NEIGHBORHOOD_OPTIONS.map((o) => (
+                                          <option value={o} selected={o === neighborhood}>{o}</option>
+                                        ))}
+                                    </select>
+                                    <div class="form-error" id="neighborhoodError"></div>
                                 </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service3" name="services" value="Guarda-corpo">
-                                    <label for="service3">Guarda-corpo</label>
+
+                                <div class="form-group">
+                                    <div class="form-label" id="services-label">Serviços de interesse</div>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service1" name="services" value="Box para Banheiro">
+                                            <label for="service1">Box para Banheiro</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service2" name="services" value="Sacada Envidraçada">
+                                            <label for="service2">Sacada Envidraçada</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service3" name="services" value="Guarda-corpo">
+                                            <label for="service3">Guarda-corpo</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service4" name="services" value="Portas de Vidro">
+                                            <label for="service4">Portas de Vidro</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service5" name="services" value="Janelas de Alumínio">
+                                            <label for="service5">Janelas de Alumínio</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service6" name="services" value="Espelhos">
+                                            <label for="service6">Espelhos</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service7" name="services" value="Divisórias">
+                                            <label for="service7">Divisórias</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="service8" name="services" value="Tampos de Mesa">
+                                            <label for="service8">Tampos de Mesa</label>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service4" name="services" value="Portas de Vidro">
-                                    <label for="service4">Portas de Vidro</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service5" name="services" value="Janelas de Alumínio">
-                                    <label for="service5">Janelas de Alumínio</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service6" name="services" value="Espelhos">
-                                    <label for="service6">Espelhos</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service7" name="services" value="Divisórias">
-                                    <label for="service7">Divisórias</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="service8" name="services" value="Tampos de Mesa">
-                                    <label for="service8">Tampos de Mesa</label>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="message">
+                                        Descreva Seu Projeto
+                                    </label>
+                                    <textarea
+                                        id="message"
+                                        name="message"
+                                        class="form-control"
+                                        rows="4"
+                                        placeholder="Ex: Preciso de um box de 1,20m x 1,80m para banheiro. Gostaria de receber orçamento."
+                                    ></textarea>
+                                    <div class="form-help">Quanto mais detalhes, melhor será nosso orçamento</div>
                                 </div>
                             </div>
                         </details>
-
-                        <div class="form-group">
-                            <label class="form-label" for="message">
-                                Descreva Seu Projeto (Opcional)
-                            </label>
-                            <textarea 
-                                id="message" 
-                                name="message"
-                                class="form-control" 
-                                rows="4"
-                                placeholder="Ex: Preciso de um box de 1,20m x 1,80m para banheiro. Gostaria de receber orçamento."
-                            ></textarea>
-                            <div class="form-help">Quanto mais detalhes, melhor será nosso orçamento</div>
-                        </div>
 
                         {/* Cor de CTA, não azul de marca: o botão que fecha a conversão é o
                             único que precisava do âmbar e era o único que não usava. */}

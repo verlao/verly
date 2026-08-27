@@ -182,26 +182,6 @@ function trackServiceClick(serviceName, servicePosition) {
 }
 
 /**
- * Track WhatsApp interaction
- *
- * Só os desvios para o WhatsApp que NÃO são clique (fallback e erro do formulário)
- * passam por aqui. O clique em si tem um emissor só, o ouvinte delegado do
- * whatsapp-cta.js — ver o comentário em initCompleteAnalytics.
- *
- * `context` e `click_source` saem com o mesmo valor de propósito: o evento tem UM
- * formato só, então uma tabela por qualquer um dos dois parâmetros mostra o
- * fallback junto dos cliques em vez de "(não definido)".
- */
-function trackWhatsAppClick(source, message = '') {
-    trackGA4Event('whatsapp_click', {
-        context: source, // 'form_fallback', 'form_error'
-        click_source: source,
-        has_pre_filled_message: !!message,
-        message_length: message ? message.length : 0
-    });
-}
-
-/**
  * Track phone click
  */
 function trackPhoneClick(phoneNumber, location) {
@@ -325,6 +305,40 @@ function clearAlert() {
     const alertDiv = document.getElementById('formAlert');
     alertDiv.style.display = 'none';
     alertDiv.innerHTML = '';
+}
+
+/**
+ * Exibe a saída de contingência como um link real.
+ *
+ * `window.open()` disparado por timer não é uma ação da pessoa (e navegadores ainda
+ * podem bloqueá-lo como popup). O link mantém nome/telefone/mensagem no handoff, mas
+ * o analytics só acontece quando a pessoa de fato clica nele.
+ */
+function showWhatsAppHandoff(message, whatsappURL, context) {
+    showAlert(message, 'error');
+
+    const alertDiv = document.getElementById('formAlert');
+    const alert = document.createElement('div');
+    alert.className = 'form-alert error';
+
+    const icon = document.createElement('span');
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = '!';
+
+    const content = document.createElement('span');
+    content.appendChild(document.createTextNode(`${message} `));
+
+    const handoff = document.createElement('a');
+    handoff.href = whatsappURL;
+    handoff.target = '_blank';
+    handoff.rel = 'noopener noreferrer';
+    handoff.dataset.context = context;
+    handoff.textContent = 'Continuar no WhatsApp';
+    content.appendChild(handoff);
+
+    alert.append(icon, content);
+    alertDiv.replaceChildren(alert);
+    alertDiv.style.display = 'block';
 }
 
 /**
@@ -725,9 +739,9 @@ async function flushLeadQueue(reason) {
             }
 
             if (result.status === 'success') {
-                // NÃO é um generate_lead: a conversão já foi contada no envio. Este
-                // evento é o que fecha o buraco de leitura — sem ele, o lead que a
-                // fila recuperou fica para sempre como api_status=fetch_error.
+                // Recuperação tem evento próprio: o submit original não foi aceito e
+                // portanto não emitiu generate_lead. Assim o relatório distingue um
+                // lead confirmado em primeiro plano de um que só chegou pela fila.
                 trackGA4Event('lead_recovered', {
                     lead_source: 'contact_form',
                     recovery_reason: reason,
@@ -835,6 +849,20 @@ async function handleFormSubmit(event) {
         utm_medium: getUrlParam('utm_medium') || '',
         utm_campaign: getUrlParam('utm_campaign') || ''
     };
+
+    // Evento próprio para o denominador de entrega. Diferente do
+    // form_interaction.submit_attempt (que acontece antes da validação), este só sai
+    // quando existe um payload válido prestes a ser enviado. Nenhum dado pessoal vai
+    // para o GA4: serviços são slugs e e-mail/mensagem viram apenas booleanos.
+    const leadEventParams = {
+        lead_source: 'contact_form',
+        services: selectedServiceSlugs.join(','),
+        services_count: selectedServices.length,
+        neighborhood: formData.neighborhood,
+        has_email: !!formData.email,
+        has_message: !!messageText
+    };
+    trackGA4Event('lead_submit_attempt', leadEventParams);
     
     // Show loading state (use ButtonLoader if available)
     if (typeof ButtonLoader !== 'undefined') {
@@ -847,12 +875,7 @@ async function handleFormSubmit(event) {
     
     try {
         // Send to API. deliverLead NUNCA lança: as três saídas possíveis
-        // (success / error / fetch_error) são tratadas no mesmo lugar, o que garante
-        // que `generate_lead` sai em TODAS elas. Antes, o evento de conversão estava
-        // dentro do `try` junto do fetch: quando o fetch lançava (offline, DNS, CORS,
-        // timeout, servidor inalcançável) o código pulava direto para o `catch`, abria
-        // o WhatsApp com nome, telefone, bairro e serviços — o lead chegava na loja — e
-        // o GA4 não contava conversão nenhuma.
+        // (success / error / fetch_error) são tratadas no mesmo lugar.
         const result = await deliverLead(formData, LEAD_FOREGROUND_ATTEMPTS);
         const apiSuccess = result.status === 'success';
 
@@ -867,24 +890,16 @@ async function handleFormSubmit(event) {
             trackFormInteraction('submit_success', 'all_fields', '', apiSuccess ? 'API success' : 'API failed');
         }
 
-        // Track as conversion with services and neighborhood.
-        //
-        // `services` vai em slug e não no rótulo: a lista dos 8 rótulos tem 127
-        // caracteres, acima do limite de 100 por valor de parâmetro do GA4, e chegava
-        // truncada — justamente na seleção maior, que é o lead mais valioso.
-        // `api_status` distingue os três desfechos, então o relatório separa
-        // "servidor respondeu erro" de "requisição nem chegou" sem perder a contagem.
-        trackGA4Event('generate_lead', {
-            lead_source: 'contact_form',
-            services: selectedServiceSlugs.join(','),
-            services_count: selectedServices.length,
-            neighborhood: formData.neighborhood,
-            api_status: result.status,
-            delivery_attempts: result.attempts,
-            lead_queued: queued,
-            has_email: !!formData.email,
-            has_message: !!messageText
-        });
+        // Conversão só existe quando a API confirmou que aceitou o lead. Falhas já
+        // têm lead_submit_attempt como denominador; se a fila entregar depois, o
+        // evento distinto lead_recovered registra esse desfecho.
+        if (apiSuccess) {
+            trackGA4Event('generate_lead', {
+                ...leadEventParams,
+                api_status: 'success',
+                delivery_attempts: result.attempts
+            });
+        }
 
         // Track Google Ads conversion
         if (typeof gtag !== 'undefined' && apiSuccess) {
@@ -943,18 +958,14 @@ async function handleFormSubmit(event) {
             const encodedMessage = encodeURIComponent(whatsappMessage);
             const whatsappURL = `https://wa.me/5521987926578?text=${encodedMessage}`;
 
-            showAlert(queued
-                ? '⚠️ <strong>Sem conexão para enviar agora.</strong><br>Seu pedido ficou salvo e será reenviado sozinho quando a internet voltar. Você será redirecionado para o WhatsApp para adiantar o contato.'
-                : '⚠️ <strong>Problema no envio automático.</strong><br>Você será redirecionado para o WhatsApp para finalizar o contato.', 'error');
-
-            // `form_fallback` = servidor respondeu erro; `form_error` = requisição não
-            // chegou. Os dois valores são os que o site já emitia nesses dois caminhos.
-            trackWhatsAppClick(result.status === 'fetch_error' ? 'form_error' : 'form_fallback', whatsappMessage);
-
-            // Redirect to WhatsApp after 2 seconds
-            setTimeout(() => {
-                window.open(whatsappURL, '_blank');
-            }, 2000);
+            const handoffContext = result.status === 'fetch_error' ? 'form_error' : 'form_fallback';
+            showWhatsAppHandoff(
+                queued
+                    ? 'Sem conexão para enviar agora. Seu pedido ficou salvo e será reenviado quando a internet voltar.'
+                    : 'Problema no envio automático. Finalize o contato pelo WhatsApp.',
+                whatsappURL,
+                handoffContext
+            );
         }
     } finally {
         // Reset button state (use ButtonLoader if available)
@@ -1138,18 +1149,22 @@ function initCompleteAnalytics() {
         });
     });
     
-    // Track form field interactions
+    // Track form field interactions. Uma única flag é compartilhada por todos os
+    // campos e pelo grupo de serviços: start significa "este formulário começou",
+    // não "este campo foi focado pela primeira vez".
+    let formStarted = false;
+    const trackFormStart = fieldName => {
+        if (formStarted) return;
+        formStarted = true;
+        trackFormInteraction('start', fieldName);
+    };
+
     const formFields = ['name', 'phone', 'email', 'neighborhood', 'message'];
     formFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
-            // Track first focus (form start)
-            let firstFocus = true;
             field.addEventListener('focus', () => {
-                if (firstFocus) {
-                    trackFormInteraction('start', fieldId);
-                    firstFocus = false;
-                }
+                trackFormStart(fieldId);
                 trackFormInteraction('field_focus', fieldId);
             });
             
@@ -1172,15 +1187,10 @@ function initCompleteAnalytics() {
     // continuar no mesmo campo, não sair e voltar — contar isso inflaria `field_focus`
     // em até 8x contra os outros campos e a comparação do funil perderia sentido.
     const staysInServicesGroup = related => !!related && related.name === 'services';
-    let servicesFirstFocus = true;
-
     document.querySelectorAll('input[name="services"]').forEach(checkbox => {
         checkbox.addEventListener('focus', (e) => {
             if (staysInServicesGroup(e.relatedTarget)) return;
-            if (servicesFirstFocus) {
-                trackFormInteraction('start', 'services');
-                servicesFirstFocus = false;
-            }
+            trackFormStart('services');
             trackFormInteraction('field_focus', 'services');
         });
 

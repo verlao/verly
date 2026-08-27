@@ -213,6 +213,7 @@ com a das 11 páginas de bairro.
 | Evento | Descrição | Dados Capturados |
 |--------|-----------|------------------|
 | `page_view` | Carregamento da página (o automático do gtag, um por acesso) | page_location, page_title, page_referrer |
+| `whatsapp_impression` | CTA de WhatsApp realmente visível (1x/context/pageview) | context, click_source, button_text |
 | `whatsapp_click` | Clique em WhatsApp | context, click_source, button_text |
 | `contact_link_click` | Clique em e-mail/endereço | event_name, link_type, link_text |
 | `phone_click` | Clique em `tel:` | phone_number, click_location |
@@ -220,7 +221,9 @@ com a das 11 páginas de bairro.
 | `cta_click` | Clique em botão de CTA | button_text, button_location, target_section |
 | `service_interaction` | Clique em card de serviço | service_name, service_position |
 | `form_interaction` | Cada passo do formulário | form_action, field_name |
-| `generate_lead` | Formulário enviado com sucesso | services, neighborhood, api_status |
+| `lead_submit_attempt` | Payload válido enviado à API | services, neighborhood, has_email, has_message |
+| `generate_lead` | API confirmou o lead (`2xx`) | services, neighborhood, api_status |
+| `lead_recovered` | Fila local foi aceita posteriormente | recovery_reason, delivery_attempts |
 | `scroll` | Profundidade de scroll | percent_scrolled (25/50/75/100) |
 | `section_view` | Visualização de seção | section_name, section_id |
 | `engagement_milestone` | 30s / 60s / 120s na página | milestone_name, milestone_value |

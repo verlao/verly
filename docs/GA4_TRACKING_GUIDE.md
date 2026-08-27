@@ -57,10 +57,11 @@ Este documento descreve **todos os eventos do Google Analytics 4** implementados
 
 ---
 
-### 3. **generate_lead** (Padrão GA4 - Conversão)
+### 3. **lead_submit_attempt** + **generate_lead**
 
-**Quando:** Formulário enviado com sucesso  
-**Tipo:** Conversão Principal  
+**Quando:** `lead_submit_attempt` sai para cada payload válido prestes a ser enviado;
+`generate_lead` sai apenas quando a API confirma aceitação (`2xx`).
+**Tipo:** Tentativa + Conversão Principal confirmada
 
 **Parâmetros:**
 ```javascript
@@ -68,14 +69,14 @@ Este documento descreve **todos os eventos do Google Analytics 4** implementados
   lead_source: 'contact_form',
   services: 'Box para Banheiro, Sacada Envidraçada',
   neighborhood: 'Barra da Tijuca',
-  api_status: 'success', // ou 'error'
+  api_status: 'success', // presente apenas em generate_lead
   has_email: true,
   has_message: true,
   timestamp: '...'
 }
 ```
 
-**Objetivo:** Rastrear conversões e qualidade dos leads
+**Objetivo:** Medir tentativa → aceite sem contar falha HTTP/rede como lead
 
 ---
 
@@ -140,23 +141,27 @@ Este documento descreve **todos os eventos do Google Analytics 4** implementados
 
 ### 6. **whatsapp_click** (Customizado)
 
-**Quando:** Clique em qualquer link do WhatsApp  
+**Quando:** Clique real em qualquer link do WhatsApp, inclusive o link de handoff exibido
+após falha do formulário. Renderizar o link não dispara o evento.
 **Tipo:** Interação + Conversão  
 
 **Parâmetros:**
 ```javascript
 {
-  click_source: 'floating_button', // 'floating_button', 'hero_cta', 'form_success', 'form_fallback', 'form_error'
-  has_pre_filled_message: true,
-  message_length: 145,
-  timestamp: '...'
+  context: 'form_fallback',
+  click_source: 'inline_button',
+  button_text: 'Continuar no WhatsApp'
 }
 ```
 
 **Locais Rastreados:**
 - Botão flutuante (canto inferior direito)
 - Hero CTA "WhatsApp Direto"
-- Fallback após erro da API
+- Link de handoff após erro da API
+
+O evento `whatsapp_impression` usa os mesmos parâmetros e dispara no máximo uma vez por
+`context` por pageview quando o CTA fica realmente visível. Ele é o denominador correto
+para comparar CTAs cuja exposição depende de scroll/visibilidade.
 
 **Objetivo:** Medir conversões via WhatsApp
 

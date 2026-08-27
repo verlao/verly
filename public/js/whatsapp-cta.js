@@ -362,6 +362,8 @@ const WhatsAppCTA = {
      * três também saíram dos eventos abaixo: eram cópia do que o GA4 mede sozinho.
      */
     trackConversions() {
+        const whatsappSelector = 'a[href*="whatsapp"], a[href*="wa.me"]';
+
         /**
          * ÚNICO emissor de whatsapp_click do site. O app.js também ligava um ouvinte em
          * cada `a[href*="wa.me"]`, então um clique saía como DOIS whatsapp_click com
@@ -375,7 +377,7 @@ const WhatsAppCTA = {
          * calculava — nada se perde na consolidação.
          */
         document.addEventListener('click', (e) => {
-            const target = e.target.closest('a[href*="whatsapp"], a[href*="wa.me"]');
+            const target = e.target.closest(whatsappSelector);
 
             if (target) {
                 const context = target.dataset.context || 'unknown';
@@ -394,6 +396,98 @@ const WhatsAppCTA = {
                 ctaLog(`📊 WhatsApp click tracked: ${context} (${clickSource})`);
             }
         });
+
+        /**
+         * Denominador dos cliques: uma impressão por contexto por pageview.
+         *
+         * IntersectionObserver mantém o custo fora do scroll handler. A checagem de
+         * estilo evita contar a sticky enquanto está recolhida e o flutuante enquanto
+         * `.is-hidden`. O MutationObserver só cobre dois casos que não exigem nova
+         * interseção geométrica: mudança de visibilidade por classe e o handoff do
+         * formulário, que é criado depois do carregamento.
+         */
+        if ('IntersectionObserver' in window) {
+            const impressedContexts = new Set();
+            const intersectingLinks = new WeakSet();
+            const observedLinks = new WeakSet();
+
+            const clickSourceFor = target => target.classList.contains('whatsapp-float')
+                ? 'floating_button'
+                : target.closest('.hero')
+                    ? 'hero_cta'
+                    : 'inline_button';
+
+            const isRendered = target => {
+                const style = window.getComputedStyle(target);
+                if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) {
+                    return false;
+                }
+
+                const hiddenContainer = target.closest('[aria-hidden="true"], .whatsapp-sticky-cta:not(.active)');
+                return !hiddenContainer;
+            };
+
+            const trackImpression = target => {
+                if (!intersectingLinks.has(target) || !isRendered(target)) return;
+
+                const context = target.dataset.context || 'unknown';
+                if (impressedContexts.has(context)) return;
+                impressedContexts.add(context);
+
+                ctaTrack('whatsapp_impression', {
+                    context,
+                    click_source: clickSourceFor(target),
+                    button_text: target.textContent.trim()
+                });
+                ctaLog(`📊 WhatsApp impression tracked: ${context}`);
+            };
+
+            const impressionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && entry.intersectionRatio > 0) {
+                        intersectingLinks.add(entry.target);
+                        trackImpression(entry.target);
+                    } else {
+                        intersectingLinks.delete(entry.target);
+                    }
+                });
+            }, { threshold: 0.01 });
+
+            const observeLink = target => {
+                if (observedLinks.has(target)) return;
+                observedLinks.add(target);
+                impressionObserver.observe(target);
+            };
+
+            const observeLinksWithin = node => {
+                if (!(node instanceof Element)) return;
+                if (node.matches(whatsappSelector)) observeLink(node);
+                node.querySelectorAll(whatsappSelector).forEach(observeLink);
+            };
+
+            document.querySelectorAll(whatsappSelector).forEach(observeLink);
+
+            new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(observeLinksWithin);
+                        return;
+                    }
+
+                    const target = mutation.target;
+                    if (target.matches('.whatsapp-float')) trackImpression(target);
+                    if (target.matches('.whatsapp-sticky-cta')) {
+                        const stickyLink = target.querySelector(whatsappSelector);
+                        if (stickyLink) trackImpression(stickyLink);
+                    }
+                });
+            }).observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['class', 'aria-hidden']
+            });
+        }
 
         // Rastrear cliques em links com data-track (endereço, email)
         document.addEventListener('click', (e) => {

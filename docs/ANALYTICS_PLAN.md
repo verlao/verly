@@ -35,11 +35,14 @@ log aparece, e não há evento que escape da segmentação.
 | `service_interaction` | `app.js:115` ← `:724` | clique em qualquer ponto de `.service-card` | `service_name: "Box para Banheiro"`, `service_position: 1`, `interaction_type: "click"` | baixa (6 cards) |
 | `navigation_click` | `app.js:147` ← `:623`, `:732`, `:741`, `:825` | `.nav-link`, links do rodapé, âncoras `#`, toggle do menu mobile | `link_text: "Serviços"`, `link_target: "#servicos"`, `navigation_type: "menu"` (`menu`\|`footer`\|`internal_link`\|`mobile_menu_toggle`) | média (~30 combinações de texto/alvo) |
 | `phone_click` | `app.js:136` ← `:750` | clique em `a[href^="tel:"]` | `phone_number: "+552134216066"` (número **da loja**), `click_location: "footer"` | baixa |
-| `whatsapp_click` | `whatsapp-cta.js` (listener delegado no `document`) | clique em qualquer link de WhatsApp — **um** por clique | `context: "service-sacada"`, `click_source`, `button_text: "Pedir Orçamento"` | `context` baixa (11 valores; ver §5.4) |
+| `whatsapp_impression` | `whatsapp-cta.js` (`IntersectionObserver`) | CTA de WhatsApp fica realmente visível — **1x por `context` por pageview** | `context: "service-sacada"`, `click_source`, `button_text: "Pedir Orçamento"` | mesma cardinalidade baixa de `context`; é o denominador de §5.4 |
+| `whatsapp_click` | `whatsapp-cta.js` (listener delegado no `document`) | clique real em qualquer link de WhatsApp — **um** por clique | `context: "service-sacada"`, `click_source`, `button_text: "Pedir Orçamento"` | `context` baixa (inclui `form_fallback`/`form_error`; ver §5.4) |
 | `contact_link_click` | `whatsapp-cta.js` | clique em `[data-track]` — **2** links do rodapé, e-mail e endereço (`Footer.astro:78,84`); WhatsApp e telefone saem como os próprios eventos | `link_id: "footer_email_click"`, `link_type: "mailto"`, `link_text` | baixa (2) |
 | `form_interaction` | `app.js:84` | 10 gatilhos, ver tabela abaixo | `form_name: "contact_form"`, `form_action: "field_focus"`, `field_name: "phone"`, `field_value_length: 15` (só quando há valor), `error_message: "Telefone inválido…"` (só em erro) | `form_action` baixa (10); `field_name` baixa (7: `name`, `phone`, `email`, `neighborhood`, `message`, `services`, `all_fields`) |
 | `engagement_milestone` | `app.js:158` ← `:696` | 30s / 60s / 120s após `DOMContentLoaded` | `milestone_name: "time_60s"`, `milestone_value: 60` | baixa (3) |
-| `generate_lead` | `app.js` | submit válido **e** resposta da API — inclusive quando a API falha | `lead_source: "contact_form"`, `services: "box,espelhos"` (**slugs**, ver `SERVICE_SLUGS`), `services_count: 2`, `neighborhood: "Realengo"`, `api_status`, `delivery_attempts`, `lead_queued`, `has_email`, `has_message` | `services` combinatória mas **curta** — 8 slugs somam bem menos que o limite de 100 caracteres do GA4; `neighborhood` baixa (11) |
+| `lead_submit_attempt` | `app.js` | payload válido está prestes a ser enviado à API | `lead_source: "contact_form"`, `services: "box,espelhos"`, `services_count: 2`, `neighborhood: "Realengo"`, `has_email`, `has_message` | denominador de entrega; nenhum parâmetro contém PII |
+| `generate_lead` | `app.js` | API confirmou aceitação (`2xx`) no envio em primeiro plano | os parâmetros de `lead_submit_attempt` + `api_status: "success"`, `delivery_attempts` | conversão confirmada; nunca sai para erro HTTP ou de rede |
+| `lead_recovered` | `app.js` | fila local foi aceita pela API em `online` ou novo page load | `lead_source`, `recovery_reason`, `delivery_attempts`, `queued_seconds` | desfecho distinto porque não foi confirmado no submit original |
 | `conversion` (Ads) | `app.js:520` | **nunca hoje**: `ADS_CONVERSION_LABEL` é `''` (`app.js:17`) | `send_to`, `value: 1.0`, `currency: "BRL"` | — |
 | `review_started` | `avaliar.astro` | primeira estrela escolhida, 1x por acesso | `rating: 5` | baixa (5) |
 | `review_submitted` | `avaliar.astro` | 202 do `POST /reviews` | `rating: 5`, `photo_count: 3`, `photo_failures: 0`, `has_comment: true` | `rating` baixa; as contagens são numéricas |
@@ -51,13 +54,13 @@ tráfego dela vem de link em conversa, nunca de busca. **A leitura que eles habi
 uma só, e é operacional, não de marketing:** quantos links enviados viram avaliação
 (`review_started` ÷ `review_submitted` ÷ links criados no Telegram). Enquanto o volume
 for de dezenas, leia contagem bruta — taxa em amostra desse tamanho não afirma nada
-(§6c).
+(§6d).
 
 Valores de `form_action`, com a linha que os emite:
 
 | `form_action` | Linha | Observação |
 |---|---|---|
-| `start` | `app.js:786` | primeiro focus em qualquer um dos 5 campos |
+| `start` | `app.js` | primeiro focus em qualquer campo, incluindo o grupo `services`; **1x por formulário por pageview** |
 | `field_focus` | `app.js:789` | **todo** focus, não só o primeiro — contagem infla por pessoa |
 | `field_blur` | `app.js:794` | passa o valor; sai só `field_value_length` |
 | `field_complete` | `app.js:359` | campo válido e preenchido |
@@ -97,7 +100,7 @@ de evento; a lista usa 15.
 | `neighborhood` | Evento | bairro **declarado no formulário** — pode divergir da página | §5.1 (tabela C) |
 | `services` | Evento | único registro do que o lead pediu | §5.2 (via filtro "contém") |
 | `context` | Evento | identidade do CTA de WhatsApp | §5.4 |
-| `click_source` | Evento | origem do `whatsapp_click` do `app.js` (o que **não** tem `context`) | §5.4; descartável quando o duplo disparo for eliminado |
+| `click_source` | Evento | categoria de origem de `whatsapp_click` e `whatsapp_impression` | §5.4 |
 | `form_action` | Evento | etapa do formulário — sem ela o funil do form não existe | §4, §5.3 |
 | `field_name` | Evento | campo da etapa | §5.3 |
 | `error_message` | Evento | qual validação barrou | §5.3 |
@@ -105,7 +108,7 @@ de evento; a lista usa 15.
 | `button_location` | Evento | onde estava o botão do `cta_click` | §4, §5.4 |
 | `button_text` | Evento | desambigua dois CTAs no mesmo `button_location` | §5.4 |
 | `service_name` | Evento | card de serviço clicado | §5.2 (sinal de interesse) |
-| `api_status` | Evento | separa lead salvo de lead com falha de API | §4 (etapa 6), §6 |
+| `api_status` | Evento | confirma que `generate_lead` corresponde a aceitação da API | auditoria de conversão |
 | `rating` | Evento | nota da avaliação (1-5); é o que separa elogio de reclamação | §1, eventos `review_*` |
 
 **Zero dimensões de escopo de usuário.** Nada na instrumentação descreve atributo
@@ -131,8 +134,8 @@ Enquanto estiver no Administrador, faça também: **Exibição de dados → Rete
 
 | Evento | Marcar? | Por que |
 |---|---|---|
-| `generate_lead` | Sim — principal | é o único evento que corresponde a um pedido de orçamento identificado |
-| `whatsapp_click` | Sim — secundário, **depois** de corrigir o disparo duplo | é intenção, não lead: o WhatsApp não devolve nada ao site |
+| `generate_lead` | Sim — principal | é o único evento que corresponde a um pedido aceito pela API |
+| `whatsapp_click` | Sim — secundário | é handoff real, mas ainda intenção: o WhatsApp não devolve confirmação de conversa ao site |
 | `phone_click`, `contact_link_click` | Não | volume baixo e mesma intenção do WhatsApp; viram ruído na contagem |
 
 Consequência de marcar os dois: uma sessão que clica no WhatsApp **e** envia o formulário
@@ -143,10 +146,8 @@ conta **duas** "conversões". A métrica "Sessões com evento principal" não so
   o evento escolhido no seletor), nunca o total agregado.
 - Só `generate_lead` vai para o Google Ads (§7). Se `whatsapp_click` for importado, o
   Smart Bidding otimiza para cliques que podem nunca virar conversa.
-- Discordância: **não marque `whatsapp_click` antes do fix do disparo duplo**. Dois ouvintes
-  independentes (`app.js:701` e `whatsapp-cta.js:386`) disparam no mesmo clique, então a
-  contagem de eventos principais sairia com o **dobro** dos cliques reais. Se marcar antes,
-  leia só a métrica de **sessões** com o evento, que não duplica.
+- O fallback do formulário só emite `whatsapp_click` quando a pessoa clica no link
+  "Continuar no WhatsApp". Renderizar o link, ou uma falha da API por si só, não é conversão.
 
 ---
 
@@ -158,8 +159,8 @@ conta **duas** "conversões". A métrica "Sessões com evento principal" não so
 |---|---|---|---|
 | 1 | Chegou | `session_start` | nenhum |
 | 2 | Viu os serviços | `section_view` | `section_id` exatamente `servicos` |
-| 3 | Demonstrou intenção | `cta_click` **ou** `whatsapp_click` (condição OR na mesma etapa) | `cta_click`: `button_location` **diferente de** `contact_form` (o botão de envio é a etapa 5, não intenção); `whatsapp_click`: `context` **diferente de** `(não definido)`, senão o clique conta duas vezes |
-| 4 | Começou o formulário | `form_interaction` | `form_action` exatamente `field_focus` |
+| 3 | Demonstrou intenção | `cta_click` **ou** `whatsapp_click` (condição OR na mesma etapa) | `cta_click`: `button_location` **diferente de** `contact_form` (o botão de envio é a etapa 5, não intenção) |
+| 4 | Começou o formulário | `form_interaction` | `form_action` exatamente `start` |
 | 5 | Pediu orçamento | `generate_lead` | nenhum |
 | 6 | Confirmou | `page_view` | "Caminho da página e classe da tela" exatamente `/obrigado.html` |
 
@@ -170,11 +171,9 @@ Três avisos sobre este funil, todos verificados no código:
 - **Por isso o funil é aberto.** A etapa 3 pode acontecer **antes** da 2: o CTA de
   WhatsApp do hero (`src/pages/index.astro:47`) está acima da seção de serviços. Num funil
   fechado e ordenado, quem clica no hero é descartado, e o hero é o CTA mais exposto do site.
-- **Etapa 5 → 6 perde gente por projeto.** `generate_lead` dispara mesmo quando a API
-  falha (`app.js:508` com `api_status: "error"`), e nesse caminho o visitante vai para o
-  WhatsApp, não para `/obrigado.html` (`app.js:549-571`). Para isolar, filtre a etapa 5 com
-  `api_status = success`. Ainda assim há perda: o redirecionamento espera 1200 ms
-  (`app.js:545`) e quem fecha a aba antes não gera o pageview.
+- **Etapa 5 → 6 ainda pode perder gente.** `generate_lead` já significa API aceita, mas o
+  redirecionamento espera 1200 ms; quem fecha a aba antes não gera o pageview de
+  `/obrigado.html`.
 - **Etapa 4 não cobre os checkboxes.** Ver §5.3.
 
 ---
@@ -275,27 +274,22 @@ principais por sessão", que só existe depois de §3.
 ### 5.4 Qual CTA converte
 
 - **Pergunta:** quais dos ~11 links de WhatsApp da home merecem existir?
-- **Tipo:** formato livre. Linhas: `context`; colunas: `page_type`; métrica: Contagem de
-  eventos. Filtro: Nome do evento exatamente `whatsapp_click`.
-- **Filtro obrigatório:** `context` **diferente** de `(não definido)`. Motivo: o mesmo
-  clique dispara `whatsapp_click` duas vezes, por dois ouvintes independentes
-  (`app.js:701-707` e `whatsapp-cta.js:386-408`), e só o segundo carrega `context`.
-  Filtrando, cada clique conta uma vez e o número volta a ser clique.
+- **Tipo:** duas tabelas de formato livre, ambas com linhas `context` e colunas
+  `page_type`. Na primeira, filtre Nome do evento = `whatsapp_impression`; na segunda,
+  Nome do evento = `whatsapp_click`. Divida cliques por impressões fora do GA4.
+- **Por que a impressão é o denominador:** sticky só fica visível após 30% de rolagem,
+  flutuante recua quando seria redundante/obstruiria conteúdo e CTAs de serviço só entram
+  no viewport com scroll. Contagem bruta de clique mistura atratividade com exposição.
+- **Cardinalidade:** cada `context` emite no máximo uma impressão por pageview, mesmo se o
+  CTA sair e voltar ao viewport. Cliques continuam um por ação real e podem ser mais de um
+  no mesmo pageview.
 - **Valores de `context` que existem:** `floating-button` (`Base.astro:153`),
   `sticky-cta` (`whatsapp-cta.js:253`), `footer-whatsapp` (`Footer.astro:62`),
   `thank-you-page` (`obrigado.astro:32`), `service-*` (6 valores, `whatsapp-cta.js:318`),
-  e `unknown`.
-- **Limite de leitura:** `unknown` é a soma de **três** CTAs sem `data-context` — hero da
-  home (`index.astro:47`), faixa do meio (`index.astro:166`) e hero das páginas de bairro
-  (`[slug].astro:69`). Quebrar por `page_type` separa o de bairro dos dois da home, mas não
-  separa hero de faixa. O CTA mais exposto do site é o que hoje não se consegue ler.
-  Follow-up de código: `data-context` nesses três links.
-- **Exposição, não popularidade:** o flutuante fica oculto em três situações
-  (`whatsapp-cta.js:116`) e a sticky só aparece após 30% de rolagem
-  (`whatsapp-cta.js:269`). Volume baixo nesses dois pode significar "não estava na tela" —
-  compare cada CTA com a própria série no tempo, não com os outros.
-- **Como ler:** zero clique em 4 semanas com tráfego confirmado = remover. Diferença entre
-  CTAs vivos precisa de ~30 cliques por CTA para valer discussão.
+  `hero-whatsapp`, `cta-band`, `neighborhood-hero` e os handoffs
+  `form_fallback`/`form_error`.
+- **Como ler:** zero clique com impressões confirmadas é candidato a remoção. Diferença
+  entre CTAs vivos ainda precisa de ~30 cliques por CTA para valer discussão.
 - **Decide:** quais CTAs cortar. Onze links de WhatsApp numa página é muito, e todos
   competem pelo mesmo clique.
 
@@ -312,7 +306,26 @@ painel). Se existir, o histórico bruto é recuperável por SQL; se não, vincul
 (**Administrador → Vinculações de produtos → BigQuery**) — é o único jeito de nunca mais
 perder parâmetro por falta de registro.
 
-**(b) O `page_view` duplicado.** Valeu para todo o período anterior
+**(b) Há uma quebra semântica no deploy deste plano.** Nenhum nome de evento foi
+renomeado, mas comparar séries atravessando o deploy mistura definições diferentes:
+
+- `generate_lead` mantinha esse nome desde aproximadamente 2026-08-10, porém incluía
+  erro HTTP e erro de rede. Depois do deploy, só inclui aceite `2xx`. O emissor de
+  `generate_lead` nos caminhos de falha foi **retirado**.
+- `whatsapp_click` também mantém o nome. O emissor sintético do fallback — executado antes
+  de um `window.open` por timer — foi **retirado**; depois do deploy o evento exige clique
+  real em link. `form_fallback`/`form_error` continuam como valores de `context`, agora
+  apenas quando houve handoff.
+- `form_interaction` + `form_action=start` mantém nome e parâmetros, mas passa de até um
+  evento por campo para exatamente um por formulário/pageview.
+- `lead_submit_attempt` e `whatsapp_impression` são novos. `lead_recovered` mantém o
+  significado existente.
+
+Registro de dimensão personalizada **não é retroativo** (§2), e correção de código também
+não reescreve evento histórico. Para qualquer taxa afetada, use o deploy como corte e não
+some os dois períodos como se fossem uma série homogênea.
+
+**(c) O `page_view` duplicado.** Valeu para todo o período anterior
 (`Base.astro:113` + `app.js:693`). O efeito é mais específico do que "tudo pela metade":
 
 | Métrica histórica | Distorcida? |
@@ -327,7 +340,7 @@ perder parâmetro por falta de registro.
 Ou seja: comparar meses entre si continua válido; comparar valor absoluto de antes com
 depois do fix, não.
 
-**(c) Volume.** Não medi o tráfego atual do site — os números abaixo são estatística, não
+**(d) Volume.** Não medi o tráfego atual do site — os números abaixo são estatística, não
 dado da Verly. Vidraçaria de bairro tem tráfego baixo, e isso limita o que cada exploração
 pode afirmar:
 
@@ -354,7 +367,7 @@ usuários e a tabela de bairros pode esconder exatamente o bairro que você quer
 propriedade de baixo volume, não ative. E `section_view` é 1x por seção por pageview: taxa
 de "quem viu serviços" é por pageview, não por pessoa.
 
-**(d) Ruído a limpar — resolvido em código, uma coisa sobra para o painel.**
+**(e) Ruído a limpar — resolvido em código, uma coisa sobra para o painel.**
 
 | ruído | estado |
 |---|---|
@@ -364,6 +377,9 @@ de "quem viu serviços" é por pageview, não por pessoa.
 | `page_view` duplicado (`Base.astro` + `app.js`) | ✅ sobrou o automático |
 | `timestamp` em todo evento, gastando cota de dimensão | ✅ removido |
 | `services` cortando em 100 caracteres na seleção grande | ✅ virou lista de slugs + `services_count` |
+| `form_interaction.start` saindo uma vez por campo | ✅ uma vez por formulário/pageview |
+| `generate_lead` contando falha de API/rede | ✅ só aceite `2xx`; tentativa virou `lead_submit_attempt` |
+| fallback emitindo `whatsapp_click` antes de `window.open` | ✅ clique real no link de handoff |
 
 ⚠️ **O que sobra é seu, e é no painel:** o evento `scroll` **automático** da Medição
 avançada dispara a 90%. O do site agora se chama `scroll_depth` (25/50/75/100), então os

@@ -270,6 +270,8 @@ const SearchableSelect = {
         input.setAttribute('aria-expanded', 'false');
         input.setAttribute('aria-autocomplete', 'list');
         input.setAttribute('autocomplete', 'off');
+        const selectedOption = options.find(option => option.value === selectElement.value);
+        input.value = selectedOption ? selectedOption.text : '';
         
         // Create dropdown
         const dropdown = document.createElement('div');

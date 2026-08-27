@@ -554,6 +554,8 @@ const LEAD_ENDPOINT = 'https://api.verlyvidracaria.com/verly-service/leads';
 const LEAD_FOREGROUND_ATTEMPTS = 2;
 const LEAD_BACKGROUND_ATTEMPTS = 3;
 const LEAD_BACKOFF_MS = [800, 2500, 6000];
+// 2 × 4 s + 800 ms de backoff: a pessoa recebe uma saída em no máximo 8,8 s.
+const LEAD_ATTEMPT_TIMEOUT_MS = 4000;
 
 const LEAD_QUEUE_KEY = 'verly_pending_leads';
 
@@ -606,6 +608,9 @@ function isRetryableStatus(status) {
  * @returns {'success'|'error'|'retryable_error'|'fetch_error'}
  */
 async function postLead(payload) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), LEAD_ATTEMPT_TIMEOUT_MS);
+
     try {
         const response = await fetch(LEAD_ENDPOINT, {
             method: 'POST',
@@ -615,7 +620,8 @@ async function postLead(payload) {
             body: JSON.stringify(payload),
             // Sobrevive ao unload: quem envia e fecha a aba (ou é redirecionado para o
             // WhatsApp) não perde mais a requisição no meio do caminho.
-            keepalive: true
+            keepalive: true,
+            signal: controller.signal
         });
 
         if (response.ok) {
@@ -632,6 +638,8 @@ async function postLead(payload) {
         // fetch lança em offline, DNS, CORS, timeout e servidor inalcançável.
         console.error('Error submitting form:', error);
         return 'fetch_error';
+    } finally {
+        clearTimeout(timeoutId);
     }
 }
 

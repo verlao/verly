@@ -67,15 +67,22 @@ const WhatsAppCTA = {
     messages: {
         hero: '🏠 Olá! Gostaria de solicitar um orçamento para vidraçaria.',
         services: '✨ Olá! Vi os serviços no site e gostaria de saber mais sobre:',
-        boxBanheiro: '🚿 Olá! Gostaria de um orçamento para Box de Banheiro.',
-        sacada: '🏢 Olá! Gostaria de um orçamento para Sacada Envidraçada.',
-        guardaCorpo: '🛡️ Olá! Gostaria de um orçamento para Guarda-corpo.',
-        portas: '🚪 Olá! Gostaria de um orçamento para Portas de Vidro.',
+        boxBanheiro: '🚿 Olá! Gostaria de um orçamento para Box para Banheiro.',
+        sacada: '🏢 Olá! Gostaria de um orçamento para Sacadas Envidraçadas.',
+        guardaCorpo: '🛡️ Olá! Gostaria de um orçamento para Guarda-corpos de Vidro.',
+        portas: '🚪 Olá! Gostaria de um orçamento para Portas e Janelas.',
         janelas: '🪟 Olá! Gostaria de um orçamento para Janelas de Alumínio.',
         espelhos: '🪞 Olá! Gostaria de um orçamento para Espelhos Sob Medida.',
         divisorias: '🚪 Olá! Gostaria de um orçamento para Divisórias de Ambiente.',
+        cortinasVidro: '🏢 Olá! Gostaria de um orçamento para Instalação de cortinas de vidro.',
+        boxBlindex: '🚿 Olá! Gostaria de um orçamento para Box blindex para banheiro.',
+        portasVidroTemperado: '🚪 Olá! Gostaria de um orçamento para Portas de vidro temperado.',
+        guardaCorpoVidro: '🛡️ Olá! Gostaria de um orçamento para Guarda corpo em vidro.',
+        portoesAluminio: '🚪 Olá! Gostaria de um orçamento para Portões em alumínio.',
+        vidrosTemperados: '✨ Olá! Gostaria de um orçamento para Vidros temperados sob medida.',
         contact: '📋 Olá! Vim pelo formulário de contato e gostaria de mais informações.',
         floating: '💬 Olá! Gostaria de solicitar um orçamento.',
+        sticky: '💬 Olá! Fiquei com uma dúvida e gostaria de conversar.',
         urgente: '🚨 Olá! Preciso de um orçamento urgente para vidraçaria!'
     },
 
@@ -234,7 +241,7 @@ const WhatsAppCTA = {
                     <strong>Ficou com dúvida?</strong>
                     <span>Chame no WhatsApp e a gente responde</span>
                 </div>
-                <a href="${this.waLink(this.messages.urgente)}"
+                <a href="${this.waLink(this.messages.sticky)}"
                    class="sticky-cta-button"
                    target="_blank"
                    rel="noopener noreferrer"
@@ -276,42 +283,54 @@ const WhatsAppCTA = {
      * Incluindo Espelhos e Divisórias
      */
     addServiceCTAs() {
-        const services = [
-            { selector: '.service-card:nth-child(1)', message: this.messages.boxBanheiro, name: 'Box Banheiro' },
-            { selector: '.service-card:nth-child(2)', message: this.messages.sacada, name: 'Sacada' },
-            { selector: '.service-card:nth-child(3)', message: this.messages.guardaCorpo, name: 'Guarda-corpo' },
-            { selector: '.service-card:nth-child(4)', message: this.messages.portas, name: 'Portas' },
-            { selector: '.service-card:nth-child(5)', message: this.messages.espelhos, name: 'Espelhos' },
-            { selector: '.service-card:nth-child(6)', message: this.messages.divisorias, name: 'Divisórias' }
-        ];
-        
+        const services = {
+            'box-banheiro': { message: this.messages.boxBanheiro, context: 'service-box-banheiro' },
+            'sacada-envidracada': { message: this.messages.sacada, context: 'service-sacada' },
+            'guarda-corpos-vidro': { message: this.messages.guardaCorpo, context: 'service-guarda-corpo' },
+            'portas-janelas': { message: this.messages.portas, context: 'service-portas' },
+            'espelhos-sob-medida': { message: this.messages.espelhos, context: 'service-espelhos' },
+            'divisorias-ambiente': { message: this.messages.divisorias, context: 'service-divisórias' },
+            'cortinas-vidro': { message: this.messages.cortinasVidro, context: 'service-cortinas-vidro' },
+            'box-blindex-banheiro': { message: this.messages.boxBlindex, context: 'service-box-blindex-banheiro' },
+            'portas-vidro-temperado': { message: this.messages.portasVidroTemperado, context: 'service-portas-vidro-temperado' },
+            'guarda-corpo-vidro': { message: this.messages.guardaCorpoVidro, context: 'service-guarda-corpo-vidro' },
+            'portoes-aluminio': { message: this.messages.portoesAluminio, context: 'service-portoes-aluminio' },
+            'vidros-temperados-sob-medida': { message: this.messages.vidrosTemperados, context: 'service-vidros-temperados-sob-medida' }
+        };
+
         let addedCount = 0;
-        
-        services.forEach(service => {
-            const card = document.querySelector(service.selector);
-            if (card) {
-                // Verificar se já não tem botão
-                if (card.querySelector('.service-whatsapp-cta')) {
-                    return;
-                }
-                
-                // Adicionar botão no card
-                const ctaButton = document.createElement('a');
-                ctaButton.href = this.waLink(service.message);
-                ctaButton.className = 'service-whatsapp-cta';
-                ctaButton.innerHTML = `
-                    ${this.iconHTML()}
-                    <span>Pedir Orçamento</span>
-                `;
-                ctaButton.dataset.context = `service-${service.name.toLowerCase().replace(/\s+/g, '-')}`;
-                ctaButton.setAttribute('target', '_blank');
-                ctaButton.setAttribute('rel', 'noopener noreferrer');
-                
-                card.appendChild(ctaButton);
-                addedCount++;
+
+        document.querySelectorAll('#servicos .service-card').forEach(card => {
+            // Verificar se já não tem botão
+            if (card.querySelector('.service-whatsapp-cta')) {
+                return;
             }
+
+            const heading = card.querySelector('h3')?.textContent.trim() || '';
+            const serviceKey = card.dataset.service || '';
+            const service = services[serviceKey];
+            // Um serviço novo nunca deve herdar a mensagem de outro: o título visível
+            // é a fonte mais segura, e a mensagem genérica fica só para card sem título.
+            const message = service?.message || (heading
+                ? `✨ Olá! Gostaria de um orçamento para ${heading}.`
+                : this.messages.services);
+
+            // Adicionar botão no card
+            const ctaButton = document.createElement('a');
+            ctaButton.href = this.waLink(message);
+            ctaButton.className = 'service-whatsapp-cta';
+            ctaButton.innerHTML = `
+                ${this.iconHTML()}
+                <span>Pedir Orçamento</span>
+            `;
+            ctaButton.dataset.context = service?.context || `service-${serviceKey || 'unknown'}`;
+            ctaButton.setAttribute('target', '_blank');
+            ctaButton.setAttribute('rel', 'noopener noreferrer');
+
+            card.appendChild(ctaButton);
+            addedCount++;
         });
-        
+
         ctaLog(`✓ ${addedCount} CTAs de serviços adicionados (incluindo Espelhos e Divisórias)`);
     },
 

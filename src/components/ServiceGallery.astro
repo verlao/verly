@@ -68,25 +68,10 @@ const waLink = (label: string) =>
   <div class="container">
     <h2 class="section-title">Como fica depois de instalado</h2>
     <p class="section-subtitle">
-      Clique no serviço que você precisa e já mande a foto junto no WhatsApp.
+      Toque no serviço que você precisa e peça seu orçamento pelo WhatsApp.
     </p>
 
     <div class="pane-frame">
-      <figure class="pane pane-material">
-        <img
-          src="/img/servicos/aresta-vidro.webp"
-          alt="Detalhe aproximado da aresta de uma chapa de vidro temperado encaixada em perfil de alumínio."
-          width="643"
-          height="900"
-          loading="lazy"
-          decoding="async"
-        />
-        <figcaption>
-          <span class="pane-label">Vidro temperado</span>
-          <span class="pane-detail">A aresta que ninguém vê</span>
-        </figcaption>
-      </figure>
-
       {panes.map((p) => (
         <a
           class="pane"
@@ -113,79 +98,60 @@ const waLink = (label: string) =>
 </section>
 
 <style>
-  /* O caixilho.
-     Os painéis não flutuam como card: eles ficam ENCOSTADOS, separados por 2px da
-     cor do alumínio anodizado, que é o perfil onde o vidro de verdade se encaixa.
-     Canto reto pelo mesmo motivo — chapa de vidro não tem canto arredondado. É o que
-     distingue esta seção dos cards de serviço logo acima, que são cards de propósito.
-     Nenhuma cor nova entra aqui: tudo sai dos tokens de src/styles/index-inline.css. */
   .pane-frame {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2px;
-    padding: 2px;
-    background: var(--dark);
+    gap: 0.75rem;
     margin-top: 2.5rem;
   }
 
   @media (min-width: 768px) {
     .pane-frame {
       grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
     }
   }
 
-  /* A proporção vive no PAINEL, não na imagem: são 6 painéis idênticos formando
-     duas fileiras cheias. Com `aspect-ratio` na <img> junto de `height: 100%` os
-     dois se contradiziam, a imagem parava antes do fim do painel e a legenda
-     descolava para uma faixa branca embaixo dela. */
   .pane {
     position: relative;
     display: block;
     margin: 0;
-    aspect-ratio: 4 / 3;
     overflow: hidden;
-    background: var(--dark);
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
     text-decoration: none;
   }
 
   .pane img {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Vidro jateado: a legenda é o próprio produto. Branco a 88% sobre a imagem —
-     no pior caso (foto preta) o texto --dark dá 10,2:1, bem acima do mínimo AA,
-     então a legenda continua legível independente da foto que estiver atrás. */
-  .pane-caption,
-  .pane figcaption {
-    position: absolute;
-    inset-inline: 0;
-    bottom: 0;
+  .pane-caption {
     display: flex;
     flex-direction: column;
-    padding: 0.7rem 0.85rem;
-    background: rgba(255, 255, 255, 0.88);
-    -webkit-backdrop-filter: blur(10px) saturate(1.15);
-    backdrop-filter: blur(10px) saturate(1.15);
+    padding: 0.875rem 1rem;
+    background: var(--white);
     color: var(--dark);
   }
 
-  /* Hierarquia por peso e tamanho, não por cor: cinza claro sobre vidro jateado
-     cairia para 3,57:1 e reprovaria em AA. */
   .pane-label {
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.25;
+    color: var(--dark);
   }
 
   .pane-detail {
-    font-size: 0.78rem;
+    font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.35;
-    opacity: 0.85;
+    color: var(--gray);
   }
 
   .pane[href]:hover img,
@@ -193,13 +159,7 @@ const waLink = (label: string) =>
     transform: scale(1.04);
   }
 
-  .pane[href]:hover .pane-caption,
-  .pane[href]:focus-visible .pane-caption {
-    background: var(--white);
-  }
-
-  /* Foco visível por dentro: os painéis são encostados, um contorno externo seria
-     cortado pelo painel vizinho. */
+  /* O foco interno permanece visível sem alterar o ritmo da grade. */
   .pane[href]:focus-visible {
     outline: 3px solid var(--cta);
     outline-offset: -3px;

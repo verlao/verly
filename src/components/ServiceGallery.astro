@@ -99,15 +99,15 @@ const waLink = (label: string) =>
 
 <style>
   .pane-frame {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 0.75rem;
     margin-top: 2.5rem;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     .pane-frame {
-      grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
     }
   }
@@ -115,12 +115,20 @@ const waLink = (label: string) =>
   .pane {
     position: relative;
     display: block;
+    flex: 0 0 calc((100% - 0.75rem) / 2);
+    min-width: 0;
     margin: 0;
     overflow: hidden;
     background: var(--white);
     border-radius: 12px;
     box-shadow: var(--shadow);
     text-decoration: none;
+  }
+
+  @media (min-width: 769px) {
+    .pane {
+      flex-basis: calc((100% - 4rem) / 3);
+    }
   }
 
   .pane img {
@@ -138,6 +146,7 @@ const waLink = (label: string) =>
     padding: 0.875rem 1rem;
     background: var(--white);
     color: var(--dark);
+    text-align: start;
   }
 
   .pane-label {

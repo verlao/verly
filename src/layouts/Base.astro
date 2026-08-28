@@ -1,7 +1,13 @@
 ---
 import Icon from '../components/Icon.astro';
 import { getImage } from 'astro:assets';
-import { SITE_URL, ANALYTICS, CONTACT } from '../data/site';
+import {
+  SITE_URL,
+  ANALYTICS,
+  CONTACT,
+  SERVICE_SLUGS,
+  WHATSAPP_CONTEXTS,
+} from '../data/site';
 import lojaFrente from '../assets/loja-verly-realengo.png';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -181,6 +187,8 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
     class={bodyClass}
     data-page-type={pageType}
     data-neighborhood-page={neighborhoodPage || undefined}
+    data-service-slugs={SERVICE_SLUGS.join(',')}
+    data-whatsapp-contexts={WHATSAPP_CONTEXTS.join(',')}
   >
     <header class="header">
       <div class="container">

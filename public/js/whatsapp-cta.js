@@ -67,19 +67,6 @@ const WhatsAppCTA = {
     messages: {
         hero: '🏠 Olá! Gostaria de solicitar um orçamento para vidraçaria.',
         services: '✨ Olá! Vi os serviços no site e gostaria de saber mais sobre:',
-        boxBanheiro: '🚿 Olá! Gostaria de um orçamento para Box para Banheiro.',
-        sacada: '🏢 Olá! Gostaria de um orçamento para Sacadas Envidraçadas.',
-        guardaCorpo: '🛡️ Olá! Gostaria de um orçamento para Guarda-corpos de Vidro.',
-        portas: '🚪 Olá! Gostaria de um orçamento para Portas e Janelas.',
-        janelas: '🪟 Olá! Gostaria de um orçamento para Janelas de Alumínio.',
-        espelhos: '🪞 Olá! Gostaria de um orçamento para Espelhos Sob Medida.',
-        divisorias: '🚪 Olá! Gostaria de um orçamento para Divisórias de Ambiente.',
-        cortinasVidro: '🏢 Olá! Gostaria de um orçamento para Instalação de cortinas de vidro.',
-        boxBlindex: '🚿 Olá! Gostaria de um orçamento para Box blindex para banheiro.',
-        portasVidroTemperado: '🚪 Olá! Gostaria de um orçamento para Portas de vidro temperado.',
-        guardaCorpoVidro: '🛡️ Olá! Gostaria de um orçamento para Guarda corpo em vidro.',
-        portoesAluminio: '🚪 Olá! Gostaria de um orçamento para Portões em alumínio.',
-        vidrosTemperados: '✨ Olá! Gostaria de um orçamento para Vidros temperados sob medida.',
         contact: '📋 Olá! Vim pelo formulário de contato e gostaria de mais informações.',
         floating: '💬 Olá! Gostaria de solicitar um orçamento.',
         sticky: '💬 Olá! Fiquei com uma dúvida e gostaria de conversar.',
@@ -315,21 +302,6 @@ const WhatsAppCTA = {
      * Incluindo Espelhos e Divisórias
      */
     addServiceCTAs() {
-        const services = {
-            'box-banheiro': { message: this.messages.boxBanheiro, context: 'service-box-banheiro' },
-            'sacada-envidracada': { message: this.messages.sacada, context: 'service-sacada' },
-            'guarda-corpos-vidro': { message: this.messages.guardaCorpo, context: 'service-guarda-corpo' },
-            'portas-janelas': { message: this.messages.portas, context: 'service-portas' },
-            'espelhos-sob-medida': { message: this.messages.espelhos, context: 'service-espelhos' },
-            'divisorias-ambiente': { message: this.messages.divisorias, context: 'service-divisórias' },
-            'cortinas-vidro': { message: this.messages.cortinasVidro, context: 'service-cortinas-vidro' },
-            'box-blindex-banheiro': { message: this.messages.boxBlindex, context: 'service-box-blindex-banheiro' },
-            'portas-vidro-temperado': { message: this.messages.portasVidroTemperado, context: 'service-portas-vidro-temperado' },
-            'guarda-corpo-vidro': { message: this.messages.guardaCorpoVidro, context: 'service-guarda-corpo-vidro' },
-            'portoes-aluminio': { message: this.messages.portoesAluminio, context: 'service-portoes-aluminio' },
-            'vidros-temperados-sob-medida': { message: this.messages.vidrosTemperados, context: 'service-vidros-temperados-sob-medida' }
-        };
-
         let addedCount = 0;
 
         document.querySelectorAll('#servicos .service-card').forEach(card => {
@@ -339,11 +311,10 @@ const WhatsAppCTA = {
             }
 
             const heading = card.querySelector('h3')?.textContent.trim() || '';
-            const serviceKey = card.dataset.service || '';
-            const service = services[serviceKey];
-            // Um serviço novo nunca deve herdar a mensagem de outro: o título visível
-            // é a fonte mais segura, e a mensagem genérica fica só para card sem título.
-            const message = service?.message || (heading
+            const service = card.dataset.service || '';
+            // Slug e mensagem vêm do markup gerado pela taxonomia de site.ts. O título
+            // visível é a rede de segurança para um card sem mensagem.
+            const message = card.dataset.whatsappMessage || (heading
                 ? `✨ Olá! Gostaria de um orçamento para ${heading}.`
                 : this.messages.services);
 
@@ -355,7 +326,8 @@ const WhatsAppCTA = {
                 ${this.iconHTML()}
                 <span>Pedir Orçamento</span>
             `;
-            ctaButton.dataset.context = service?.context || `service-${serviceKey || 'unknown'}`;
+            ctaButton.dataset.context = 'service-card';
+            if (service) ctaButton.dataset.service = service;
             ctaButton.setAttribute('target', '_blank');
             ctaButton.setAttribute('rel', 'noopener noreferrer');
 
@@ -422,10 +394,9 @@ const WhatsAppCTA = {
          * dobra o volume e joga metade de qualquer tabela por origem em "(não definido)".
          *
          * Ficou o delegado, e não o por elemento, porque ele alcança os CTAs criados em
-         * runtime (a sticky e os 6 dos cards de serviço) e lê o `data-context` que o
-         * markup já traz. Os DOIS parâmetros continuam saindo: `context` é a origem
-         * nomeada na página, `click_source` é a categoria que o ouvinte do app.js
-         * calculava — nada se perde na consolidação.
+         * runtime (a sticky e os cards de serviço) e lê os atributos do markup.
+         * `context` responde de onde veio o CTA; `service`, quando existe, identifica
+         * o serviço sem incorporar a origem ao slug.
          */
         document.addEventListener('click', (e) => {
             const target = e.target.closest(whatsappSelector);
@@ -441,15 +412,16 @@ const WhatsAppCTA = {
                 ctaTrack('whatsapp_click', {
                     context: context,
                     click_source: clickSource,
-                    button_text: target.textContent.trim()
+                    button_text: target.textContent.trim(),
+                    ...(target.dataset.service ? { service: target.dataset.service } : {})
                 });
 
-                ctaLog(`📊 WhatsApp click tracked: ${context} (${clickSource})`);
+                ctaLog(`📊 WhatsApp click tracked: ${context} (${target.dataset.service || 'sem serviço'}, ${clickSource})`);
             }
         });
 
         /**
-         * Denominador dos cliques: uma impressão por contexto por pageview.
+         * Denominador dos cliques: uma impressão por origem + serviço por pageview.
          *
          * IntersectionObserver mantém o custo fora do scroll handler. A checagem de
          * estilo evita contar a sticky enquanto está recolhida e o flutuante enquanto
@@ -458,7 +430,7 @@ const WhatsAppCTA = {
          * formulário, que é criado depois do carregamento.
          */
         if ('IntersectionObserver' in window) {
-            const impressedContexts = new Set();
+            const impressedCtas = new Set();
             const intersectingLinks = new WeakSet();
             const observedLinks = new WeakSet();
 
@@ -482,15 +454,18 @@ const WhatsAppCTA = {
                 if (!intersectingLinks.has(target) || !isRendered(target)) return;
 
                 const context = target.dataset.context || 'unknown';
-                if (impressedContexts.has(context)) return;
-                impressedContexts.add(context);
+                const service = target.dataset.service || '';
+                const ctaIdentity = `${context}:${service}`;
+                if (impressedCtas.has(ctaIdentity)) return;
+                impressedCtas.add(ctaIdentity);
 
                 ctaTrack('whatsapp_impression', {
                     context,
                     click_source: clickSourceFor(target),
-                    button_text: target.textContent.trim()
+                    button_text: target.textContent.trim(),
+                    ...(service ? { service } : {})
                 });
-                ctaLog(`📊 WhatsApp impression tracked: ${context}`);
+                ctaLog(`📊 WhatsApp impression tracked: ${context} (${service || 'sem serviço'})`);
             };
 
             const impressionObserver = new IntersectionObserver((entries) => {

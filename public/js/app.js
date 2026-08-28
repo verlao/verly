@@ -487,54 +487,9 @@ function validateField(field) {
  * conseguia enviar sem responder.
  */
 
-// ============================================================================
-// SERVIÇOS — CHAVE CURTA E ESTÁVEL
-// ============================================================================
-
-/**
- * Slug por serviço.
- *
- * O rótulo do checkbox é bom para ler e ruim para medir: a lista dos 8 concatenada dá
- * 127 caracteres e o GA4 corta valor de parâmetro em 100 — a seleção grande, que é
- * justamente o lead mais valioso, chegava truncada e virava linha espúria no relatório.
- * Os 8 slugs concatenados dão 85 caracteres, então nenhuma seleção possível é cortada.
- *
- * O mapa é explícito (e não só derivado do rótulo) porque a chave precisa sobreviver a
- * mudança de copy: trocar "Box para Banheiro" por "Box de Banheiro" não pode virar um
- * serviço novo no relatório.
- *
- * NENHUM slug é pedaço de outro. Isso é requisito, não coincidência: a leitura por
- * serviço é um filtro "services contém <slug>", e um slug contido em outro faria uma
- * linha contar leads da outra. Serviço novo aqui precisa manter essa propriedade.
- *
- * Um evento por serviço foi tentado e descartado: medindo o envio real, um lead com os
- * 8 serviços emite 8 eventos a mais no mesmo instante, o gtag os agrupa num lote só, e
- * o lote perde eventos — 3 dos 8 se perderam no caminho de sucesso, que redireciona
- * para /obrigado.html 1,2 s depois. Contagem por serviço que perde evento é pior que
- * filtro "contém", porque o erro não aparece em lugar nenhum.
- */
-const SERVICE_SLUGS = {
-    'Box para Banheiro': 'box',
-    'Sacada Envidraçada': 'sacada',
-    'Guarda-corpo': 'guarda_corpo',
-    'Portas de Vidro': 'portas_vidro',
-    'Janelas de Alumínio': 'janelas_aluminio',
-    'Espelhos': 'espelhos',
-    'Divisórias': 'divisorias',
-    'Tampos de Mesa': 'tampos_mesa'
-};
-
-function serviceSlug(value) {
-    if (SERVICE_SLUGS[value]) return SERVICE_SLUGS[value];
-    // Serviço novo no markup sem passar por aqui: melhor um slug derivado do que
-    // perder a linha no relatório.
-    return String(value)
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '_')
-        .replace(/^_+|_+$/g, '');
-}
+// O rótulo dos checkboxes continua apropriado para a API e o WhatsApp. A identidade
+// estável do analytics vem separada em data-service, gerada pela taxonomia única de
+// src/data/site.ts; este script não mantém uma segunda tabela de equivalência.
 
 // ============================================================================
 // ENTREGA DO LEAD — KEEPALIVE, TENTATIVAS E FILA LOCAL
@@ -826,7 +781,11 @@ async function handleFormSubmit(event) {
     // Get selected services
     const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
         .map(cb => cb.value);
-    const selectedServiceSlugs = selectedServices.map(serviceSlug);
+    const selectedServiceSlugs = [...new Set(
+        Array.from(document.querySelectorAll('input[name="services"]:checked'))
+            .map(cb => cb.dataset.service)
+            .filter(Boolean)
+    )];
 
     // O que o WhatsApp precisa, capturado ANTES do reset do formulário: `reset()` zera
     // os campos, e a mensagem de fallback era montada depois dele com
@@ -966,7 +925,7 @@ async function handleFormSubmit(event) {
             const encodedMessage = encodeURIComponent(whatsappMessage);
             const whatsappURL = `https://wa.me/5521987926578?text=${encodedMessage}`;
 
-            const handoffContext = result.status === 'fetch_error' ? 'form_error' : 'form_fallback';
+            const handoffContext = result.status === 'fetch_error' ? 'form-error' : 'form-fallback';
             showWhatsAppHandoff(
                 queued
                     ? 'Sem conexão para enviar agora. Seu pedido ficou salvo e será reenviado quando a internet voltar.'

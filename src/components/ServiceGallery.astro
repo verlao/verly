@@ -1,5 +1,5 @@
 ---
-import { CONTACT } from '../data/site';
+import { CONTACT, SERVICE_TAXONOMY } from '../data/site';
 
 /**
  * Galeria de serviços.
@@ -19,35 +19,35 @@ import { CONTACT } from '../data/site';
  */
 const panes = [
   {
-    service: 'box-banheiro',
+    service: SERVICE_TAXONOMY.boxBanheiro,
     label: 'Box para banheiro',
     detail: 'Temperado 8mm, ferragem preta',
     img: '/img/servicos/box-banheiro.webp',
     alt: 'Box de banheiro em vidro temperado com perfil e puxador pretos, instalado em nicho revestido.',
   },
   {
-    service: 'sacada-envidracada',
+    service: SERVICE_TAXONOMY.sacadaEnvidracada,
     label: 'Sacada envidraçada',
     detail: 'Cortina de vidro retrátil',
     img: '/img/servicos/sacada-envidracada.webp',
     alt: 'Varanda envidraçada com folhas de vidro recolhidas na lateral e guarda-corpo de vidro.',
   },
   {
-    service: 'guarda-corpos-vidro',
+    service: SERVICE_TAXONOMY.guardaCorpo,
     label: 'Guarda-corpo',
     detail: 'Vidro com corrimão de inox',
     img: '/img/servicos/guarda-corpos-vidro.webp',
     alt: 'Guarda-corpo de vidro com corrimão de aço inox e prendedores redondos, em varanda externa.',
   },
   {
-    service: 'portas-janelas',
+    service: SERVICE_TAXONOMY.portasJanelas,
     label: 'Portas e janelas',
     detail: 'Perfil de alumínio sob medida',
     img: '/img/servicos/portas-janelas.webp',
     alt: 'Divisória envidraçada de piso a teto com perfil escuro separando dois ambientes de uma sala.',
   },
   {
-    service: 'espelhos-sob-medida',
+    service: SERVICE_TAXONOMY.espelhoSobMedida,
     label: 'Espelho sob medida',
     detail: 'Corte e instalação no local',
     img: '/img/servicos/espelhos-sob-medida.webp',
@@ -78,8 +78,8 @@ const waLink = (label: string) =>
           href={waLink(p.label)}
           target="_blank"
           rel="noopener noreferrer"
-          data-service={p.service}
-          data-context={`gallery-${p.service}`}
+          data-service={p.service.slug}
+          data-context="service-gallery"
         >
           <img src={p.img} alt={p.alt} width="800" height="600" loading="lazy" decoding="async" />
           <span class="pane-caption">

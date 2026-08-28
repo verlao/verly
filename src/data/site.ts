@@ -111,6 +111,70 @@ export const GOOGLE_REVIEWS = {
   ],
 };
 
+/**
+ * Taxonomia canônica de serviços usada por cards, galeria, formulário e analytics.
+ *
+ * `slug` é identidade de relatório, não copy. Uma origem diferente (card/foto/página
+ * local) continua apontando para o mesmo slug; a origem vai separada em `context`.
+ * Manter os slugs aqui evita que cada emissor invente grafia, plural ou qualificador.
+ */
+export const SERVICE_TAXONOMY = {
+  boxBanheiro: {
+    slug: 'box-banheiro',
+    whatsappMessage: '🚿 Olá! Gostaria de um orçamento para Box para Banheiro.',
+  },
+  sacadaEnvidracada: {
+    slug: 'sacada',
+    whatsappMessage: '🏢 Olá! Gostaria de um orçamento para Sacadas Envidraçadas.',
+  },
+  guardaCorpo: {
+    slug: 'guarda-corpo',
+    whatsappMessage: '🛡️ Olá! Gostaria de um orçamento para Guarda-corpos de Vidro.',
+  },
+  portasJanelas: {
+    slug: 'portas-janelas',
+    whatsappMessage: '🚪 Olá! Gostaria de um orçamento para Portas e Janelas.',
+  },
+  espelhoSobMedida: {
+    slug: 'espelho',
+    whatsappMessage: '🪞 Olá! Gostaria de um orçamento para Espelhos Sob Medida.',
+  },
+  divisoriaAmbiente: {
+    slug: 'divisoria',
+    whatsappMessage: '🚪 Olá! Gostaria de um orçamento para Divisórias de Ambiente.',
+  },
+  portaoAluminio: {
+    slug: 'portao-aluminio',
+    whatsappMessage: '🚪 Olá! Gostaria de um orçamento para Portões em alumínio.',
+  },
+  vidroTemperadoSobMedida: {
+    slug: 'vidro-temperado',
+    whatsappMessage: '✨ Olá! Gostaria de um orçamento para Vidros temperados sob medida.',
+  },
+  tampoMesa: {
+    slug: 'tampo-mesa',
+    whatsappMessage: '✨ Olá! Gostaria de um orçamento para Tampos de Mesa.',
+  },
+} as const;
+
+export const SERVICE_SLUGS = Object.values(SERVICE_TAXONOMY).map(({ slug }) => slug);
+
+/** Valores aceitos pelo guard do DOM final. */
+export const WHATSAPP_CONTEXTS = [
+  'floating-button',
+  'footer-whatsapp',
+  'sticky-cta',
+  'hero-whatsapp',
+  'service-card',
+  'service-gallery',
+  'cta-band',
+  'thank-you-page',
+  'avaliar-link-invalido',
+  'form-fallback',
+  'form-error',
+] as const;
+
+/** Rótulos do rodapé e da página de avaliação; copy preservada. */
 export const SERVICES = [
   'Box para Banheiro',
   'Sacadas Envidraçadas',
@@ -119,6 +183,19 @@ export const SERVICES = [
   'Espelhos',
   'Divisórias',
 ];
+
+const SERVICE_BY_LOCAL_LABEL = new Map([
+  ['Instalação de cortinas de vidro', SERVICE_TAXONOMY.sacadaEnvidracada],
+  ['Box blindex para banheiro', SERVICE_TAXONOMY.boxBanheiro],
+  ['Portas de vidro temperado', SERVICE_TAXONOMY.portasJanelas],
+  ['Guarda corpo em vidro', SERVICE_TAXONOMY.guardaCorpo],
+  ['Portões em alumínio', SERVICE_TAXONOMY.portaoAluminio],
+  ['Vidros temperados sob medida', SERVICE_TAXONOMY.vidroTemperadoSobMedida],
+]);
+
+export function serviceForLocalLabel(label: string) {
+  return SERVICE_BY_LOCAL_LABEL.get(label);
+}
 
 /** Opções do <select> do formulário — a ordem é a mesma do index atual. */
 export const NEIGHBORHOOD_OPTIONS = [

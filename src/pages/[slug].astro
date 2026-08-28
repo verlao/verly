@@ -1,7 +1,12 @@
 ---
 import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
-import { CONTACT, SITE_URL, GOOGLE_REVIEWS } from '../data/site';
+import {
+  CONTACT,
+  SITE_URL,
+  GOOGLE_REVIEWS,
+  serviceForLocalLabel,
+} from '../data/site';
 import QuoteForm from '../components/QuoteForm.astro';
 import { Image } from 'astro:assets';
 import lojaFrente from '../assets/loja-verly-realengo.png';
@@ -15,15 +20,14 @@ export function getStaticPaths() {
 
 const { n } = Astro.props;
 
-// O texto local é copy; data-service é o contrato estável usado pelo CTA.
-const serviceKeys: Record<string, string> = {
-  'Instalação de cortinas de vidro': 'cortinas-vidro',
-  'Box blindex para banheiro': 'box-blindex-banheiro',
-  'Portas de vidro temperado': 'portas-vidro-temperado',
-  'Guarda corpo em vidro': 'guarda-corpo-vidro',
-  'Portões em alumínio': 'portoes-aluminio',
-  'Vidros temperados sob medida': 'vidros-temperados-sob-medida',
-};
+// O texto local é copy; o slug canônico vem da taxonomia única de site.ts.
+const localServices = n.services.map((label: string) => {
+  const service = serviceForLocalLabel(label);
+  if (!service) {
+    throw new Error(`Serviço local sem taxonomia: "${label}" (${n.slug}).`);
+  }
+  return { label, service };
+});
 
 // FAQPage só entra quando o bairro realmente tem perguntas (hoje só Realengo).
 const faqSchema =
@@ -139,10 +143,10 @@ const faqSchema =
       {n.intro.map((p) => <p class="section-subtitle">{p}</p>)}
 
       <div class="services-grid">
-        {n.services.map((s) => (
-          <div class="service-card" data-service={serviceKeys[s]}>
+        {localServices.map(({ label, service }) => (
+          <div class="service-card" data-service={service.slug} data-whatsapp-message={service.whatsappMessage}>
             <div class="service-icon"><Icon name="check" /></div>
-            <h3>{s}</h3>
+            <h3>{label}</h3>
           </div>
         ))}
       </div>

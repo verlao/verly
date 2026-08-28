@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run check:contrast && astro build",
+    "build": "npm run check:contrast && astro build && npm run check:analytics",
     "preview": "astro preview",
-    "check:contrast": "node scripts/check-contrast.mjs"
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:analytics": "node scripts/check-whatsapp-taxonomy.mjs"
   },
   "dependencies": {
     "astro": "^5.18.2"

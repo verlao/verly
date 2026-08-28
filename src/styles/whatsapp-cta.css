@@ -363,7 +363,7 @@
 
 /* Phone Link no Footer */
 .footer-contact-link.phone-link:hover {
-    color: #4CAF50 !important;
+    color: var(--white) !important;
 }
 
 /* Address Link no Footer */
@@ -373,7 +373,7 @@
 }
 
 .footer-contact-link.address-link:hover {
-    color: #FF5722 !important;
+    color: var(--white) !important;
 }
 
 /* Ícones do footer com espaçamento */

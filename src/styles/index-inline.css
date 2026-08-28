@@ -776,12 +776,12 @@
             right: var(--float-inset);
             width: var(--float-size);
             height: var(--float-size);
-            background: #25d366;
+            background: var(--whatsapp);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--white);
+            color: var(--whatsapp-text);
             font-size: 2rem;
             box-shadow: var(--shadow-xl);
             z-index: 999;
@@ -793,7 +793,7 @@
 
         .whatsapp-float:hover {
             transform: scale(1.1);
-            background: #20ba5a;
+            background: var(--whatsapp-dark);
         }
 
         /* Footer */

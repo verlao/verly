@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import lojaFrente from '../assets/loja-verly-realengo.png';
 import QuoteForm from '../components/QuoteForm.astro';
+import ServiceGallery from '../components/ServiceGallery.astro';
 import { CONTACT, GOOGLE_REVIEWS } from '../data/site';
 import { fetchPublishedReviews, idadeRelativa } from '../data/published-reviews';
 
@@ -178,6 +179,8 @@ const initials = (name: string): string =>
             </div>
         </div>
     </section>
+
+    <ServiceGallery />
 
     <!-- Ponto de conversão no meio da página. As páginas de bairro já trazem o
          formulário exatamente aqui, logo depois dos serviços: é onde o visitante

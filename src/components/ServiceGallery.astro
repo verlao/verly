@@ -1,0 +1,224 @@
+---
+import { CONTACT } from '../data/site';
+
+/**
+ * Galeria de serviços.
+ *
+ * Não é decoração: cada painel é uma entrada de lead. O visitante reconhece o
+ * trabalho que precisa pela FOTO — que é como se compra vidraçaria — e o clique
+ * abre o WhatsApp já dizendo qual serviço, com um `data-context` próprio para
+ * separar no relatório o lead que veio da foto do que veio do card.
+ *
+ * Zero JavaScript: os links são `<a>` de verdade, montados no build. O ouvinte
+ * delegado de whatsapp-cta.js (`a[href*="wa.me"]`) já os alcança e lê o
+ * `data-context` do markup, então o rastreio vem de graça e sem duplicar emissor.
+ *
+ * `panes` só lista serviço COM foto. Divisórias de ambiente está fora de
+ * propósito: mostrar a foto de outro serviço no lugar seria mentir sobre o que a
+ * pessoa está pedindo, que é exatamente o defeito que #78 acabou de consertar.
+ */
+const panes = [
+  {
+    service: 'box-banheiro',
+    label: 'Box para banheiro',
+    detail: 'Temperado 8mm, ferragem preta',
+    img: '/img/servicos/box-banheiro.webp',
+    alt: 'Box de banheiro em vidro temperado com perfil e puxador pretos, instalado em nicho revestido.',
+  },
+  {
+    service: 'sacada-envidracada',
+    label: 'Sacada envidraçada',
+    detail: 'Cortina de vidro retrátil',
+    img: '/img/servicos/sacada-envidracada.webp',
+    alt: 'Varanda envidraçada com folhas de vidro recolhidas na lateral e guarda-corpo de vidro.',
+  },
+  {
+    service: 'guarda-corpos-vidro',
+    label: 'Guarda-corpo',
+    detail: 'Vidro com corrimão de inox',
+    img: '/img/servicos/guarda-corpos-vidro.webp',
+    alt: 'Guarda-corpo de vidro com corrimão de aço inox e prendedores redondos, em varanda externa.',
+  },
+  {
+    service: 'portas-janelas',
+    label: 'Portas e janelas',
+    detail: 'Perfil de alumínio sob medida',
+    img: '/img/servicos/portas-janelas.webp',
+    alt: 'Divisória envidraçada de piso a teto com perfil escuro separando dois ambientes de uma sala.',
+  },
+  {
+    service: 'espelhos-sob-medida',
+    label: 'Espelho sob medida',
+    detail: 'Corte e instalação no local',
+    img: '/img/servicos/espelhos-sob-medida.webp',
+    alt: 'Espelho grande sob medida instalado em hall de entrada, com iluminação embutida acima.',
+  },
+];
+
+// `CONTACT.mobile` é a mesma origem dos outros links do site; wa.me escolhe entre
+// app, WhatsApp Web e loja, que é a razão de nenhum link daqui apontar para
+// web.whatsapp.com direto.
+const waLink = (label: string) =>
+  `https://wa.me/${CONTACT.mobile}?text=${encodeURIComponent(
+    `Olá! Vi a foto de ${label.toLowerCase()} no site e gostaria de um orçamento.`
+  )}`;
+---
+
+<section id="trabalhos" class="section gallery">
+  <div class="container">
+    <h2 class="section-title">Como fica depois de instalado</h2>
+    <p class="section-subtitle">
+      Clique no serviço que você precisa e já mande a foto junto no WhatsApp.
+    </p>
+
+    <div class="pane-frame">
+      <figure class="pane pane-material">
+        <img
+          src="/img/servicos/aresta-vidro.webp"
+          alt="Detalhe aproximado da aresta de uma chapa de vidro temperado encaixada em perfil de alumínio."
+          width="643"
+          height="900"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>
+          <span class="pane-label">Vidro temperado</span>
+          <span class="pane-detail">A aresta que ninguém vê</span>
+        </figcaption>
+      </figure>
+
+      {panes.map((p) => (
+        <a
+          class="pane"
+          href={waLink(p.label)}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-service={p.service}
+          data-context={`gallery-${p.service}`}
+        >
+          <img src={p.img} alt={p.alt} width="800" height="600" loading="lazy" decoding="async" />
+          <span class="pane-caption">
+            <span class="pane-label">{p.label}</span>
+            <span class="pane-detail">{p.detail}</span>
+          </span>
+        </a>
+      ))}
+    </div>
+
+    <p class="gallery-note">
+      Imagens ilustrativas dos serviços. Fotos das nossas obras entram aqui conforme
+      os clientes autorizam.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* O caixilho.
+     Os painéis não flutuam como card: eles ficam ENCOSTADOS, separados por 2px da
+     cor do alumínio anodizado, que é o perfil onde o vidro de verdade se encaixa.
+     Canto reto pelo mesmo motivo — chapa de vidro não tem canto arredondado. É o que
+     distingue esta seção dos cards de serviço logo acima, que são cards de propósito.
+     Nenhuma cor nova entra aqui: tudo sai dos tokens de src/styles/index-inline.css. */
+  .pane-frame {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    padding: 2px;
+    background: var(--dark);
+    margin-top: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .pane-frame {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* A proporção vive no PAINEL, não na imagem: são 6 painéis idênticos formando
+     duas fileiras cheias. Com `aspect-ratio` na <img> junto de `height: 100%` os
+     dois se contradiziam, a imagem parava antes do fim do painel e a legenda
+     descolava para uma faixa branca embaixo dela. */
+  .pane {
+    position: relative;
+    display: block;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--dark);
+    text-decoration: none;
+  }
+
+  .pane img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Vidro jateado: a legenda é o próprio produto. Branco a 88% sobre a imagem —
+     no pior caso (foto preta) o texto --dark dá 10,2:1, bem acima do mínimo AA,
+     então a legenda continua legível independente da foto que estiver atrás. */
+  .pane-caption,
+  .pane figcaption {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0.7rem 0.85rem;
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(10px) saturate(1.15);
+    backdrop-filter: blur(10px) saturate(1.15);
+    color: var(--dark);
+  }
+
+  /* Hierarquia por peso e tamanho, não por cor: cinza claro sobre vidro jateado
+     cairia para 3,57:1 e reprovaria em AA. */
+  .pane-label {
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.25;
+  }
+
+  .pane-detail {
+    font-size: 0.78rem;
+    font-weight: 400;
+    line-height: 1.35;
+    opacity: 0.85;
+  }
+
+  .pane[href]:hover img,
+  .pane[href]:focus-visible img {
+    transform: scale(1.04);
+  }
+
+  .pane[href]:hover .pane-caption,
+  .pane[href]:focus-visible .pane-caption {
+    background: var(--white);
+  }
+
+  /* Foco visível por dentro: os painéis são encostados, um contorno externo seria
+     cortado pelo painel vizinho. */
+  .pane[href]:focus-visible {
+    outline: 3px solid var(--cta);
+    outline-offset: -3px;
+  }
+
+  .gallery-note {
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: var(--gray);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pane img {
+      transition: none;
+    }
+    .pane[href]:hover img,
+    .pane[href]:focus-visible img {
+      transform: none;
+    }
+  }
+</style>

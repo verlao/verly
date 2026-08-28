@@ -254,23 +254,55 @@ const WhatsAppCTA = {
         
         document.body.appendChild(stickyBar);
         
-        // Mostrar/esconder baseado em scroll
+        // A sticky cede espaço aos pontos de conversão que já estão na tela. O Set
+        // cobre a transição direta entre regiões sem reexibir a barra entre callbacks.
+        const yieldingRegions = document.querySelectorAll('.cta-band, #contato');
+        const intersectingRegions = new Set();
         let lastScroll = 0;
+        let scrollingDown = false;
+
+        const scrollPercent = () =>
+            (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+
+        const syncSticky = () => {
+            this.floatState.stickyVisible = stickyBar.classList.contains('active');
+            this.syncFloat();
+        };
+
+        if (yieldingRegions.length && 'IntersectionObserver' in window) {
+            const regionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) intersectingRegions.add(entry.target);
+                    else intersectingRegions.delete(entry.target);
+                });
+
+                if (intersectingRegions.size) {
+                    stickyBar.classList.remove('active');
+                } else if (scrollingDown && scrollPercent() > 30) {
+                    stickyBar.classList.add('active');
+                }
+                syncSticky();
+            }, { threshold: 0 });
+
+            yieldingRegions.forEach(region => regionObserver.observe(region));
+        }
+
+        // Mostrar/esconder baseado em scroll
         window.addEventListener('scroll', () => {
-            const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            const currentScrollPercent = scrollPercent();
             const currentScroll = window.scrollY;
+            scrollingDown = currentScroll > lastScroll;
             
             // Mostrar após 30% de scroll e quando scrollando para baixo
-            if (scrollPercent > 30 && currentScroll > lastScroll) {
+            if (currentScrollPercent > 30 && scrollingDown && !intersectingRegions.size) {
                 stickyBar.classList.add('active');
-            } else if (currentScroll < lastScroll && scrollPercent < 20) {
+            } else if (currentScroll < lastScroll && currentScrollPercent < 20) {
                 // Esconder quando volta ao topo
                 stickyBar.classList.remove('active');
             }
 
             // A sticky e o flutuante são o mesmo CTA: quando ela aparece, ele sai.
-            this.floatState.stickyVisible = stickyBar.classList.contains('active');
-            this.syncFloat();
+            syncSticky();
 
             lastScroll = currentScroll;
         });

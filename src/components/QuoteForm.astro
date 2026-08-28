@@ -1,6 +1,6 @@
 ---
 import Icon from '../components/Icon.astro';
-import { CONTACT, NEIGHBORHOOD_OPTIONS } from '../data/site';
+import { CONTACT, NEIGHBORHOOD_OPTIONS, SERVICE_TAXONOMY } from '../data/site';
 
 interface Props {
   /** Bairro da página — pré-seleciona a opção no <select>. A escolha segue editável:
@@ -171,35 +171,35 @@ const {
                                     <div class="form-label" id="services-label">Serviços de interesse</div>
                                     <div class="checkbox-group">
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service1" name="services" value="Box para Banheiro">
+                                            <input type="checkbox" id="service1" name="services" value="Box para Banheiro" data-service={SERVICE_TAXONOMY.boxBanheiro.slug}>
                                             <label for="service1">Box para Banheiro</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service2" name="services" value="Sacada Envidraçada">
+                                            <input type="checkbox" id="service2" name="services" value="Sacada Envidraçada" data-service={SERVICE_TAXONOMY.sacadaEnvidracada.slug}>
                                             <label for="service2">Sacada Envidraçada</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service3" name="services" value="Guarda-corpo">
+                                            <input type="checkbox" id="service3" name="services" value="Guarda-corpo" data-service={SERVICE_TAXONOMY.guardaCorpo.slug}>
                                             <label for="service3">Guarda-corpo</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service4" name="services" value="Portas de Vidro">
+                                            <input type="checkbox" id="service4" name="services" value="Portas de Vidro" data-service={SERVICE_TAXONOMY.portasJanelas.slug}>
                                             <label for="service4">Portas de Vidro</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service5" name="services" value="Janelas de Alumínio">
+                                            <input type="checkbox" id="service5" name="services" value="Janelas de Alumínio" data-service={SERVICE_TAXONOMY.portasJanelas.slug}>
                                             <label for="service5">Janelas de Alumínio</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service6" name="services" value="Espelhos">
+                                            <input type="checkbox" id="service6" name="services" value="Espelhos" data-service={SERVICE_TAXONOMY.espelhoSobMedida.slug}>
                                             <label for="service6">Espelhos</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service7" name="services" value="Divisórias">
+                                            <input type="checkbox" id="service7" name="services" value="Divisórias" data-service={SERVICE_TAXONOMY.divisoriaAmbiente.slug}>
                                             <label for="service7">Divisórias</label>
                                         </div>
                                         <div class="checkbox-item">
-                                            <input type="checkbox" id="service8" name="services" value="Tampos de Mesa">
+                                            <input type="checkbox" id="service8" name="services" value="Tampos de Mesa" data-service={SERVICE_TAXONOMY.tampoMesa.slug}>
                                             <label for="service8">Tampos de Mesa</label>
                                         </div>
                                     </div>

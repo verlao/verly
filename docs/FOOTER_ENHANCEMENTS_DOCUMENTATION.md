@@ -50,11 +50,13 @@ Aprimorar o footer com links de contato completos e implementar tracking avança
 #### ✅ **Novos Botões Adicionados:**
 - **Espelhos Sob Medida** 
   - Mensagem: "🪞 Olá! Gostaria de um orçamento para Espelhos Sob Medida."
-  - Context: `service-espelhos`
+  - Context: `service-card`
+  - Service: `espelho`
 
 - **Divisórias de Ambiente**
   - Mensagem: "🚪 Olá! Gostaria de um orçamento para Divisórias de Ambiente."
-  - Context: `service-divisórias`
+  - Context: `service-card`
+  - Service: `divisoria`
 
 **Agora TODOS os 6 cards de serviços têm botões de WhatsApp!**
 
@@ -337,9 +339,9 @@ Conversão
 - Segmentação: Desktop vs Mobile
 
 ✅ **Qual card de serviço tem mais cliques?**
-- Dimensão: `context`
-- Filtro: `event_name = 'whatsapp_click'`
-- Exemplos: `service-espelhos`, `service-divisórias`
+- Dimensão: `service`
+- Filtros: `event_name = 'whatsapp_click'` e `context = 'service-card'`
+- Exemplos: `espelho`, `divisoria`
 
 ---
 

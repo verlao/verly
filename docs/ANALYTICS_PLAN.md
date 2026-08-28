@@ -7,11 +7,10 @@ Este documento é para executar com o painel do GA4 aberto. Ele descreve o **est
 da instrumentação (page_view único, `page_type`/`neighborhood_page` em todo evento,
 sem `timestamp`), não o estado atual em produção.
 
-Complementa `GA4_TRACKING_GUIDE.md`, que lista os eventos mas não trata de registro de
-dimensão nem de leitura — e é justamente o registro que hoje bloqueia todo insight:
-**parâmetro não registrado é invisível em relatório**.
+`GA4_TRACKING_GUIDE.md` é o contrato operacional resumido; este plano detalha registro e
+leitura. **Parâmetro não registrado é invisível em relatório**.
 
-**Execute nesta ordem:** registrar as 15 dimensões (§2, ~15 min) → retenção 14 meses (§2)
+**Execute nesta ordem:** registrar as 14 dimensões (§2, ~15 min) → retenção 14 meses (§2)
 → marcar `generate_lead` como evento-chave (§3) → esperar dados → montar funil (§4) e as
 4 explorações (§5) → religar o Ads por importação (§7). Antes de concluir qualquer coisa,
 ler §6.
@@ -27,16 +26,16 @@ log aparece, e não há evento que escape da segmentação.
 
 | Evento | Arquivo:linha | Quando dispara | Parâmetros próprios (exemplo) | Cardinalidade |
 |---|---|---|---|---|
-| `page_view` | `Base.astro:113` | 1x por carregamento (`send_page_view: true`) | automáticos: `page_location`, `page_title`, `page_referrer` | baixa — 14 URLs (`/`, 11 `/<bairro>.html`, `/blog.html`, `/obrigado.html`) mais `/404.html` e `/500.html` |
+| `page_view` | `Base.astro` | 1x por carregamento (`send_page_view: true`) | automáticos: `page_location`, `page_title`, `page_referrer` | baixa — 17 URLs: home, 11 bairros, avaliação, blog, obrigado, 404 e 500 |
 | `session_start`, `first_visit`, `user_engagement` | GA4 automático | início de sessão / 1ª visita | — | — |
 | `scroll_depth` | `app.js` | cruza 25 / 50 / 75 / 100% | `percent_scrolled: 50`, `page_height: 9840`, `viewport_height: 844` | `percent_scrolled` baixa (4); `page_height`/`viewport_height` altas (numéricas). **Nome próprio para não colidir com o `scroll` automático do GA4, que dispara a 90%** |
-| `section_view` | `app.js:103` ← `:672` | 50% da seção visível, 1x por seção por pageview | `section_name: "Nossos Serviços"`, `section_id: "servicos"`, `scroll_position: 2140`, `time_on_page: 18` | `section_id` baixa (`servicos`, `diferenciais`, `depoimentos`, `contato`, `faq`); `section_name` instável (vem do `<h2>`); `scroll_position`/`time_on_page` altas |
+| `section_view` | `app.js` | 50% da seção visível, 1x por seção por pageview | `section_name: "Nossos Serviços"`, `section_id: "servicos"`, `scroll_position: 2140`, `time_on_page: 18` | `section_id` baixa (`servicos`, `trabalhos`, `diferenciais`, `depoimentos`, `contato`, `faq`); `section_name` instável (vem do `<h2>`); `scroll_position`/`time_on_page` altas |
 | `cta_click` | `app.js:63` ← `:710` | clique em `.btn-primary` / `.btn-success` / `.btn-secondary` | `button_text: "Solicitar Orçamento Grátis"`, `button_location: "hero"` (`hero`\|`menu`\|`contact_form`\|`other`), `target_section: "#contato"`, `click_position_y: 0` | `button_text`/`button_location` baixas; `click_position_y` alta |
-| `service_interaction` | `app.js:115` ← `:724` | clique em qualquer ponto de `.service-card` | `service_name: "Box para Banheiro"`, `service_position: 1`, `interaction_type: "click"` | baixa (6 cards) |
+| `service_interaction` | `app.js` | clique em qualquer ponto de `.service-card` | `service_name: "Box para Banheiro"`, `service_position: 1`, `interaction_type: "click"` | inclui os 6 cards da home, os 6 serviços e os 5 motivos de cada bairro; não usar como ranking até restringir o seletor em tarefa própria |
 | `navigation_click` | `app.js:147` ← `:623`, `:732`, `:741`, `:825` | `.nav-link`, links do rodapé, âncoras `#`, toggle do menu mobile | `link_text: "Serviços"`, `link_target: "#servicos"`, `navigation_type: "menu"` (`menu`\|`footer`\|`internal_link`\|`mobile_menu_toggle`) | média (~30 combinações de texto/alvo) |
 | `phone_click` | `app.js:136` ← `:750` | clique em `a[href^="tel:"]` | `phone_number: "+552134216066"` (número **da loja**), `click_location: "footer"` | baixa |
-| `whatsapp_impression` | `whatsapp-cta.js` (`IntersectionObserver`) | CTA de WhatsApp fica realmente visível — **1x por `context` por pageview** | `context: "service-sacada"`, `click_source`, `button_text: "Pedir Orçamento"` | mesma cardinalidade baixa de `context`; é o denominador de §5.4 |
-| `whatsapp_click` | `whatsapp-cta.js` (listener delegado no `document`) | clique real em qualquer link de WhatsApp — **um** por clique | `context: "service-sacada"`, `click_source`, `button_text: "Pedir Orçamento"` | `context` baixa (inclui `form_fallback`/`form_error`; ver §5.4) |
+| `whatsapp_impression` | `whatsapp-cta.js` (`IntersectionObserver`) | CTA fica realmente visível — **1x por combinação `context` + `service` por pageview** | `context: "service-card"`, `service: "guarda-corpo"`, `click_source`, `button_text` | `context` identifica origem; `service` identifica o serviço canônico |
+| `whatsapp_click` | `whatsapp-cta.js` (listener delegado no `document`) | clique real em qualquer link de WhatsApp — **um** por clique | os mesmos parâmetros da impressão | `context` não incorpora mais serviço; handoffs são `form-fallback`/`form-error` |
 | `contact_link_click` | `whatsapp-cta.js` | clique em `[data-track]` — **2** links do rodapé, e-mail e endereço (`Footer.astro:78,84`); WhatsApp e telefone saem como os próprios eventos | `link_id: "footer_email_click"`, `link_type: "mailto"`, `link_text` | baixa (2) |
 | `form_interaction` | `app.js:84` | 10 gatilhos, ver tabela abaixo | `form_name: "contact_form"`, `form_action: "field_focus"`, `field_name: "phone"`, `field_value_length: 15` (só quando há valor), `error_message: "Telefone inválido…"` (só em erro) | `form_action` baixa (10); `field_name` baixa (7: `name`, `phone`, `email`, `neighborhood`, `message`, `services`, `all_fields`) |
 | `engagement_milestone` | `app.js:158` ← `:696` | 30s / 60s / 120s após `DOMContentLoaded` | `milestone_name: "time_60s"`, `milestone_value: 60` | baixa (3) |
@@ -48,6 +47,7 @@ log aparece, e não há evento que escape da segmentação.
 | `review_submitted` | `avaliar.astro` | 202 do `POST /reviews` | `rating: 5`, `photo_count: 3`, `photo_failures: 0`, `has_comment: true` | `rating` baixa; as contagens são numéricas |
 | `review_failed` | `avaliar.astro` | erro da API ou de rede no envio | `error_message: "Link expirado"` | baixa |
 | `review_link_invalid` | `avaliar.astro` | `?t=` ausente ou fora do formato | — | — |
+| `review_validation_error` | `avaliar.astro` | tentativa de envio sem nota | `error_message` | baixa |
 
 Os quatro últimos só acontecem em `page_type = avaliar`, e essa página é `noindex`:
 tráfego dela vem de link em conversa, nunca de busca. **A leitura que eles habilitam é
@@ -64,12 +64,12 @@ Valores de `form_action`, com a linha que os emite:
 | `field_focus` | `app.js:789` | **todo** focus, não só o primeiro — contagem infla por pessoa |
 | `field_blur` | `app.js:794` | passa o valor; sai só `field_value_length` |
 | `field_complete` | `app.js:359` | campo válido e preenchido |
-| `validation_error` | `app.js:349`, `:387` | `:387` é o bloco de serviços (`error_message: "Nenhum serviço selecionado"`) |
+| `validation_error` | `app.js` | campo obrigatório ou formato inválido; serviços são opcionais e não emitem este erro |
 | `service_selected` | `app.js` | dispara a cada marcação; `field_name` é sempre `services` |
 | `submit_attempt` | `app.js:410` | antes de validar |
 | `validation_failed` | `app.js:445` | submit barrado na validação |
-| `submit_success` | `app.js:505` | dispara também quando a API falhou (`error_message: "API failed"`) |
-| `submit_error` | `app.js:577` | exceção de rede |
+| `submit_success` | `app.js` | tentativa HTTP concluída; use `generate_lead` para aceite real |
+| `submit_error` | `app.js` | falha de rede |
 
 Campos que emitem `field_focus`: `name`, `phone`, `email`, `neighborhood`, `message` e
 **`services`** — o bloco dos 8 checkboxes conta como UM campo, e o vaivém entre checkboxes
@@ -99,7 +99,8 @@ de evento; a lista usa 15.
 | `neighborhood_page` | Evento | bairro da **página** (origem do tráfego) | §5.1 (numerador e denominador) |
 | `neighborhood` | Evento | bairro **declarado no formulário** — pode divergir da página | §5.1 (tabela C) |
 | `services` | Evento | único registro do que o lead pediu | §5.2 (via filtro "contém") |
-| `context` | Evento | identidade do CTA de WhatsApp | §5.4 |
+| `context` | Evento | origem estável do CTA de WhatsApp | §5.4 |
+| `service` | Evento | slug canônico do serviço, independente da origem card/galeria/bairro | §5.2 e §5.4 |
 | `click_source` | Evento | categoria de origem de `whatsapp_click` e `whatsapp_impression` | §5.4 |
 | `form_action` | Evento | etapa do formulário — sem ela o funil do form não existe | §4, §5.3 |
 | `field_name` | Evento | campo da etapa | §5.3 |
@@ -107,8 +108,6 @@ de evento; a lista usa 15.
 | `section_id` | Evento | seção vista, valor **estável** | §4 (etapa 2) |
 | `button_location` | Evento | onde estava o botão do `cta_click` | §4, §5.4 |
 | `button_text` | Evento | desambigua dois CTAs no mesmo `button_location` | §5.4 |
-| `service_name` | Evento | card de serviço clicado | §5.2 (sinal de interesse) |
-| `api_status` | Evento | confirma que `generate_lead` corresponde a aceitação da API | auditoria de conversão |
 | `rating` | Evento | nota da avaliação (1-5); é o que separa elogio de reclamação | §1, eventos `review_*` |
 
 **Zero dimensões de escopo de usuário.** Nada na instrumentação descreve atributo
@@ -121,7 +120,9 @@ Categoria do dispositivo / Navegador / SO); `timestamp` (será removido);
 `scroll_position`, `time_on_page`, `click_position_y`, `page_height`, `viewport_height`,
 `message_length`, `field_value_length`, `service_position`, `milestone_value` (numéricos —
 se algum dia precisar, é **métrica** personalizada, não dimensão); `section_name` (texto do
-`<h2>`: muda quando a copy muda e quebra o histórico — use `section_id`).
+`<h2>`: muda quando a copy muda e quebra o histórico — use `section_id`); `api_status`
+(constante em `generate_lead`); `service_name` (o seletor atual também inclui motivos dos
+bairros; aguarde a tarefa que restringirá `service_interaction`).
 
 Enquanto estiver no Administrador, faça também: **Exibição de dados → Retenção de dados →
 14 meses**. O padrão é 2 meses, e explorações não alcançam além da retenção.
@@ -174,7 +175,7 @@ Três avisos sobre este funil, todos verificados no código:
 - **Etapa 5 → 6 ainda pode perder gente.** `generate_lead` já significa API aceita, mas o
   redirecionamento espera 1200 ms; quem fecha a aba antes não gera o pageview de
   `/obrigado.html`.
-- **Etapa 4 não cobre os checkboxes.** Ver §5.3.
+- **Etapa 4 cobre os checkboxes.** O primeiro foco em `services` também inicia o formulário.
 
 ---
 
@@ -210,22 +211,23 @@ principais por sessão", que só existe depois de §3.
 
 - **Pergunta:** os 6 cards têm peso igual na página; têm peso igual na demanda?
 - **Tipo:** formato livre.
-- **Cardinalidade — leia antes de montar:** `services` é lista de **slugs**
-  (`box,sacada,guarda_corpo,portas_vidro,janelas_aluminio,espelhos,divisorias,tampos_mesa`).
+- **Cardinalidade — leia antes de montar:** `services` é lista deduplicada de **slugs
+  canônicos** (`box-banheiro`, `sacada`, `guarda-corpo`, `portas-janelas`, `espelho`,
+  `divisoria`, `tampo-mesa`). Mesmo com todas as opções, o valor fica abaixo do limite
+  de 100 caracteres do GA4.
   Continua sendo combinação, então detalhar por `services` dá uma tabela de combinações e
   não um ranking de serviços — mas já não estoura os 100 caracteres do GA4, que era o que
   cortava justamente a seleção maior, o lead mais valioso.
-- **Como montar:** uma consulta **por serviço**, 8 no total. Métrica: Contagem de eventos;
+- **Como montar:** uma consulta **por serviço**. Métrica: Contagem de eventos;
   filtros: Nome do evento exatamente `generate_lead` **e** `services` **contém** o *slug*
   (não o nome exibido). Os slugs foram escolhidos para que nenhum seja pedaço de outro, o
   que é o que torna o "contém" confiável. A soma das 8 passa do total de leads — esperado,
   cada linha é "% dos leads que citaram X", não uma partição.
   Atalho para ranking grosseiro sem 8 consultas: `services_count` responde "quantos
   serviços por lead", que é outra pergunta, mas de graça.
-- **Sinal de interesse (limpo, já disponível):** `service_interaction.service_name`
-  (cliques nos 6 cards) e `whatsapp_click` com `context` começando em `service-` — por
-  serviço, sem concatenação. Use-os para *interesse* e `generate_lead` para *demanda
-  realizada*; divergência entre os dois é problema de card, não de demanda.
+- **Sinal de interesse limpo:** filtre `whatsapp_click` por `service` exatamente igual ao
+  slug. O mesmo `guarda-corpo` sai do card da home, do card de bairro e da galeria; use
+  `context` (`service-card` ou `service-gallery`) apenas para quebrar por origem.
 - **Como ler:** compare o ranking com a ordem dos cards. Serviço no topo da demanda e no fim
   da página é troca de ordem, custo zero. Achado da própria estrutura: o formulário oferece
   **8** serviços e a página tem **6** cards — `Janelas de Alumínio` e `Tampos de Mesa` não
@@ -252,42 +254,37 @@ principais por sessão", que só existe depois de §3.
 | 6 | `form_interaction` | `form_action` = `submit_attempt` |
 | 7 | `generate_lead` | — |
 
-- **O bloco de serviços agora é mensurável direto.** Ele emite `field_focus` com
+- **O bloco opcional de serviços é mensurável direto.** Ele emite `field_focus` com
   `field_name = services`, então cabe uma etapa própria no funil, entre a 4 e a 5:
   `form_action` = `field_focus` e `field_name` = `services`. A queda dessa etapa para
   `service_selected` é literalmente "olhou as 8 opções e não marcou nenhuma" — antes esse
-  abandono não deixava rastro.
+  abandono não deixava rastro; não trate a queda como erro de validação.
 - **Confirmação independente:** tabela de formato livre com filtro `form_action` =
-  `validation_error`, linhas `field_name` e `error_message`. Se
-  `services` / `"Nenhum serviço selecionado"` for a maior linha, o bloco obrigatório é o
-  gargalo, e aí a decisão abaixo se sustenta em dois sinais e não em um.
+  `validation_error`, linhas `field_name` e `error_message`. `services` não deve aparecer:
+  o bloco é opcional.
 - **Armadilha de contagem:** `field_focus` dispara em **todo** focus (`app.js:789`). Em
   funil (por usuário) não distorce; em Contagem de eventos, distorce — nunca compare
   `field_focus` com `field_complete` por contagem.
 - **Como ler:** a maior queda percentual é o alvo, e só ela. Abaixo de ~30 inícios de
   formulário no período, leia só a **ordem** das etapas. Queda no `message` (opcional,
   último) não é problema.
-- **Decide:** trocar os checkboxes obrigatórios por um `<select>` de serviço principal, ou
-  tornar o bloco opcional. É a mudança de formulário com maior retorno esperado — e a única
-  que este funil consegue julgar.
+- **Decide:** simplificar, reordenar ou retirar opções quando o volume sustentar a leitura.
 
 ### 5.4 Qual CTA converte
 
-- **Pergunta:** quais dos ~11 links de WhatsApp da home merecem existir?
+- **Pergunta:** quais origens de CTA da home merecem existir?
 - **Tipo:** duas tabelas de formato livre, ambas com linhas `context` e colunas
   `page_type`. Na primeira, filtre Nome do evento = `whatsapp_impression`; na segunda,
   Nome do evento = `whatsapp_click`. Divida cliques por impressões fora do GA4.
 - **Por que a impressão é o denominador:** sticky só fica visível após 30% de rolagem,
   flutuante recua quando seria redundante/obstruiria conteúdo e CTAs de serviço só entram
   no viewport com scroll. Contagem bruta de clique mistura atratividade com exposição.
-- **Cardinalidade:** cada `context` emite no máximo uma impressão por pageview, mesmo se o
-  CTA sair e voltar ao viewport. Cliques continuam um por ação real e podem ser mais de um
-  no mesmo pageview.
-- **Valores de `context` que existem:** `floating-button` (`Base.astro:153`),
-  `sticky-cta` (`whatsapp-cta.js:253`), `footer-whatsapp` (`Footer.astro:62`),
-  `thank-you-page` (`obrigado.astro:32`), `service-*` (6 valores, `whatsapp-cta.js:318`),
-  `hero-whatsapp`, `cta-band`, `neighborhood-hero` e os handoffs
-  `form_fallback`/`form_error`.
+- **Cardinalidade:** cada combinação `context` + `service` emite no máximo uma impressão
+  por pageview, mesmo se o CTA sair e voltar ao viewport.
+- **Valores de `context`:** `floating-button`, `sticky-cta`, `footer-whatsapp`,
+  `thank-you-page`, `hero-whatsapp`, `cta-band`, `avaliar-link-invalido`,
+  `service-card`, `service-gallery` e os handoffs `form-fallback`/`form-error`.
+  Para comparar serviços, use a dimensão `service`, nunca extraia sufixo de `context`.
 - **Como ler:** zero clique com impressões confirmadas é candidato a remoção. Diferença
   entre CTAs vivos ainda precisa de ~30 cliques por CTA para valer discussão.
 - **Decide:** quais CTAs cortar. Onze links de WhatsApp numa página é muito, e todos
@@ -320,6 +317,10 @@ renomeado, mas comparar séries atravessando o deploy mistura definições difer
   evento por campo para exatamente um por formulário/pageview.
 - `lead_submit_attempt` e `whatsapp_impression` são novos. `lead_recovered` mantém o
   significado existente.
+- No deploy da taxonomia, `context` deixa de fundir origem e serviço. `service-*` e
+  `gallery-*` convergem em `service-card`/`service-gallery`; o novo parâmetro `service`
+  carrega o slug canônico. `form_fallback`/`form_error` viram
+  `form-fallback`/`form-error`. Use esse deploy como novo corte para relatórios por CTA.
 
 Registro de dimensão personalizada **não é retroativo** (§2), e correção de código também
 não reescreve evento histórico. Para qualquer taxa afetada, use o deploy como corte e não

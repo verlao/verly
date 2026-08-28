@@ -1,526 +1,160 @@
-# 📊 Guia Completo de Tracking GA4 - Verly Vidraçaria
+# Guia operacional de tracking GA4
 
-## 🎯 Visão Geral
+Este documento descreve o contrato atual da instrumentação da Verly. Para registrar
+dimensões, montar explorações e respeitar os cortes históricos, use também
+`ANALYTICS_PLAN.md`.
 
-Este documento descreve **todos os eventos do Google Analytics 4** implementados na landing page da Verly Vidraçaria para rastrear comportamento do usuário e otimizar conversões.
+- Medição GA4: `G-GDQV6C1NWH`
+- Implementação: `gtag` direto, sem GTM
+- Emissor comum: `trackGA4Event` em `public/js/app.js`
+- Contexto de página: `page_type` em todo evento e `neighborhood_page` nos bairros
+- PII: nome, telefone, e-mail, mensagem e hashes desses valores nunca vão ao GA4
 
-**Property ID:** `G-GDQV6C1NWH`  
-**Total de Eventos:** 15+ tipos de eventos  
-**Eventos Personalizados:** 10  
-**Eventos Padrão GA4:** 5  
+## Eventos
 
----
+| Evento | Quando sai | Parâmetros próprios principais |
+|---|---|---|
+| `page_view` | carregamento, pelo `gtag('config')` | automáticos + `page_type`, `neighborhood_page` quando aplicável |
+| `scroll_depth` | 25%, 50%, 75% e 100% | `percent_scrolled`, alturas |
+| `section_view` | 50% de qualquer `section[id]` visível | `section_id`, `section_name`, posição, tempo |
+| `cta_click` | `.btn-primary`, `.btn-success`, `.btn-secondary` | `button_text`, `button_location`, alvo |
+| `service_interaction` | clique em `.service-card` | nome exibido, posição, tipo |
+| `navigation_click` | menu, rodapé e navegação interna | texto, alvo, tipo |
+| `phone_click` | link `tel:` | número da loja, localização |
+| `contact_link_click` | e-mail ou endereço com `data-track` | `link_id`, tipo, texto |
+| `whatsapp_impression` | CTA de WhatsApp realmente visível | `context`, `service` opcional, `click_source`, texto |
+| `whatsapp_click` | clique real em link de WhatsApp | mesmos parâmetros da impressão |
+| `form_interaction` | foco, blur, validação e submit | `form_action`, `field_name`, comprimentos/erro quando existem |
+| `lead_submit_attempt` | payload válido antes da entrega | serviços canônicos, contagem e booleanos; sem PII |
+| `generate_lead` | API aceitou o lead (`2xx`) | mesmos dados da tentativa + resultado técnico |
+| `lead_recovered` | fila local foi aceita depois | motivo, tentativas e idade da fila |
+| `engagement_milestone` | 30, 60 e 120 segundos | marco e valor |
+| `review_*` | fluxo da página de avaliação | nota/contagens/erro conforme o desfecho |
 
-## 📈 Eventos Implementados
+`service_interaction` ainda seleciona também os cards de motivos dos bairros. Não use
+`service_name` para ranking até o seletor ser restringido em uma tarefa própria. Para
+interesse por serviço, use `whatsapp_click.service`.
 
-### 1. **page_view** (Padrão GA4)
+## WhatsApp: origem e serviço são dimensões separadas
 
-**Quando:** Página carrega  
-**Tipo:** Automático + Customizado  
+`context` responde **de onde veio o CTA**. `service` responde **qual serviço foi pedido**.
+Um valor nunca incorpora o outro.
 
-**Parâmetros:**
+Exemplos:
+
 ```javascript
 {
-  page_path: '/index.html',
-  page_referrer: 'https://google.com',
-  user_agent: 'Mozilla/5.0...',
-  screen_resolution: '1920x1080',
-  viewport_size: '1920x947',
-  device_type: 'desktop',
-  timestamp: '2025-10-08T...',
-  page_location: 'https://verlyvidracaria.com',
-  page_title: 'Vidraçaria Zona Oeste...'
+  context: 'service-card',
+  service: 'guarda-corpo',
+  click_source: 'inline_button'
 }
 ```
 
-**Objetivo:** Entender origem e dispositivo dos visitantes
-
----
-
-### 2. **scroll** (Padrão GA4)
-
-**Quando:** Usuário rola a página (25%, 50%, 75%, 100%)  
-**Tipo:** Customizado  
-
-**Parâmetros:**
 ```javascript
 {
-  percent_scrolled: 50,
-  scroll_depth_threshold: 50,
-  page_height: 4500,
-  viewport_height: 947,
-  timestamp: '...'
+  context: 'service-gallery',
+  service: 'guarda-corpo',
+  click_source: 'inline_button'
 }
 ```
 
-**Objetivo:** Medir engajamento e pontos de abandono
+As duas linhas somam em `service = guarda-corpo`; `context` permite comparar card e foto.
+CTAs genéricos não enviam `service`.
 
----
+Valores aceitos de `context`:
 
-### 3. **lead_submit_attempt** + **generate_lead**
+- `floating-button`
+- `footer-whatsapp`
+- `sticky-cta`
+- `hero-whatsapp`
+- `service-card`
+- `service-gallery`
+- `cta-band`
+- `thank-you-page`
+- `avaliar-link-invalido`
+- `form-fallback`
+- `form-error`
 
-**Quando:** `lead_submit_attempt` sai para cada payload válido prestes a ser enviado;
-`generate_lead` sai apenas quando a API confirma aceitação (`2xx`).
-**Tipo:** Tentativa + Conversão Principal confirmada
+Slugs canônicos de serviço:
 
-**Parâmetros:**
+- `box-banheiro`
+- `sacada`
+- `guarda-corpo`
+- `portas-janelas`
+- `espelho`
+- `divisoria`
+- `portao-aluminio`
+- `vidro-temperado`
+- `tampo-mesa`
+
+A fonte única desses slugs é `SERVICE_TAXONOMY` em `src/data/site.ts`. Card da home,
+card de bairro, galeria e formulário recebem a identidade a partir dela. Alterar copy não
+altera o slug.
+
+`whatsapp_impression` deduplica por combinação `context + service` por pageview. Isso
+evita que seis cards com `context = service-card` colapsem em uma única impressão.
+
+## Formulário
+
+Os campos obrigatórios são nome e telefone. E-mail, bairro, serviços e mensagem são
+opcionais.
+
+`services` em eventos de lead é uma lista deduplicada dos mesmos slugs canônicos usados
+por WhatsApp. Portas de vidro e janelas de alumínio pertencem à família
+`portas-janelas`; marcar as duas opções não repete o slug. O texto enviado à API e ao
+WhatsApp continua usando os rótulos visíveis.
+
+`generate_lead` só significa aceite `2xx`. Falha HTTP ou de rede pode exibir um link de
+handoff; `whatsapp_click` só sai se a pessoa clicar nesse link. Os contextos desses
+handoffs são `form-fallback` e `form-error`.
+
+## Depuração
+
+Para liberar logs locais:
+
+```text
+?analytics_debug=1
+```
+
+ou:
+
 ```javascript
-{
-  lead_source: 'contact_form',
-  services: 'Box para Banheiro, Sacada Envidraçada',
-  neighborhood: 'Barra da Tijuca',
-  api_status: 'success', // presente apenas em generate_lead
-  has_email: true,
-  has_message: true,
-  timestamp: '...'
-}
+localStorage.setItem('verly_debug', '1')
 ```
 
-**Objetivo:** Medir tentativa → aceite sem contar falha HTTP/rede como lead
+Isso apenas libera `console.log`; não ativa o DebugView. Para DebugView, conecte o domínio
+em `tagassistant.google.com`, abra **Administrador → Exibição de dados → DebugView** e
+confira o evento e seus parâmetros.
 
----
+No navegador, a prova bruta fica em **DevTools → Network**, filtro `collect`, requisição
+`g/collect`. Confira o nome do evento e os parâmetros, sem esperar que o console mostre
+eventos quando o modo local está desligado.
 
-### 4. **cta_click** (Customizado)
+## Guard de build
 
-**Quando:** Clique em qualquer botão CTA  
-**Tipo:** Interação  
+`npm run build` gera o site e depois abre todas as páginas HTML do `dist` em Chrome
+headless. A checagem usa o DOM final, portanto inclui sticky e botões de serviço criados
+em runtime.
 
-**Parâmetros:**
-```javascript
-{
-  button_text: 'Solicitar Orçamento Grátis',
-  button_location: 'hero', // 'hero', 'menu', 'floating', 'section', 'contact_form'
-  target_section: '#contato',
-  click_position_y: 250,
-  timestamp: '...'
-}
-```
+O build falha quando:
 
-**CTAs Rastreados:**
-- "Solicitar Orçamento Grátis" (hero)
-- "WhatsApp Direto" (hero)
-- "Orçamento Grátis" (menu)
-- "Solicitar Orçamento Grátis" (formulário)
-- Todos os botões .btn-primary, .btn-success, .btn-secondary
+- um link de WhatsApp não tem `data-context`;
+- `context` ou `service` contém acento, `_`, maiúscula ou separador inválido;
+- o valor não pertence ao registro gerado por `src/data/site.ts`;
+- `service-card` ou `service-gallery` não traz `data-service`.
 
-**Objetivo:** Identificar CTAs mais efetivos
+O guard descobre todas as páginas `*.html` recursivamente; não mantém uma lista de nomes.
+Em máquina sem Chrome no caminho padrão, defina `CHROME_PATH`.
 
----
+## Corte histórico
 
-### 5. **form_interaction** (Customizado)
+Não misture períodos anteriores e posteriores ao deploy desta taxonomia em uma mesma
+série por `context`:
 
-**Quando:** Qualquer interação com o formulário  
-**Tipo:** Interação + Conversão  
+- contextos `service-*` convergiram para `service-card`;
+- contextos `gallery-*` convergiram para `service-gallery`;
+- o serviço passou ao parâmetro `service`;
+- `form_fallback` e `form_error` viraram `form-fallback` e `form-error`.
 
-**Ações Rastreadas:**
-- `start` - Primeiro foco no formulário
-- `field_focus` - Campo recebe foco
-- `field_blur` - Campo perde foco
-- `field_complete` - Campo preenchido corretamente
-- `validation_error` - Erro de validação
-- `validation_failed` - Validação geral falhou
-- `submit_attempt` - Tentativa de envio
-- `submit_success` - Envio bem-sucedido
-- `submit_error` - Erro no envio
-
-**Parâmetros:**
-```javascript
-{
-  form_name: 'contact_form',
-  form_action: 'field_focus',
-  field_name: 'phone',
-  field_value_length: 15,
-  error_message: 'Telefone inválido',
-  timestamp: '...'
-}
-```
-
-**Objetivo:** Analisar funil de conversão do formulário e identificar pontos de fricção
-
----
-
-### 6. **whatsapp_click** (Customizado)
-
-**Quando:** Clique real em qualquer link do WhatsApp, inclusive o link de handoff exibido
-após falha do formulário. Renderizar o link não dispara o evento.
-**Tipo:** Interação + Conversão  
-
-**Parâmetros:**
-```javascript
-{
-  context: 'form_fallback',
-  click_source: 'inline_button',
-  button_text: 'Continuar no WhatsApp'
-}
-```
-
-**Locais Rastreados:**
-- Botão flutuante (canto inferior direito)
-- Hero CTA "WhatsApp Direto"
-- Link de handoff após erro da API
-
-O evento `whatsapp_impression` usa os mesmos parâmetros e dispara no máximo uma vez por
-`context` por pageview quando o CTA fica realmente visível. Ele é o denominador correto
-para comparar CTAs cuja exposição depende de scroll/visibilidade.
-
-**Objetivo:** Medir conversões via WhatsApp
-
----
-
-### 7. **phone_click** (Customizado)
-
-**Quando:** Clique em número de telefone  
-**Tipo:** Interação + Conversão  
-
-**Parâmetros:**
-```javascript
-{
-  phone_number: '+5521987926578',
-  click_location: 'contact_section', // 'header', 'contact_section', 'footer'
-  timestamp: '...'
-}
-```
-
-**Objetivo:** Rastrear conversões por telefone
-
----
-
-### 8. **navigation_click** (Customizado)
-
-**Quando:** Clique em menu, footer ou links internos  
-**Tipo:** Navegação  
-
-**Parâmetros:**
-```javascript
-{
-  link_text: 'Serviços',
-  link_target: '#servicos',
-  navigation_type: 'menu', // 'menu', 'footer', 'internal_link', 'mobile_menu_toggle'
-  timestamp: '...'
-}
-```
-
-**Objetivo:** Entender padrões de navegação
-
----
-
-### 9. **service_interaction** (Customizado)
-
-**Quando:** Clique em card de serviço  
-**Tipo:** Engajamento  
-
-**Parâmetros:**
-```javascript
-{
-  service_name: 'Box para Banheiro',
-  service_position: 1,
-  interaction_type: 'click',
-  timestamp: '...'
-}
-```
-
-**Serviços Rastreados:**
-1. Box para Banheiro
-2. Sacadas Envidraçadas
-3. Guarda-corpos de Vidro
-4. Portas e Janelas
-5. Espelhos Sob Medida
-6. Divisórias de Ambiente
-
-**Objetivo:** Identificar serviços mais interessantes
-
----
-
-### 10. **section_view** (Customizado)
-
-**Quando:** Seção entra no viewport (50% visível)  
-**Tipo:** Engajamento  
-
-**Parâmetros:**
-```javascript
-{
-  section_name: 'Nossos Serviços',
-  section_id: 'servicos',
-  scroll_position: 850,
-  time_on_page: 25, // segundos
-  timestamp: '...'
-}
-```
-
-**Seções Rastreadas:**
-- Hero (topo)
-- Serviços (#servicos)
-- Diferenciais (#diferenciais)
-- Depoimentos (#depoimentos)
-- Formulário (#contato)
-
-**Objetivo:** Medir engajamento com cada seção
-
----
-
-### 11. **engagement_milestone** (Customizado)
-
-**Quando:** Marcos de tempo na página  
-**Tipo:** Engajamento  
-
-**Parâmetros:**
-```javascript
-{
-  milestone_name: 'time_30s',
-  milestone_value: 30,
-  timestamp: '...'
-}
-```
-
-**Milestones Rastreados:**
-- 30 segundos
-- 60 segundos (1 minuto)
-- 120 segundos (2 minutos)
-
-**Objetivo:** Medir qualidade de tráfego e engajamento
-
----
-
-## 🎯 Eventos por Categoria
-
-### **Conversão (Alta Prioridade)**
-1. ✅ `generate_lead` - Lead gerado
-2. ✅ `form_interaction` (submit_success)
-3. ✅ `whatsapp_click`
-4. ✅ `phone_click`
-5. ✅ `cta_click`
-
-### **Engajamento**
-1. ✅ `scroll` - Profundidade de scroll
-2. ✅ `section_view` - Visualização de seções
-3. ✅ `engagement_milestone` - Tempo na página
-4. ✅ `service_interaction` - Interesse em serviços
-
-### **Navegação**
-1. ✅ `navigation_click` - Cliques em menu/links
-2. ✅ `page_view` - Visualizações de página
-
-### **Formulário (Funil)**
-1. ✅ `form_interaction` (start)
-2. ✅ `form_interaction` (field_focus)
-3. ✅ `form_interaction` (field_complete)
-4. ✅ `form_interaction` (validation_error)
-5. ✅ `form_interaction` (submit_attempt)
-6. ✅ `form_interaction` (submit_success)
-
----
-
-## 📊 Relatórios Recomendados no GA4
-
-### 1. **Funil de Conversão do Formulário**
-
-```
-Etapa 1: form_interaction (start)
-Etapa 2: form_interaction (field_complete) onde field_name = 'name'
-Etapa 3: form_interaction (field_complete) onde field_name = 'phone'
-Etapa 4: form_interaction (field_complete) onde field_name = 'neighborhood'
-Etapa 5: form_interaction (submit_attempt)
-Etapa 6: generate_lead
-```
-
-**Objetivo:** Identificar onde usuários abandonam o formulário
-
----
-
-### 2. **Análise de CTAs**
-
-**Métricas:**
-- Cliques por CTA (button_text)
-- Taxa de conversão por localização (button_location)
-- CTAs que mais geram leads
-
-**Segmentação:**
-- Por dispositivo (device_type)
-- Por fonte de tráfego (page_referrer)
-
----
-
-### 3. **Análise de Scroll Depth**
-
-**Métricas:**
-- % de usuários que chegam a 25%, 50%, 75%, 100%
-- Correlação entre scroll e conversão
-- Identificar ponto de abandono
-
----
-
-### 4. **Análise de Serviços**
-
-**Métricas:**
-- Serviços mais clicados (service_name)
-- Serviços mais selecionados no formulário
-- Taxa de conversão por serviço
-
----
-
-### 5. **Tempo de Engajamento**
-
-**Métricas:**
-- % de usuários que ficam 30s, 60s, 120s
-- Tempo médio por seção
-- Correlação entre tempo e conversão
-
----
-
-### 6. **Análise de Erros de Validação**
-
-**Métricas:**
-- Campos com mais erros (field_name)
-- Tipos de erro mais comuns (error_message)
-- Taxa de abandono após erro
-
----
-
-## 🔍 Como Usar no GA4
-
-### Ver Eventos em Tempo Real:
-
-1. Acesse GA4: https://analytics.google.com
-2. Vá em **Relatórios** → **Tempo real**
-3. Veja eventos acontecendo ao vivo
-
-### Criar Relatório Personalizado:
-
-1. Vá em **Explorar** → **Análise de exploração**
-2. Adicione dimensões:
-   - Nome do evento
-   - button_text (para CTAs)
-   - field_name (para formulário)
-   - service_name (para serviços)
-3. Adicione métricas:
-   - Total de eventos
-   - Eventos por usuário
-   - Taxa de conversão
-
-### Criar Conversão:
-
-1. Vá em **Configurar** → **Eventos**
-2. Marque `generate_lead` como **Conversão**
-3. Marque `whatsapp_click` como **Conversão** (opcional)
-4. Marque `phone_click` como **Conversão** (opcional)
-
----
-
-## 🎯 KPIs Principais para Monitorar
-
-### Conversão:
-- ✅ **Taxa de conversão geral** (generate_lead / page_view)
-- ✅ **Taxa de conclusão do formulário** (submit_success / submit_attempt)
-- ✅ **Taxa de WhatsApp** (whatsapp_click / page_view)
-
-### Engajamento:
-- ✅ **Scroll depth médio**
-- ✅ **Tempo médio na página**
-- ✅ **Seções mais visualizadas**
-- ✅ **Serviços mais populares**
-
-### Fricção:
-- ✅ **Taxa de erro de validação**
-- ✅ **Campos mais problemáticos**
-- ✅ **Taxa de abandono do formulário**
-
-### CTAs:
-- ✅ **CTA mais clicado**
-- ✅ **Melhor localização de CTA**
-- ✅ **Taxa de conversão por CTA**
-
----
-
-## 🧪 Como Testar
-
-### Teste 1: Verificar Console
-
-1. Abra o site: https://verlyvidracaria.com
-2. Abra DevTools (F12)
-3. Vá na aba Console
-4. Você deve ver: `📊 GA4 Event: ...` a cada interação
-
-### Teste 2: Verificar Network
-
-1. Abra DevTools → Network
-2. Filtre por "collect" ou "analytics"
-3. Interaja com o site
-4. Veja requisições para `google-analytics.com/g/collect`
-
-### Teste 3: Tempo Real no GA4
-
-1. Abra GA4 em outra aba
-2. Vá em Tempo Real
-3. Navegue pelo site
-4. Veja eventos aparecendo instantaneamente
-
----
-
-## 📋 Checklist de Validação
-
-- [ ] GA4 property ID correto: `G-GDQV6C1NWH`
-- [ ] Eventos aparecem no console
-- [ ] Eventos aparecem no GA4 Tempo Real
-- [ ] `generate_lead` marcado como conversão
-- [ ] Parâmetros personalizados sendo enviados
-- [ ] Eventos de formulário funcionando
-- [ ] Eventos de CTA funcionando
-- [ ] Eventos de scroll funcionando
-- [ ] Eventos de seção funcionando
-- [ ] Eventos de WhatsApp funcionando
-
----
-
-## 🚀 Benefícios Desta Implementação
-
-### Para Marketing:
-- ✅ Entender quais fontes geram leads qualificados
-- ✅ Otimizar campanhas baseado em dados reais
-- ✅ ROI preciso de cada canal
-
-### Para Produto:
-- ✅ Identificar pontos de fricção no formulário
-- ✅ Saber quais serviços geram mais interesse
-- ✅ Melhorar UX baseado em comportamento real
-
-### Para Vendas:
-- ✅ Qualificar leads antes de contato
-- ✅ Saber qual serviço o cliente procura
-- ✅ Priorizar leads mais engajados
-
-### Para Negócio:
-- ✅ Decisões baseadas em dados
-- ✅ Aumento de conversão
-- ✅ Redução de custo por lead
-
----
-
-## 📞 Suporte
-
-**Dúvidas sobre eventos?**
-- Consulte este documento
-- Veja comentários no código (`js/app.js`)
-- Use GA4 Debug Mode
-
-**Quer adicionar novos eventos?**
-- Use a função `trackGA4Event(eventName, params)`
-- Siga o padrão snake_case para nomes
-- Adicione parâmetros relevantes
-
----
-
-## ✅ Resumo
-
-**15+ tipos de eventos implementados**  
-**100+ pontos de tracking na página**  
-**Cobertura completa do funil de conversão**  
-**Dados acionáveis para otimização**  
-
-**O tracking GA4 mais completo para uma landing page de vidraçaria! 🎯**
-
----
-
-**Última atualização:** 08/10/2025  
-**Versão:** 2.0 (GA4 completo)  
-**Desenvolvido por:** Cursor AI + Claude Sonnet 4.5
-
+O registro de dimensão personalizada não é retroativo. Registre `context` e `service`
+antes de iniciar o novo baseline.

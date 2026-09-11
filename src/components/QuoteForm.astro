@@ -22,6 +22,24 @@ const {
             <p class="section-subtitle">
                 {subtitle}
             </p>
+
+            {/* Real tappable WhatsApp action for #contato: the floating button and the
+                sticky bar both yield (hide) while this section is on screen (PR #87), by
+                design, so this is the only WhatsApp affordance left once a visitor scrolls
+                here — exactly where intent peaks. It's a static anchor, not a fixed/floating
+                overlay, so it doesn't reintroduce the obstruction that #87 removed. */}
+            <div class="contact-whatsapp-banner">
+                <a
+                    href={CONTACT.whatsappContact}
+                    class="btn btn-whatsapp"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-context="contact-whatsapp"
+                >
+                    <Icon name="whatsapp" /> Pedir orçamento pelo WhatsApp
+                </a>
+            </div>
+
             <div class="contact-wrapper">
                 <!-- Contact Info -->
                 <div class="contact-info">

@@ -601,6 +601,15 @@
             margin-top: 3rem;
         }
 
+        /* Inline WhatsApp action for the contact section itself: the floating and
+           sticky CTAs both hide here on purpose (PR #87), so this is what stays
+           tappable once a visitor scrolls this far. */
+        .contact-whatsapp-banner {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
         .contact-info {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: var(--white);

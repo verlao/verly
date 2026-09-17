@@ -34,6 +34,13 @@ export const CONTACT = {
     'https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20para%20vidra%C3%A7aria!',
   whatsappDirect:
     'https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20de%20vidra%C3%A7aria!',
+  /**
+   * Same wa.me pattern, origin tag "contact section": the inline anchor at the top
+   * of #contato needs its own message so a click from there is distinguishable from
+   * the footer/float/hero ones in the funnel report.
+   */
+  whatsappContact:
+    'https://wa.me/5521987926578?text=Ol%C3%A1%2C%20vim%20pela%20se%C3%A7%C3%A3o%20de%20contato%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!',
   mapsUrl:
     'https://www.google.com/maps/search/?api=1&query=R.+Gen.+Azeredo+218+Loja+C+Realengo+Rio+de+Janeiro+RJ+21765-000',
   address: {
@@ -183,6 +190,7 @@ export const WHATSAPP_CONTEXTS = [
   'footer-whatsapp',
   'sticky-cta',
   'hero-whatsapp',
+  'contact-whatsapp',
   'service-card',
   'service-gallery',
   'cta-band',

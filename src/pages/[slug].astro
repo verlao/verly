@@ -53,7 +53,6 @@ const faqSchema =
   keywords={n.keywords ?? undefined}
   robots={n.robots ?? undefined}
   ogImage={n.ogImage ?? undefined}
-  includeRating={n.hasRating}
   pageType="bairro"
   neighborhoodPage={n.name}
   hasForm={true}
@@ -105,9 +104,10 @@ const faqSchema =
           </div>
           {/* Quinto filho de propósito: .trust-badges > :nth-child(5) tem order:-1, então
               a nota assume a primeira posição sem CSS novo — mesmo arranjo da home.
-              E ela precisa estar AQUI, visível: estas páginas já declaravam
-              aggregateRating no schema sem mostrar nota nenhuma na tela, que é
-              justamente o que o Google não aceita. */}
+              Ela nasceu aqui porque estas páginas declaravam aggregateRating sem
+              mostrar nota nenhuma na tela. O aggregateRating saiu (ver
+              LocalBusinessSchema.astro), e a nota FICA: ela trabalha para o
+              visitante, não para o rastreador. */}
           <div class="trust-badge">
             <div class="trust-badge-icon"><Icon name="star" /></div>
             <div class="trust-badge-text">

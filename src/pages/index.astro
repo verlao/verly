@@ -7,13 +7,23 @@ import QuoteForm from '../components/QuoteForm.astro';
 import ServiceGallery from '../components/ServiceGallery.astro';
 import { CONTACT, GOOGLE_REVIEWS, SERVICE_TAXONOMY } from '../data/site';
 import { fetchPublishedReviews, idadeRelativa } from '../data/published-reviews';
+import { provaSocialGoogle } from '../data/google-reviews';
 
 // Lidas no build. Devolve [] em qualquer falha, de propósito: o deploy da LP não pode
 // depender do Orange Pi estar no ar. Ver o comentário longo em published-reviews.ts.
 const verlyReviews = await fetchPublishedReviews();
-// A data do build ancora os "há N semanas" das avaliações da Verly, do mesmo jeito que
-// GOOGLE_REVIEWS.snapshotDate ancora as do Google. Uma página estática não tem "agora".
+// A data do build ancora os "há N semanas" das avaliações da Verly, e também as do
+// snapshot do Google quando a leitura do perfil falha. Uma página estática não tem "agora".
 const geradoEm = new Date();
+
+// Nota e depoimentos do Google. Vem do perfil lido no build quando o raspador rodou, e do
+// snapshot manual quando não — `origem` diz qual, e a tela mostra a data, para leitura
+// parada aparecer como data velha em vez de sumir sem ninguém ver.
+const google = provaSocialGoogle(idadeRelativa, geradoEm);
+const lidasEm =
+  google.origem === 'perfil'
+    ? new Date(google.lidoEm).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+    : google.lidoEm;
 
 // Iniciais do avatar DERIVADAS do nome do autor. Antes eram três strings digitadas à
 // mão ao lado de três nomes inventados; com nomes reais, digitar de novo só cria uma
@@ -93,11 +103,13 @@ const initials = (name: string): string =>
                     <div class="trust-badge">
                         <div class="trust-badge-icon"><Icon name="star" /></div>
                         {/* Nota sem contagem, e com a fonte clicável: a diferença entre uma
-                            estrela que o visitante acredita e uma que ele confere é o link. A
-                            contagem real (15) fica só no aggregateRating — ver GOOGLE_REVIEWS. */}
+                            estrela que o visitante acredita e uma que ele confere é o link. O
+                            link só ajuda se a nota BATER com o perfil — foi ele que denunciou o
+                            5,0 que ficou cinco semanas no ar. A contagem (19) não vai para a
+                            tela e não vai mais para schema nenhum — ver GOOGLE_REVIEWS. */}
                         <div class="trust-badge-text">
                             <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">
-                                {GOOGLE_REVIEWS.ratingDisplay}★ no Google
+                                {google.notaExibida}★ no Google
                             </a>
                         </div>
                     </div>
@@ -275,28 +287,33 @@ const initials = (name: string): string =>
         <div class="container">
             <h2 class="section-title">O Que Nossos Clientes Dizem</h2>
             {/* Os três cartões eram texto de escritório assinado por gente que não existe.
-                Agora saem de GOOGLE_REVIEWS.featured — avaliações do perfil da loja, copiadas
-                na íntegra. O subtítulo trocou "mais de 127 projetos" pela procedência: ali o
+                Agora saem do perfil da loja no Google, lido no build, com o snapshot manual de
+                GOOGLE_REVIEWS.featured como reserva — copiadas na íntegra nos dois casos. O subtítulo trocou "mais de 127 projetos" pela procedência: ali o
                 127 era a contagem falsa de avaliações reaproveitada como contagem de obras. O
-                que o visitante pode conferir não é quantos, é onde as falas estão publicadas —
-                e em que data foram lidas, senão os "há N semanas" envelhecem calados. */}
+                que o visitante pode conferir não é quantos, é onde as falas estão publicadas.
+                A data de leitura continua visível porque a NOTA é snapshot; os "há N semanas"
+                não dependem mais dela, cada cartão carrega o próprio `publishedAt`. */}
             {/* O subtítulo é condicional porque a procedência mudou de uma fonte para
                 duas. Enquanto só houver as do Google, ele afirma exatamente o que
                 afirmava; com avaliações vindas do link, dizer "publicadas no perfil do
-                Google" passaria a ser falso para parte dos cartões da mesma grade. */}
+                Google" passaria a ser falso para parte dos cartões da mesma grade.
+
+                A data é a do dado que REALMENTE está na página: lida do perfil neste
+                build, ou a do snapshot manual se a leitura falhou. Afirmar a data errada
+                aqui seria o mesmo defeito que o "há 1 semana" de cinco semanas. */}
             <p class="section-subtitle">
                 {verlyReviews.length > 0 ? (
                     <>
                         Avaliações de clientes atendidos pela loja, enviadas por eles e
-                        reproduzidas na íntegra. As três últimas vêm
-                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">do perfil do Google</a>,
-                        como estavam em {GOOGLE_REVIEWS.snapshotDate}
+                        reproduzidas na íntegra. As do Google vêm
+                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">do perfil da loja</a>,
+                        como estavam em {lidasEm}
                     </>
                 ) : (
                     <>
                         Avaliações publicadas por clientes
                         <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">no perfil do Google da loja</a>,
-                        reproduzidas aqui na íntegra — como estavam em {GOOGLE_REVIEWS.snapshotDate}
+                        reproduzidas aqui na íntegra — como estavam em {lidasEm}
                     </>
                 )}
             </p>
@@ -337,17 +354,48 @@ const initials = (name: string): string =>
                     </div>
                 </div>
                 ))}
-                {GOOGLE_REVIEWS.featured.map((review) => (
+                {google.depoimentos.map((review) => (
                 <div class="testimonial-card">
                     <div class="testimonial-quote">"</div>
                     <div class="testimonial-content">
-                        <p class="testimonial-text">{review.text}</p>
+                        <p class="testimonial-text">{review.texto}</p>
+                        {review.fotos.length > 0 && (
+                            <ul class="testimonial-photos">
+                                {review.fotos.map((url) => (
+                                    <li>
+                                        {/* Hospedada pelo Google, exibida daqui — a política
+                                            manda mostrar a foto do autor junto da avaliação, e
+                                            baixá-la para o nosso storage seria guardar conteúdo
+                                            de terceiro. Fora de astro:assets pelo mesmo motivo
+                                            das fotos do Garage: o arquivo não está no repo. */}
+                                        <img src={url} alt={`Foto enviada por ${review.autor} na avaliação do Google`} loading="lazy" decoding="async" referrerpolicy="no-referrer-when-downgrade" />
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                         <div class="testimonial-author">
-                            <div class="testimonial-avatar">{initials(review.author)}</div>
+                            {/* Avatar do perfil quando o Google entrega; iniciais quando não.
+                                "Attribute the author using all available resources (avatar,
+                                name, and profile link)" — a foto do autor é parte da
+                                atribuição obrigatória, não enfeite. */}
+                            {review.avatar ? (
+                                <img class="testimonial-avatar" src={review.avatar} alt={`Foto de perfil de ${review.autor}`} loading="lazy" decoding="async" width="48" height="48" />
+                            ) : (
+                                <div class="testimonial-avatar">{initials(review.autor)}</div>
+                            )}
                             <div class="testimonial-info">
-                                <h3>{review.author}</h3>
-                                <p>{review.age}</p>
-                                <div class="testimonial-stars">★★★★★</div>
+                                <h3>
+                                    {review.perfilAutor ? (
+                                        <a href={review.perfilAutor} target="_blank" rel="noopener noreferrer nofollow">{review.autor}</a>
+                                    ) : (
+                                        review.autor
+                                    )}
+                                </h3>
+                                <p>{review.quando}</p>
+                                {/* Estrela por NOTA, não cravada: o perfil tem 1x3 e 1x1
+                                    estrela, e no dia em que uma delas entrar nesta lista o
+                                    cartão não pode desenhar cinco. */}
+                                <div class="testimonial-stars">{'★'.repeat(review.nota)}</div>
                             </div>
                         </div>
                     </div>

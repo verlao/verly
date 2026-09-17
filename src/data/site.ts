@@ -52,23 +52,30 @@ export const CONTACT = {
 
 /**
  * Avaliações do Google Business Profile da loja. Snapshot de 10/08/2026:
- * 15 avaliações, todas 5 estrelas.
+ * 4,6 com 19 avaliações, lidas no perfil em 17/09/2026.
  *
  * Antes daqui saíam 4,8★ e 127 avaliações — números herdados do site antigo, sem
- * nenhuma fonte. Agora só entra aqui o que o perfil do Google mostra: nada de
- * estimativa, arredondamento ou "mais de".
+ * nenhuma fonte. Depois saíram 5,0★ e 15, que pareciam conferidos e NÃO eram: 15 é a
+ * LINHA DE 5 ESTRELAS DO HISTOGRAMA, não o total, e 5,0 era a média só desse
+ * subconjunto. O histograma real é 15×5★, 2×4★, 1×3★, 0×2★, 1×1★ = 19 avaliações,
+ * média 4,6. O site afirmou 5,0 por cinco semanas com o link do perfil ao lado
+ * desmentindo em um clique — o oposto do que este arquivo existe para fazer.
  *
- * A CONTAGEM não vai para a tela, por decisão do dono: quinze é número pequeno
- * demais para vender, a nota é que vende. Ela sobrevive em `reviewCount` porque o
- * aggregateRating do schema.org exige o campo — quem abrir o código-fonte lê 15, e
- * isso é melhor que publicar um número que ninguém consegue conferir.
+ * LIÇÃO: ao reler o perfil, copiar a nota e o total do CABEÇALHO do perfil. A linha de
+ * cinco estrelas do histograma é a armadilha, porque o número dela é grande e a nota
+ * dela é redonda.
+ *
+ * A CONTAGEM não vai para a tela, por decisão do dono: dezenove é número pequeno
+ * demais para vender, a nota é que vende. Ela não sobrevive em `reviewCount` porque o
+ * `aggregateRating` saiu do schema — ver LocalBusinessSchema.astro.
  */
 export const GOOGLE_REVIEWS = {
-  /** Formato do schema.org — ponto decimal. */
-  ratingValue: '5.0',
-  reviewCount: '15',
-  /** Formato pt-BR, para a tela. */
-  ratingDisplay: '5,0',
+  /** Formato pt-BR, para a tela. É o único formato usado: o schema.org não recebe mais
+      a nota, então não existe mais uma segunda grafia para divergir desta. */
+  ratingDisplay: '4,6',
+  /** Total de avaliações do perfil. Fora da tela por decisão do dono; fica aqui para
+      quem reler o perfil poder comparar e ver se mudou. */
+  ratingCount: 19,
   /**
    * Perfil da loja no Google, por CID — a única forma de link que veio do próprio
    * Google (o link curto do perfil resolve para o feature ID 0x9bdf66871be8a1:
@@ -80,32 +87,43 @@ export const GOOGLE_REVIEWS = {
    * endereço, cai no mapa e não no perfil, então não serve aqui.
    */
   profileUrl: 'https://maps.google.com/?cid=4827813671680371489',
-  /** Data em que as avaliações foram lidas no perfil. É o que ancora os "há N semanas". */
-  snapshotDate: '10/08/2026',
+  /** Data em que a nota e o total foram lidos no perfil. Os "há N semanas" NÃO dependem
+      mais dela: cada depoimento carrega a própria data. Ela continua visível na seção
+      porque a NOTA é que continua sendo um snapshot. */
+  snapshotDate: '17/09/2026',
   /**
    * Os três depoimentos exibidos na home, escolhidos para cobrir promessas
    * DIFERENTES do site (rapidez, canal de WhatsApp e preço, box blindex) em vez de
    * repetir o mesmo elogio três vezes.
    *
    * `text` é copiado como o cliente escreveu, incluindo pontuação e concordância:
-   * corrigir a fala de alguém é reescrevê-la, e aí ela deixa de ser dele. `age` é o
-   * "há quanto tempo" que o Google exibia na data do snapshot — por isso a data do
-   * snapshot fica visível na seção, senão o rótulo envelhece calado.
+   * corrigir a fala de alguém é reescrevê-la, e aí ela deixa de ser dele.
+   *
+   * `publishedAt` substituiu o antigo `age`, que era o rótulo relativo LITERAL do
+   * Google ("há 1 semana"). String literal de tempo envelhece calada: em 17/09/2026 o
+   * site ainda dizia "há 1 semana" numa avaliação que o Google já exibia como "um mês
+   * atrás". Agora a data é absoluta e quem formata é `idadeRelativa`, o mesmo cálculo
+   * das avaliações vindas do link — uma regra de tempo no projeto, não duas.
+   *
+   * ⚠️ As datas são DERIVADAS do rótulo relativo do snapshot de 10/08/2026 (1, 3 e 23
+   * semanas antes), então têm precisão de poucos dias, não de dia exato. Conferem com o
+   * que o Google exibe hoje ("um mês", "um mês", "6 meses"). Quando a leitura do perfil
+   * for automatizada, o `publishTime` real substitui estas três.
    */
   featured: [
     {
       author: 'Marcos Leite',
-      age: 'há 1 semana',
+      publishedAt: '2026-08-03',
       text: 'Excelente atendimento. Foram muito solícitos e educados. Resolveram meu problema no mesmo dia. Eu indico!',
     },
     {
       author: 'Daniel Santos',
-      age: 'há 3 semanas',
+      publishedAt: '2026-07-20',
       text: 'Atendimento excelente e rápido, ótimo suporte pelo whatsapp, instalação fácil e preço bom para os padrões do mercado. Recomendo demais',
     },
     {
       author: 'Luciene Lima',
-      age: 'há 23 semanas',
+      publishedAt: '2026-03-02',
       text: 'Gostei muito do serviço da loja. Blindex do box do banheiro muito bem instalado. Ótimo custo benefício. Indico!',
     },
   ],

@@ -31,7 +31,14 @@ import { chromium } from 'playwright';
 /** Mesmo CID de `GOOGLE_REVIEWS.profileUrl`, que é a única forma de link que veio do Google. */
 const PERFIL = 'https://maps.google.com/?cid=4827813671680371489&hl=pt-BR';
 const SAIDA = new URL('../src/data/google-reviews.generated.json', import.meta.url);
+/** Para o conteúdo, uma vez que o painel do lugar apareceu: aí a espera é legítima. */
 const TIMEOUT_MS = 45_000;
+/**
+ * Para a PRIMEIRA espera (a aba de avaliações existir). Curto de propósito: quando o CID
+ * não abre o painel do lugar, ele não abre — esperar 45s não muda o resultado, só encarece
+ * a tentativa. Medido no runner do GitHub: duas tentativas de três falham exatamente aqui.
+ */
+const TIMEOUT_PAINEL_MS = 15_000;
 
 const cartoes = () =>
   // eslint-disable-next-line no-undef
@@ -92,10 +99,19 @@ const cabecalho = () => {
   return { notaExibida: exibida, total, mediaCalculada: Number(media.toFixed(2)) };
 };
 
-/** Tentativas da leitura inteira. O CID às vezes cai num painel sem a aba de avaliações —
-    uma rodada em cinco, medido. Não é degradação progressiva, é sorte de layout: a mesma
-    leitura repetida funciona. Duas tentativas extras levam a falha de ~20% para ~1%. */
-const TENTATIVAS = 3;
+/**
+ * Tentativas da leitura inteira. O CID às vezes não abre o painel do lugar; repetir
+ * resolve, então não é degradação progressiva, é sorte de layout.
+ *
+ * OITO, e o número vem de medição, não de gosto: no meu IP residencial falha ~1 tentativa
+ * em 5, mas no runner do GitHub falharam 2 de 3 (a leitura passou na terceira). Com três
+ * tentativas a 2/3 de falha, o build cairia no snapshot manual em torno de um dia em três
+ * — publicaria dado velho com CI verde, que é o pior dos dois mundos. Com oito tentativas
+ * de 15s, a chance cai para ~4% e o pior caso custa ~2 min num build que roda uma vez por
+ * dia. Se o padrão do log virar "8/8 falharam", o problema deixou de ser sorte: é o IP, e
+ * o lugar deste script passa a ser o Orange Pi.
+ */
+const TENTATIVAS = 8;
 
 async function lerPerfil(navegador) {
   const pagina = await navegador.newPage({ locale: 'pt-BR' });
@@ -107,7 +123,7 @@ async function lerPerfil(navegador) {
     // carregar: esperar o histograma ali falhava em uma rodada de três. Dentro da aba ele
     // é parte obrigatória do conteúdo.
     const aba = pagina.locator('button', { hasText: /^Avaliaç/ }).first();
-    await aba.waitFor({ state: 'visible', timeout: TIMEOUT_MS });
+    await aba.waitFor({ state: 'visible', timeout: TIMEOUT_PAINEL_MS });
     await aba.click({ timeout: TIMEOUT_MS });
 
     // `attached` e não `visible`: o nó existe antes de terminar de animar, e visibilidade

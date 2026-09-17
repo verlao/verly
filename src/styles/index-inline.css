@@ -563,6 +563,22 @@
             color: var(--dark);
         }
 
+        /* O nome do autor virou link para o perfil dele no Google — a política manda
+           atribuir com avatar, nome E link do perfil. O link herda a cor e dispensa o
+           sublinhado de propósito: cor nova aqui passaria pelo gate de contraste sem ser
+           testada (ele só confere pares declarados) e um segundo azul na seção competiria
+           com o CTA, que é o único lugar onde clicar importa para a loja. */
+        .testimonial-info h3 a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .testimonial-info h3 a:hover,
+        .testimonial-info h3 a:focus-visible {
+            text-decoration: underline;
+        }
+
+
         .testimonial-info p {
             font-size: 0.875rem;
             color: var(--gray);

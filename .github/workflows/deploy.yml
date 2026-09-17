@@ -46,6 +46,23 @@ jobs:
 
       - run: npm ci
 
+      # A leitura do perfil do Google precisa de um navegador de verdade: a Places API
+      # não devolve FOTO de avaliação (o objeto Review dela não tem o campo), e foto é
+      # requisito da seção. Só o Chromium, sem `--with-deps`: o runner do Ubuntu já traz
+      # as bibliotecas de sistema, e headless não precisa de X.
+      - run: npx playwright install chromium
+
+      # NÃO tem `continue-on-error`: o script já sai 0 quando falha, de propósito. Marcar
+      # o passo como tolerante esconderia uma falha de OUTRA natureza (npx ausente, cache
+      # corrompido) que deve aparecer vermelha.
+      #
+      # ⚠️ O runner do GitHub é IP de datacenter, que é onde o Google serve consentimento
+      # e CAPTCHA. Se este passo começar a falhar sempre, o problema provavelmente não é o
+      # seletor: é o IP, e o lugar do script passa a ser o Orange Pi (IP residencial), com
+      # o build lendo o resultado de lá.
+      - name: Ler o perfil do Google
+        run: node scripts/fetch-google-reviews.mjs
+
       - run: npm run build
 
       # Rede de segurança contra o bug que motivou esta migração: âncora apontando

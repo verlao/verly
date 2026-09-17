@@ -51,8 +51,6 @@ interface Props {
   bodyClass?: string;
   /** paridade: blog/obrigado/404/500 não carregam LocalBusiness hoje */
   schema?: boolean;
-  /** paridade: realengo.html não tem aggregateRating hoje */
-  includeRating?: boolean;
   /** override de og:url — a home hoje publica a URL sem barra final */
   ogUrl?: string;
 }
@@ -74,7 +72,6 @@ const {
   hasDifferentials = false,
   bodyClass,
   schema = true,
-  includeRating = true,
   ogUrl,
 } = Astro.props;
 
@@ -179,7 +176,7 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
 
     <link rel="canonical" href={canonical} />
 
-    {schema && <LocalBusinessSchema includeRating={includeRating} image={ogImageUrl} />}
+    {schema && <LocalBusinessSchema image={ogImageUrl} />}
     <slot name="head" />
   </head>
 

@@ -93,8 +93,10 @@ const initials = (name: string): string =>
                     <div class="trust-badge">
                         <div class="trust-badge-icon"><Icon name="star" /></div>
                         {/* Nota sem contagem, e com a fonte clicável: a diferença entre uma
-                            estrela que o visitante acredita e uma que ele confere é o link. A
-                            contagem real (15) fica só no aggregateRating — ver GOOGLE_REVIEWS. */}
+                            estrela que o visitante acredita e uma que ele confere é o link. O
+                            link só ajuda se a nota BATER com o perfil — foi ele que denunciou o
+                            5,0 que ficou cinco semanas no ar. A contagem (19) não vai para a
+                            tela e não vai mais para schema nenhum — ver GOOGLE_REVIEWS. */}
                         <div class="trust-badge-text">
                             <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">
                                 {GOOGLE_REVIEWS.ratingDisplay}★ no Google
@@ -278,8 +280,9 @@ const initials = (name: string): string =>
                 Agora saem de GOOGLE_REVIEWS.featured — avaliações do perfil da loja, copiadas
                 na íntegra. O subtítulo trocou "mais de 127 projetos" pela procedência: ali o
                 127 era a contagem falsa de avaliações reaproveitada como contagem de obras. O
-                que o visitante pode conferir não é quantos, é onde as falas estão publicadas —
-                e em que data foram lidas, senão os "há N semanas" envelhecem calados. */}
+                que o visitante pode conferir não é quantos, é onde as falas estão publicadas.
+                A data de leitura continua visível porque a NOTA é snapshot; os "há N semanas"
+                não dependem mais dela, cada cartão carrega o próprio `publishedAt`. */}
             {/* O subtítulo é condicional porque a procedência mudou de uma fonte para
                 duas. Enquanto só houver as do Google, ele afirma exatamente o que
                 afirmava; com avaliações vindas do link, dizer "publicadas no perfil do
@@ -346,7 +349,12 @@ const initials = (name: string): string =>
                             <div class="testimonial-avatar">{initials(review.author)}</div>
                             <div class="testimonial-info">
                                 <h3>{review.author}</h3>
-                                <p>{review.age}</p>
+                                <p>{idadeRelativa(review.publishedAt, geradoEm)}</p>
+                                {/* ⚠️ CRAVADO em cinco estrelas, e hoje isso é verdade: as três
+                                    em destaque são 5★ no perfil. Mas o perfil tem 1×3★ e 1×1★, então
+                                    no dia em que esta lista deixar de ser escolhida à mão isto tem
+                                    que virar render por `rating` — senão o site dá cinco estrelas a
+                                    quem deu uma. */}
                                 <div class="testimonial-stars">★★★★★</div>
                             </div>
                         </div>

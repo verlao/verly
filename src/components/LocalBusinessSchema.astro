@@ -1,24 +1,29 @@
 ---
-import { SITE_URL, CONTACT, ANALYTICS, GOOGLE_REVIEWS } from '../data/site';
+import { SITE_URL, CONTACT, ANALYTICS } from '../data/site';
 import neighborhoods from '../data/neighborhoods.json';
 
 interface Props {
   /** URL absoluta da imagem — mesma do og:image, para não divergirem */
   image?: string;
-  /** emite aggregateRating. Era false em realengo por paridade com o site antigo;
-      agora as 11 páginas de bairro exibem a nota na tela, então todas declaram. */
-  includeRating?: boolean;
 }
-const { includeRating = true, image } = Astro.props;
+const { image } = Astro.props;
 
 // Schema LocalBusiness — antes duplicado em cada página HTML, agora gerado.
-// O aggregateRating saía daqui com 4,8 / 127: números herdados do site antigo, sem
-// fonte, e por isso registrados como risco em aberto em 2026-08-07 — structured data
-// que não bate com o Google Business Profile custa o rich result inteiro, não só a
-// estrela inflada. O risco está FECHADO em 2026-08-10: a nota e a contagem passaram a
-// vir de GOOGLE_REVIEWS, que espelha o perfil real da loja (15 avaliações, todas 5
-// estrelas). A contagem não aparece em lugar nenhum da interface, por decisão do dono;
-// ela existe aqui porque o schema.org exige reviewCount dentro de aggregateRating.
+//
+// NÃO TEM `aggregateRating`, de propósito, e não é por causa do número errado. O
+// Review snippet do Google diz, textualmente: "If the entity that's being reviewed
+// controls the reviews about itself, their pages that use LocalBusiness or any other
+// type of Organization structured data are ineligible for star review feature." E, na
+// mesma página: "Don't aggregate reviews or ratings from other websites."
+//
+// Ou seja: esta página NUNCA foi elegível à estrela no resultado de busca — nem com
+// 4,8/127, nem com 5,0/15, nem com o 4,6/19 conferido. O comentário que vivia aqui
+// dizia que divergir do perfil "custa o rich result inteiro"; custava um rich result
+// que não estava disponível. Emitir a nota só criava uma afirmação a mais para manter
+// sincronizada, sem nada em troca.
+//
+// A estrela que o visitante vê no pacote local e no painel de conhecimento vem do
+// Google Business Profile, não deste markup. Para mudá-la, mexe-se no perfil.
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
@@ -66,15 +71,6 @@ const schema = {
     },
   ],
   sameAs: ['https://facebook.com/verlyvidracaria', 'https://instagram.com/verlyvidracaria'],
-  ...(includeRating
-    ? {
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: GOOGLE_REVIEWS.ratingValue,
-          reviewCount: GOOGLE_REVIEWS.reviewCount,
-        },
-      }
-    : {}),
 };
 ---
 

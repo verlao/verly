@@ -31,8 +31,9 @@ const year = new Date().getFullYear();
       <div class="footer-section">
         <h2>Verly Vidraçaria</h2>
         <p>Especialista em vidros temperados e soluções em alumínio na Zona Oeste do Rio de Janeiro.</p>
-        {/* A nota vem do Google Business Profile; a contagem, não — ela fica só no
-            aggregateRating do LocalBusiness, que exige o campo. Ver GOOGLE_REVIEWS. */}
+        {/* A nota vem do perfil do Google; a contagem não vai para a tela, por decisão
+            do dono. Ela também não vai para o schema: o aggregateRating saiu daqui em
+            17/09/2026 — ver LocalBusinessSchema.astro. */}
         <p style="margin-top: 1rem;">
           <strong>{GOOGLE_REVIEWS.ratingDisplay}★</strong> no Google<br />
           Mais de 10 anos de experiência

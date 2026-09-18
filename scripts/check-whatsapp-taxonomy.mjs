@@ -1,9 +1,9 @@
-import { accessSync, constants, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { basename, extname, join, relative, resolve, sep } from 'node:path';
-import { execFile } from 'node:child_process';
+import { extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const DIST = join(ROOT, 'dist');
@@ -16,36 +16,6 @@ const walkHtml = (directory) =>
     if (entry.isDirectory()) return walkHtml(path);
     return entry.isFile() && entry.name.endsWith('.html') ? [path] : [];
   });
-
-const executable = (path) => {
-  try {
-    accessSync(path, constants.X_OK);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-const chromeCandidates = [
-  process.env.CHROME_PATH,
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  '/usr/bin/google-chrome',
-  '/usr/bin/google-chrome-stable',
-  '/usr/bin/chromium',
-  '/usr/bin/chromium-browser',
-].filter(Boolean);
-
-for (const directory of (process.env.PATH || '').split(sep)) {
-  chromeCandidates.push(join(directory, 'google-chrome'));
-  chromeCandidates.push(join(directory, 'google-chrome-stable'));
-  chromeCandidates.push(join(directory, 'chromium'));
-}
-
-const chrome = chromeCandidates.find((candidate) => existsSync(candidate) && executable(candidate));
-if (!chrome) {
-  console.error('✗ Chrome/Chromium não encontrado; defina CHROME_PATH para validar o DOM final.');
-  process.exit(1);
-}
 
 const contentType = (path) => ({
   '.css': 'text/css',
@@ -77,24 +47,66 @@ const server = createServer((request, response) => {
 await new Promise((resolveListening) => server.listen(0, '127.0.0.1', resolveListening));
 const { port } = server.address();
 
-const dumpDom = (page) => new Promise((resolveDump, rejectDump) => {
-  const profile = mkdtempSync(join(tmpdir(), 'verly-analytics-'));
-  execFile(chrome, [
-    '--headless',
-    '--disable-gpu',
-    '--disable-dev-shm-usage',
-    '--no-sandbox',
-    '--disable-background-networking',
-    '--dump-dom',
-    '--virtual-time-budget=1000',
-    `--user-data-dir=${profile}`,
-    `http://127.0.0.1:${port}/${relative(DIST, page)}`,
-  ], { encoding: 'utf8', maxBuffer: 20 * 1024 * 1024, timeout: 30_000 }, (error, stdout) => {
-    rmSync(profile, { recursive: true, force: true });
-    if (error) rejectDump(error);
-    else resolveDump(stdout);
+/**
+ * Navegador ÚNICO; o paralelismo sai de contextos, não de processos. Um contexto por
+ * página mantém o isolamento que o `--user-data-dir` novo a cada dump dava (é o que
+ * garante, por exemplo, que o guard de sessão de `whatsapp_impression` não vaze entre
+ * páginas), sem pagar quatro Chromes.
+ *
+ * Falha aqui é FALHA, nunca "nada a verificar": sem navegador o gate não tem como
+ * afirmar coisa alguma sobre o DOM final.
+ */
+let browser;
+try {
+  browser = await chromium.launch();
+} catch (error) {
+  await new Promise((resolveClose) => server.close(resolveClose));
+  console.error('✗ Chromium do playwright não abriu; rode `npx playwright install chromium`.');
+  console.error(`  ${error.message}`);
+  process.exit(1);
+}
+
+/**
+ * POR QUE NAVEGADOR DE VERDADE E NÃO `chrome --dump-dom --virtual-time-budget`
+ *
+ * O que este gate valida é o DOM DEPOIS da injeção de whatsapp-cta.js, e a versão
+ * anterior media isso com um ORÇAMENTO DE RELÓGIO: `--virtual-time-budget=1000`
+ * manda o Chrome serializar quando o tempo virtual acaba, que é um instante SEM
+ * relação nenhuma com o fim da injeção. Resultado medido no MESMO commit: 154 links
+ * numa execução, 151 na seguinte. Os três que somem são justamente a sticky das
+ * páginas cujo ÚNICO link injetado é ela (404, 500, blog, obrigado) — nas páginas com
+ * cartão de serviço a amostra prematura levaria sete de uma vez.
+ *
+ * `waitUntil: 'load'` é sinal, não tempo. `init()` é chamado no DOMContentLoaded e é
+ * SÍNCRONO de ponta a ponta (sticky, cartões de serviço, flutuante), então quando
+ * `load` dispara TODA a injeção já aconteceu — por especificação, não por sorte.
+ *
+ * Os pedidos para fora de 127.0.0.1 são abortados. A folha de estilo da fonte é
+ * `render-blocking` no <head>, e enquanto ela está pendente o Chrome NÃO EXECUTA os
+ * scripts seguintes: com ela no caminho, o momento da amostra passava a depender da
+ * rede do Google. Abortar não afrouxa nada — o que se valida é markup nosso, local.
+ */
+const TIMEOUT_MS = 30_000;
+
+const dumpDom = async (page) => {
+  const context = await browser.newContext();
+  context.setDefaultTimeout(TIMEOUT_MS);
+  await context.route('**/*', (route) => {
+    const url = route.request().url();
+    return url.startsWith(`http://127.0.0.1:${port}/`) ? route.continue() : route.abort();
   });
-});
+
+  const tab = await context.newPage();
+  try {
+    await tab.goto(`http://127.0.0.1:${port}/${relative(DIST, page)}`, {
+      waitUntil: 'load',
+      timeout: TIMEOUT_MS,
+    });
+    return await tab.content();
+  } finally {
+    await context.close();
+  }
+};
 
 const attr = (tag, name) => tag.match(new RegExp(`\\b${name}="([^"]*)"`, 'i'))?.[1];
 
@@ -113,11 +125,23 @@ const forwards = (page) => /<meta[^>]+http-equiv="refresh"/i.test(readFileSync(p
 const allPages = walkHtml(DIST).sort();
 const forwarded = allPages.filter(forwards);
 const pages = allPages.filter((page) => !forwarded.includes(page));
+
+/**
+ * O DOM que falhou é o único artefato que responde POR QUE falhou, e a versão anterior
+ * o descartava — é por isso que a falha que motivou esta mudança ficou sem explicação.
+ * Só em falha, para não encher o disco do runner em build verde.
+ */
+const saveDom = (pageName, html) => {
+  const saved = join(mkdtempSync(join(tmpdir(), 'verly-analytics-')), pageName.split(sep).join('_'));
+  writeFileSync(saved, html);
+  return `${pageName}: DOM final salvo em ${saved}`;
+};
+
 const failures = [];
 let checkedLinks = 0;
 
 try {
-  // Quatro navegadores reduzem o tempo sem pressionar demais o runner do CI.
+  // Quatro abas reduzem o tempo sem pressionar demais o runner do CI.
   for (let offset = 0; offset < pages.length; offset += 4) {
     const batch = pages.slice(offset, offset + 4);
     const doms = await Promise.all(batch.map(dumpDom));
@@ -125,12 +149,14 @@ try {
     batch.forEach((page, index) => {
       const html = doms[index];
       const pageName = relative(DIST, page);
+      const failuresBefore = failures.length;
       const body = html.match(/<body\b[^>]*>/i)?.[0] || '';
       const contexts = new Set((attr(body, 'data-whatsapp-contexts') || '').split(',').filter(Boolean));
       const services = new Set((attr(body, 'data-service-slugs') || '').split(',').filter(Boolean));
 
       if (!contexts.size || !services.size) {
         failures.push(`${pageName}: registro de contextos/serviços ausente no <body>`);
+        failures.push(saveDom(pageName, html));
         return;
       }
 
@@ -164,11 +190,14 @@ try {
           failures.push(`${location}: context "${context}" exige data-service`);
         }
       });
+
+      if (failures.length > failuresBefore) failures.push(saveDom(pageName, html));
     });
   }
 } catch (error) {
   failures.push(`Chrome não conseguiu renderizar o dist: ${error.message}`);
 } finally {
+  await browser.close();
   await new Promise((resolveClose) => server.close(resolveClose));
 }
 

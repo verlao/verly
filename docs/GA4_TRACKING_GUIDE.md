@@ -22,14 +22,15 @@ dimensões, montar explorações e respeitar os cortes históricos, use também
 | `navigation_click` | menu, rodapé e navegação interna | texto, alvo, tipo |
 | `phone_click` | link `tel:` | número da loja, localização |
 | `contact_link_click` | e-mail ou endereço com `data-track` | `link_id`, tipo, texto |
-| `whatsapp_impression` | CTA de WhatsApp realmente visível | `context`, `service` opcional, `click_source`, texto |
+| `whatsapp_impression` | CTA de WhatsApp realmente visível, **1x por sessão** | `context`, `service` opcional, `click_source`, texto, `impression_scope` |
 | `whatsapp_click` | clique real em link de WhatsApp | mesmos parâmetros da impressão |
 | `form_interaction` | foco, blur, validação e submit | `form_action`, `field_name`, comprimentos/erro quando existem |
 | `lead_submit_attempt` | payload válido antes da entrega | serviços canônicos, contagem e booleanos; sem PII |
 | `generate_lead` | API aceitou o lead (`2xx`) | mesmos dados da tentativa + resultado técnico |
 | `lead_recovered` | fila local foi aceita depois | motivo, tentativas e idade da fila |
 | `engagement_milestone` | 30, 60 e 120 segundos | marco e valor |
-| `review_*` | fluxo da página de avaliação | nota/contagens/erro conforme o desfecho |
+| `review_link_click` | clique em `[data-review-intent]`, saída para o Google | `review_intent` (`proof` ver \| `invite` escrever), `click_location` |
+| `review_photo_open` | foto de avaliação aberta em tamanho grande | `photo_source` (`google` \| `garage`), `photo_position` |
 
 `service_interaction` ainda seleciona também os cards de motivos dos bairros. Não use
 `service_name` para ranking até o seletor ser restringido em uma tarefa própria. Para
@@ -158,3 +159,25 @@ série por `context`:
 
 O registro de dimensão personalizada não é retroativo. Registre `context` e `service`
 antes de iniciar o novo baseline.
+
+### 18/09/2026 — `whatsapp_impression` deixou de ser comparável
+
+O dedupe da impressão passou de **1x por carregamento de página** para **1x por sessão**.
+A contagem despenca por DESENHO, e o evento não é comparável atravessando essa data: a
+medição anterior era 1.001 disparos em 28 dias, **41% de TODOS os eventos da propriedade**,
+14,3 por usuário. Todo gráfico que usava o total de eventos como denominador estava
+contaminado por isso.
+
+O discriminador está no próprio evento: `impression_scope = 'session'` só existe depois
+desta data. Filtrar por ele é a única forma honesta de montar série contínua — e é o que
+evita ler a melhoria como incidente.
+
+### Anomalias do GA4 em amostra pequena
+
+A propriedade tem cerca de **100 usuários em 28 dias**. O detector de anomalias do GA4
+opera sobre isso e acusa "queda abaixo do esperado" em variação de tráfego de um dia —
+por exemplo o alerta de 07/09/2026 sobre `whatsapp_impression` (4 contra 65 esperados,
+puxado por usuários de Chrome caindo de 59 para 2). **Não houve nenhum deploy entre
+28/08/2026 e 11/09/2026**, então aquele dia não pode ser regressão de instrumentação:
+foi tráfego. Antes de investigar um alerta desses como incidente, confira a janela de
+deploy no histórico do repositório.

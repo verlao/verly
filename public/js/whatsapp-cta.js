@@ -489,6 +489,12 @@ const WhatsAppCTA = {
                     context,
                     click_source: clickSourceFor(target),
                     button_text: target.textContent.trim(),
+                    // O escopo do dedupe vai NO EVENTO porque ele mudou em produção em
+                    // 18/09/2026: antes era 1x por carregamento de página, agora é 1x
+                    // por sessão. A contagem despenca por DESENHO, e sem este parâmetro
+                    // qualquer gráfico que cruze a data lê a melhoria como incidente —
+                    // e quem for olhar em dezembro não tem como saber disso.
+                    impression_scope: 'session',
                     ...(service ? { service } : {})
                 });
                 ctaLog(`📊 WhatsApp impression tracked (1x/sessão): ${context} (${service || 'sem serviço'})`);

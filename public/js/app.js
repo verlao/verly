@@ -203,7 +203,31 @@ function hasDedicatedEvent(link) {
     return /wa\.me|whatsapp/.test(href)
         || href.startsWith('tel:')
         || href.startsWith('mailto:')
-        || link.hasAttribute('data-track');
+        || link.hasAttribute('data-track')
+        // review_link_click é mais específico: o link de avaliação sai do site para o
+        // Google, e sair do site não é navegar dentro dele.
+        || link.hasAttribute('data-review-intent');
+}
+
+/**
+ * Clique que SAI do site para o Google.
+ *
+ * Duas intenções que usam a MESMA URL hoje e não podem virar a mesma métrica:
+ * `proof` é ir VER as avaliações que existem (os links ao lado da nota, na home e nas
+ * páginas de bairro) e `invite` é ir ESCREVER uma (o botão de /avaliar.html, que é onde
+ * o canal próprio aposentado agora desemboca). A intenção vem do markup, em
+ * `data-review-intent`, porque o href não distingue as duas — e no dia em que o convite
+ * ganhar o link de "escrever avaliação" do painel, quem mede não muda de lugar.
+ *
+ * Isto existe porque a avaliação no perfil do Google é o que move ranking local, e até
+ * agora NENHUM evento dizia se alguém chegava lá: o funil terminava no clique que a
+ * gente não media.
+ */
+function trackReviewLinkClick(intent, location) {
+    trackGA4Event('review_link_click', {
+        review_intent: intent, // 'proof' (ver avaliações) | 'invite' (escrever uma)
+        click_location: location
+    });
 }
 
 /**
@@ -1044,8 +1068,23 @@ function initCompleteAnalytics() {
     // sticky-cta, service-*, footer-whatsapp, thank-you-page), o que é mais preciso que
     // o hero/inline deduzido aqui, e alcança os CTAs criados em runtime.
 
+    // Saída para o Google, delegada no document: é um ouvinte só para a home, as 11
+    // páginas de bairro e /avaliar.html, e alcança markup criado depois do load.
+    document.addEventListener('click', (event) => {
+        const link = event.target.closest('[data-review-intent]');
+        if (!link) return;
+        trackReviewLinkClick(
+            link.dataset.reviewIntent,
+            link.dataset.reviewLocation || 'other'
+        );
+    });
+
     // Track ALL CTA clicks with detailed info
     document.querySelectorAll('.btn-primary, .btn-success, .btn-secondary').forEach(button => {
+        // O botão de /avaliar.html é `.btn-success` E link de avaliação. Sem este corte
+        // o mesmo clique saía como cta_click e review_link_click — o erro que este
+        // arquivo já pagou uma vez com o whatsapp_click duplicado.
+        if (button.hasAttribute('data-review-intent')) return;
         button.addEventListener('click', (e) => {
             const buttonText = button.textContent.trim();
             const location = button.closest('.hero') ? 'hero' :

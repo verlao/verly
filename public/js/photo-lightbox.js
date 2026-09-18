@@ -23,10 +23,35 @@
   // para o topo do documento e quem navega por teclado perde o lugar na grade.
   var lastTrigger = null;
 
+  /**
+   * De onde veio a foto. As do Google chegam por `lh3.googleusercontent.com` e as do
+   * Garage são arquivo nosso — e a distinção é o que responde se a prova que converte é
+   * a foto que o CLIENTE postou no perfil ou a que a loja publicou. Sem isto o evento
+   * diria apenas "abriu uma foto".
+   */
+  function photoSource(url) {
+    return url.indexOf('googleusercontent.com') !== -1 ? 'google' : 'garage';
+  }
+
+  /**
+   * Mesma ponte que o whatsapp-cta.js usa (`window.VerlyAnalytics`): este arquivo não
+   * vê as funções do app.js, e duplicar o enriquecimento de página seria a segunda
+   * fonte de verdade do `page_type`.
+   */
+  function track(url, trigger) {
+    if (!window.VerlyAnalytics) return;
+    window.VerlyAnalytics.track('review_photo_open', {
+      photo_source: photoSource(url),
+      photo_position: Array.prototype.indexOf.call(triggers, trigger) + 1
+    });
+  }
+
   function open(trigger) {
     var full = trigger.getAttribute('data-photo-zoom');
     var thumb = trigger.querySelector('img');
     if (!full) return;
+
+    track(full, trigger);
 
     lastTrigger = trigger;
     image.src = full;

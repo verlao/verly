@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import lojaFrente from '../assets/loja-verly-realengo.png';
 import QuoteForm from '../components/QuoteForm.astro';
-import ServiceGallery from '../components/ServiceGallery.astro';
+import ServicesSection from '../components/ServicesSection.astro';
 import { CONTACT, GOOGLE_REVIEWS, SERVICE_TAXONOMY } from '../data/site';
 import { fetchPublishedReviews, idadeRelativa } from '../data/published-reviews';
 import { provaSocialGoogle } from '../data/google-reviews';
@@ -116,86 +116,39 @@ const initials = (name: string): string =>
                 </div>
             </div>
 
-            <!-- Foto da fachada no hero. Ficava só embaixo, no bloco de contato, porque
-                 a versão anterior era dura de olhar: céu estourado, fiação, laje
-                 manchada. A foto nova é frontal e limpa, então o motivo de esconder
-                 deixou de existir — prova visual nos primeiros segundos vale mais que
-                 prova visual no rodapé. Eager porque está acima da dobra e é candidata
-                 a LCP. -->
+            <!-- Foto de INSTALAÇÃO no hero, não a fachada. Quem chega aqui vem de
+                 "box em <bairro>" na busca orgânica (79 das 126 sessões) e quer ver o
+                 serviço, não a porta da loja. Box é o serviço que o H1 e o subtítulo
+                 nomeiam primeiro, é a busca que mais traz gente e é a foto mais legível
+                 das cinco: frontal, iluminada e reconhecível em um piscar — as outras
+                 quatro são recorte de detalhe (guarda-corpo), ambiente específico
+                 (espelho em hall), vista que domina o assunto (sacada) ou lêem como
+                 divisória (portas e janelas).
+                 A fachada não foi descartada: passou para "Por Que Escolher a Verly?",
+                 onde faz o trabalho que realmente é dela — provar endereço e loja
+                 física.
+                 Fora de astro:assets porque o arquivo mora em public/ e já é .webp;
+                 eager + fetchpriority porque está acima da dobra e é candidata a LCP. -->
             <figure class="hero-photo">
-                <Image
-                    src={lojaFrente}
-                    alt="Fachada da Verly Vidraçaria na Rua General Azeredo, 218 - Loja C, em Realengo"
-                    widths={[420, 700, 980]}
-                    width={980}
-                    sizes="(max-width: 1024px) 92vw, 460px"
-                    format="webp"
-                    quality={80}
+                <img
+                    src="/img/servicos/box-banheiro.webp"
+                    alt="Box de banheiro em vidro temperado com perfil e puxador pretos, instalado pela Verly"
+                    width="800"
+                    height="600"
                     loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
                 />
             </figure>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section id="servicos" class="section">
-        <div class="container">
-            <h2 class="section-title">Nossos Serviços</h2>
-            <p class="section-subtitle">
-                Soluções completas em vidros temperados e alumínio para seu projeto
-            </p>
-            <div class="services-grid">
-                <div class="service-card" data-service={SERVICE_TAXONOMY.boxBanheiro.slug} data-whatsapp-message={SERVICE_TAXONOMY.boxBanheiro.whatsappMessage}>
-                    <div class="service-icon">
-                        <Icon name="box-canto" />
-                    </div>
-                    <h3>Box para Banheiro</h3>
-                    <p>Box blindex com vidro temperado 8mm, acabamento premium e instalação rápida.</p>
-                </div>
-                <div class="service-card" data-service={SERVICE_TAXONOMY.sacadaEnvidracada.slug} data-whatsapp-message={SERVICE_TAXONOMY.sacadaEnvidracada.whatsappMessage}>
-                    <div class="service-icon">
-                        <Icon name="sacada-envidracada" />
-                    </div>
-                    <h3>Sacadas Envidraçadas</h3>
-                    <p>Cortinas de vidro retráteis para sacadas e varandas com alta resistência.</p>
-                </div>
-                <div class="service-card" data-service={SERVICE_TAXONOMY.guardaCorpo.slug} data-whatsapp-message={SERVICE_TAXONOMY.guardaCorpo.whatsappMessage}>
-                    <div class="service-icon">
-                        <Icon name="guarda-corpo" />
-                    </div>
-                    <h3>Guarda-corpos de Vidro</h3>
-                    <p>Guarda-corpos modernos em vidro temperado para escadas e sacadas.</p>
-                </div>
-                <div class="service-card" data-service={SERVICE_TAXONOMY.portasJanelas.slug} data-whatsapp-message={SERVICE_TAXONOMY.portasJanelas.whatsappMessage}>
-                    <div class="service-icon">
-                        <Icon name="porta-janela-vidro" />
-                    </div>
-                    <h3>Portas e Janelas</h3>
-                    <p>Portas e janelas de vidro temperado e alumínio sob medida.</p>
-                </div>
-                <div class="service-card" data-service={SERVICE_TAXONOMY.espelhoSobMedida.slug} data-whatsapp-message={SERVICE_TAXONOMY.espelhoSobMedida.whatsappMessage}>
-                    <div class="service-icon">
-                        <Icon name="espelho" />
-                    </div>
-                    <h3>Espelhos Sob Medida</h3>
-                    <p>Espelhos com e sem moldura, instalação completa e acabamento perfeito.</p>
-                </div>
-                <div class="service-card" data-service={SERVICE_TAXONOMY.divisoriaAmbiente.slug} data-whatsapp-message={SERVICE_TAXONOMY.divisoriaAmbiente.whatsappMessage}>
-                    <div class="service-icon">
-                        <Icon name="divisoria" />
-                    </div>
-                    <h3>Divisórias de Ambiente</h3>
-                    <p>Divisórias em vidro temperado para ambientes modernos e integrados.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <ServiceGallery />
+    <ServicesSection />
 
     <!-- Testimonials. Subiu de 6ª para 4ª seção: estava atrás de serviços, galeria,
-         faixa de CTA e diferenciais, e a visita média é de 28 SEGUNDOS com 96% de
+         faixa de CTA e diferenciais (a galeria não existe mais como seção — fundiu
+         com os serviços), e a visita média é de 28 SEGUNDOS com 96% de
          visitantes novos — ou seja, a prova social praticamente não era lida por quem
          ainda não conhece a loja e é exatamente quem precisa dela. NN/g, "F-Shaped
          Pattern for Reading Web Content" (Nielsen, 2006, eye-tracking com 232
@@ -203,10 +156,10 @@ const initials = (name: string): string =>
 
          Fica ANTES da faixa de CTA, não depois. Prova social é o gatilho da decisão
          (Cialdini, "Influence", 1984), então tem de chegar antes do pedido, não como
-         justificação a posteriori. A ordem agora é reconhecimento (serviços) → prova
-         visual (galeria "como fica depois de instalado") → prova de terceiros
-         (depoimentos) → pedido (faixa de CTA), com o bloco de prova inteiro
-         alimentando o primeiro CTA do meio da página.
+         justificação a posteriori. A ordem agora é reconhecimento + prova visual na
+         MESMA seção (serviços com foto) → prova de terceiros (depoimentos) → razões
+         para escolher a loja, com a foto da fachada → pedido (faixa de CTA), com o
+         bloco de prova inteiro alimentando o primeiro CTA do meio da página.
 
          Não sobe para logo depois do hero de propósito: acima dos serviços o
          visitante ainda não sabe o que a loja vende, os depoimentos citam serviços
@@ -334,28 +287,6 @@ const initials = (name: string): string =>
         </div>
     </section>
 
-    <!-- Ponto de conversão no meio da página. As páginas de bairro já trazem o
-         formulário exatamente aqui, logo depois dos serviços: é onde o visitante
-         acabou de reconhecer o que precisa (interesse) e ainda faltam ~5.000px de
-         rolagem no celular até o formulário. Faixa com âncora, não um segundo
-         <QuoteForm /> — ver o comentário de .cta-band no CSS. -->
-    <section class="cta-band">
-        <div class="container cta-band-inner">
-            <div>
-                <h2>Achou o serviço que precisa?</h2>
-                <p>Orçamento gratuito, sem compromisso, com resposta em até 2 horas úteis.</p>
-            </div>
-            <div class="cta-band-actions">
-                <a href="#contato" class="btn btn-success">
-                    <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
-                </a>
-                <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="cta-band-alt" data-context="cta-band">
-                    ou fale direto no WhatsApp
-                </a>
-            </div>
-        </div>
-    </section>
-
     <!-- Why Choose Us -->
     <section id="diferenciais" class="section why-choose">
         <div class="container">
@@ -418,6 +349,57 @@ const initials = (name: string): string =>
                         <p>Vidros temperados de alta qualidade e perfis de alumínio com acabamento superior.</p>
                     </div>
                 </div>
+            </div>
+
+            <!-- A fachada saiu do hero e veio para cá. No hero ela ocupava o lugar da
+                 prova de serviço para quem buscou um serviço; aqui ela faz o que
+                 realmente sabe fazer, que é sustentar as razões desta seção: existe
+                 endereço, existe loja de rua, existe para onde ir reclamar. É o mesmo
+                 arquivo do repo, então continua passando por astro:assets — o que muda
+                 é a posição e o `loading`, que virou lazy porque agora está bem abaixo
+                 da dobra e não é mais candidata a LCP. -->
+            <figure class="why-choose-photo">
+                <Image
+                    src={lojaFrente}
+                    alt="Fachada da Verly Vidraçaria na Rua General Azeredo, 218 - Loja C, em Realengo"
+                    widths={[420, 700, 980]}
+                    width={980}
+                    sizes="(max-width: 768px) 92vw, 400px"
+                    format="webp"
+                    quality={80}
+                    loading="lazy"
+                    decoding="async"
+                />
+                {/* Endereço e horário saem de CONTACT, a mesma fonte do rodapé e do
+                    LocalBusiness: uma legenda digitada à mão seria a quarta grafia do
+                    mesmo endereço, e a primeira a desencontrar quando a loja mudar. */}
+                <figcaption>
+                    Nossa loja na {CONTACT.address.street}, {CONTACT.address.locality} —
+                    atendimento presencial {CONTACT.hoursDisplay}.
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- Ponto de conversão no meio da página, agora fechando o bloco de prova: o
+         visitante acabou de ver o serviço instalado (fotos), o que outros clientes
+         disseram (depoimentos) e por que a loja (diferenciais + fachada). Continua
+         muito acima do formulário, que só aparece depois de ~5.000px de rolagem no
+         celular. Faixa com âncora, não um segundo <QuoteForm /> — ver o comentário de
+         .cta-band no CSS. -->
+    <section class="cta-band">
+        <div class="container cta-band-inner">
+            <div>
+                <h2>Achou o serviço que precisa?</h2>
+                <p>Orçamento gratuito, sem compromisso, com resposta em até 2 horas úteis.</p>
+            </div>
+            <div class="cta-band-actions">
+                <a href="#contato" class="btn btn-success">
+                    <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
+                </a>
+                <a href={CONTACT.whatsappDirect} target="_blank" rel="noopener" class="cta-band-alt" data-context="cta-band">
+                    ou fale direto no WhatsApp
+                </a>
             </div>
         </div>
     </section>

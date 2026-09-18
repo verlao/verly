@@ -427,6 +427,65 @@
             line-height: 1.6;
         }
 
+        /* Cartão de serviço COM FOTO. Substitui o ícone de 80px pela foto do serviço
+           instalado — é a fusão da antiga seção "#trabalhos" nesta. Só o topo do cartão
+           muda: título, descrição e o CTA que o whatsapp-cta.js injeta continuam com o
+           mesmo padding do cartão textual, porque a foto sangra para fora do padding em
+           vez de a regra do padding mudar. `overflow: hidden` só aqui: é o que faz o
+           canto de cima da foto seguir o raio do cartão, e o cartão textual não tem
+           nada para recortar. */
+        .service-card--photo {
+            padding-top: 0;
+            overflow: hidden;
+        }
+
+        .service-photo {
+            display: block;
+            margin: 0 -2rem 1.5rem;
+            text-decoration: none;
+        }
+
+        .service-photo img {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .service-photo:hover img,
+        .service-photo:focus-visible img {
+            transform: scale(1.04);
+        }
+
+        /* O foco fica visível DENTRO da foto: o contorno por fora seria recortado pelo
+           overflow do cartão. */
+        .service-photo:focus-visible {
+            outline: 3px solid var(--cta);
+            outline-offset: -3px;
+        }
+
+        /* Nota que herdou da galeria: as fotos são ilustrativas, e dizer isso é o que
+           separa "exemplo do serviço" de "obra nossa" — a segunda afirmação a página
+           ainda não pode fazer. */
+        .services-note {
+            margin-top: 1.5rem;
+            font-size: 0.82rem;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .service-photo img {
+                transition: none;
+            }
+            .service-photo:hover img,
+            .service-photo:focus-visible img {
+                transform: none;
+            }
+        }
+
         /* Why Choose Us Section */
         .why-choose {
             background: var(--light-gray);
@@ -471,6 +530,34 @@
         .feature-content p {
             color: var(--gray);
             font-size: 0.938rem;
+        }
+
+        /* Foto da fachada, que veio do hero para cá. Fecha a seção das razões porque é
+           uma razão: loja de rua com endereço. Largura limitada para não competir com a
+           grade de seis itens acima dela — é evidência, não capa. */
+        /* 400px, não 620: o arquivo é retrato 1086x1448, e a 620 ele passava de 800px de
+           altura — um bloco maior que a grade de seis razões que ele ilustra. Largura
+           menor em vez de recorte por object-fit: um 4/3 forçado cortaria o letreiro, que
+           é justamente a parte que prova o endereço. */
+        .why-choose-photo {
+            margin: 2.5rem auto 0;
+            max-width: 400px;
+        }
+
+        .why-choose-photo img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .why-choose-photo figcaption {
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: var(--gray);
+            text-align: center;
         }
 
         /* Testimonials Section */
@@ -996,6 +1083,29 @@
 
             .services-grid .service-whatsapp-cta {
                 margin-top: 0.5rem;
+            }
+
+            /* O cartão COM FOTO não deita. O cartão deitado existe para poupar a altura
+               que o ícone de 80px gastava — a foto não é enfeite ocupando espaço, é o
+               conteúdo que o visitante veio ver, e em 44px ela não informa nada. Foto na
+               largura inteira, texto embaixo. Desfaz também o `grid-column: 2` que a
+               regra acima aplica a todo filho, inclusive ao CTA injetado. */
+            .services-grid .service-card--photo {
+                display: flex;
+                flex-direction: column;
+                padding: 0 1rem 0.875rem;
+            }
+
+            .services-grid .service-card--photo > * {
+                grid-column: auto;
+            }
+
+            .service-photo {
+                margin: 0 -1rem 0.75rem;
+            }
+
+            .services-note {
+                margin-top: 1rem;
             }
 
             .service-card h3 {

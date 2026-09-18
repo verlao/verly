@@ -1,0 +1,144 @@
+---
+import Icon from './Icon.astro';
+import { CONTACT, SERVICE_TAXONOMY } from '../data/site';
+
+/**
+ * Seção de serviços da home — UMA seção, com foto.
+ *
+ * Era duas: `#servicos` com seis cartões de ÍCONE e `#trabalhos` com cinco FOTOS dos
+ * mesmos serviços. Cinco dos seis serviços apareciam duas vezes na mesma página, e a
+ * versão sem foto vinha primeiro: o visitante rolava uma grade de ícones inteira antes
+ * de ver qualquer trabalho instalado. Com 28 segundos de sessão média e 96% de
+ * visitantes novos, quem chegou de "box em <bairro>" saía antes da foto.
+ *
+ * Cada cartão continua sendo PORTADOR DE CTA. `whatsapp-cta.js` injeta o "Pedir
+ * Orçamento" em `#servicos .service-card` lendo `data-service` e
+ * `data-whatsapp-message` do markup — o cartão daqui é superconjunto do antigo, então
+ * o injetor e o guard do DOM final não foram tocados. Seis cartões, seis CTAs, um por
+ * serviço, num site onde 100% dos leads entram pelo WhatsApp.
+ *
+ * A FOTO também continua sendo entrada de lead própria: é um `<a>` de verdade, montado
+ * no build, com `data-context="service-gallery"` — o mesmo contexto da galeria — para
+ * o relatório continuar separando o lead que veio da foto do que veio do botão. Zero
+ * JavaScript novo.
+ *
+ * `photo` é opcional de propósito. Divisórias de ambiente não tem foto, e mostrar a de
+ * outro serviço no lugar seria mentir sobre o que a pessoa está pedindo — que é
+ * exatamente o defeito que #78 consertou. Sem foto, o cartão fica textual com o ícone
+ * que já tinha, na mesma grade e com o mesmo CTA.
+ *
+ * Os títulos são a âncora de SEO "serviço + bairro" que traz 79 das 126 sessões, e
+ * saem daqui LITERALMENTE iguais aos da grade anterior. A fusão troca ícone por foto;
+ * não mexe na taxonomia de texto.
+ */
+const services = [
+  {
+    service: SERVICE_TAXONOMY.boxBanheiro,
+    title: 'Box para Banheiro',
+    description: 'Box blindex com vidro temperado 8mm, acabamento premium e instalação rápida.',
+    photo: {
+      label: 'Box para banheiro',
+      src: '/img/servicos/box-banheiro.webp',
+      alt: 'Box de banheiro em vidro temperado com perfil e puxador pretos, instalado em nicho revestido.',
+    },
+  },
+  {
+    service: SERVICE_TAXONOMY.sacadaEnvidracada,
+    title: 'Sacadas Envidraçadas',
+    description: 'Cortinas de vidro retráteis para sacadas e varandas com alta resistência.',
+    photo: {
+      label: 'Sacada envidraçada',
+      src: '/img/servicos/sacada-envidracada.webp',
+      alt: 'Varanda envidraçada com folhas de vidro recolhidas na lateral e guarda-corpo de vidro.',
+    },
+  },
+  {
+    service: SERVICE_TAXONOMY.guardaCorpo,
+    title: 'Guarda-corpos de Vidro',
+    description: 'Guarda-corpos modernos em vidro temperado para escadas e sacadas.',
+    photo: {
+      label: 'Guarda-corpo',
+      src: '/img/servicos/guarda-corpos-vidro.webp',
+      alt: 'Guarda-corpo de vidro com corrimão de aço inox e prendedores redondos, em varanda externa.',
+    },
+  },
+  {
+    service: SERVICE_TAXONOMY.portasJanelas,
+    title: 'Portas e Janelas',
+    description: 'Portas e janelas de vidro temperado e alumínio sob medida.',
+    photo: {
+      label: 'Portas e janelas',
+      src: '/img/servicos/portas-janelas.webp',
+      alt: 'Divisória envidraçada de piso a teto com perfil escuro separando dois ambientes de uma sala.',
+    },
+  },
+  {
+    service: SERVICE_TAXONOMY.espelhoSobMedida,
+    title: 'Espelhos Sob Medida',
+    description: 'Espelhos com e sem moldura, instalação completa e acabamento perfeito.',
+    photo: {
+      label: 'Espelho sob medida',
+      src: '/img/servicos/espelhos-sob-medida.webp',
+      alt: 'Espelho grande sob medida instalado em hall de entrada, com iluminação embutida acima.',
+    },
+  },
+  {
+    service: SERVICE_TAXONOMY.divisoriaAmbiente,
+    title: 'Divisórias de Ambiente',
+    description: 'Divisórias em vidro temperado para ambientes modernos e integrados.',
+    icon: 'divisoria',
+  },
+];
+
+// `CONTACT.mobile` é a mesma origem dos outros links do site; wa.me escolhe entre
+// app, WhatsApp Web e loja, que é a razão de nenhum link daqui apontar para
+// web.whatsapp.com direto.
+const waLink = (label: string) =>
+  `https://wa.me/${CONTACT.mobile}?text=${encodeURIComponent(
+    `Olá! Vi a foto de ${label.toLowerCase()} no site e gostaria de um orçamento.`
+  )}`;
+---
+
+<section id="servicos" class="section">
+  <div class="container">
+    <h2 class="section-title">Nossos Serviços</h2>
+    <p class="section-subtitle">
+      Soluções completas em vidros temperados e alumínio para seu projeto
+    </p>
+    <div class="services-grid">
+      {services.map((item) => (
+        <div
+          class:list={['service-card', { 'service-card--photo': item.photo }]}
+          data-service={item.service.slug}
+          data-whatsapp-message={item.service.whatsappMessage}
+        >
+          {item.photo ? (
+            <a
+              class="service-photo"
+              href={waLink(item.photo.label)}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-service={item.service.slug}
+              data-context="service-gallery"
+            >
+              {/* Fora de astro:assets: o arquivo mora em public/ e não na árvore de
+                  src/, então não há pipeline de otimização para ele — já é .webp de
+                  800x600. width/height evitam que a grade pule ao carregar. */}
+              <img src={item.photo.src} alt={item.photo.alt} width="800" height="600" loading="lazy" decoding="async" />
+            </a>
+          ) : (
+            <div class="service-icon">
+              <Icon name={item.icon} />
+            </div>
+          )}
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </div>
+      ))}
+    </div>
+    <p class="services-note">
+      Imagens ilustrativas dos serviços. Fotos das nossas obras entram aqui conforme
+      os clientes autorizam.
+    </p>
+  </div>
+</section>

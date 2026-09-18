@@ -56,18 +56,22 @@ const schema = {
     },
   ],
   priceRange: '$$',
+  // As faixas são as do Perfil da Empresa no Google, conferidas no painel em 18/09/2026.
+  // Structured data que discorda do perfil é a pior das duas: o perfil é quem decide o
+  // "aberto agora" na Pesquisa, e aqui a divergência só serve para o Google achar sinal
+  // conflitante sobre o mesmo negócio. Sábado fecha ao MEIO-DIA.
   openingHoursSpecification: [
     {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '08:00',
+      opens: '09:00',
       closes: '18:00',
     },
     {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: 'Saturday',
-      opens: '08:00',
-      closes: '18:00',
+      opens: '09:00',
+      closes: '12:00',
     },
   ],
   sameAs: ['https://facebook.com/verlyvidracaria', 'https://instagram.com/verlyvidracaria'],

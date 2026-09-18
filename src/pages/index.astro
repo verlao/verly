@@ -7,7 +7,7 @@ import QuoteForm from '../components/QuoteForm.astro';
 import ServicesSection from '../components/ServicesSection.astro';
 import { CONTACT, GOOGLE_REVIEWS, SERVICE_TAXONOMY } from '../data/site';
 import { fetchPublishedReviews, idadeRelativa } from '../data/published-reviews';
-import { provaSocialGoogle } from '../data/google-reviews';
+import { provaSocialGoogle, urlAmpliada } from '../data/google-reviews';
 
 // Lidas no build. Devolve [] em qualquer falha, de propósito: o deploy da LP não pode
 // depender do Orange Pi estar no ar. Ver o comentário longo em published-reviews.ts.
@@ -220,7 +220,9 @@ const initials = (name: string): string =>
                                             dobra, e aspect-ratio no CSS porque as
                                             dimensões só o arquivo conhece — sem ela, a
                                             imagem empurraria o texto ao carregar. */}
-                                        <img src={url} alt={`Serviço realizado pela Verly${review.serviceType ? ` — ${review.serviceType}` : ''}`} loading="lazy" decoding="async" />
+                                        <button class="photo-zoom" type="button" data-photo-zoom={url} aria-label="Ver a foto em tamanho grande">
+                                            <img src={url} alt={`Serviço realizado pela Verly${review.serviceType ? ` — ${review.serviceType}` : ''}`} loading="lazy" decoding="async" />
+                                        </button>
                                     </li>
                                 ))}
                             </ul>
@@ -250,7 +252,9 @@ const initials = (name: string): string =>
                                             baixá-la para o nosso storage seria guardar conteúdo
                                             de terceiro. Fora de astro:assets pelo mesmo motivo
                                             das fotos do Garage: o arquivo não está no repo. */}
-                                        <img src={url} alt={`Foto enviada por ${review.autor} na avaliação do Google`} loading="lazy" decoding="async" referrerpolicy="no-referrer-when-downgrade" />
+                                        <button class="photo-zoom" type="button" data-photo-zoom={urlAmpliada(url)} aria-label={`Ver em tamanho grande a foto enviada por ${review.autor}`}>
+                                            <img src={url} alt={`Foto enviada por ${review.autor} na avaliação do Google`} loading="lazy" decoding="async" referrerpolicy="no-referrer-when-downgrade" />
+                                        </button>
                                     </li>
                                 ))}
                             </ul>
@@ -404,6 +408,15 @@ const initials = (name: string): string =>
         </div>
     </section>
 
+    {/* Um diálogo só para todas as fotos: o conteúdo é trocado no clique. N cópias de
+        markup para N fotos cresceria com o número de avaliações sem nenhum ganho. Nasce
+        com `hidden`, então quem entra sem JS não recebe um bloco vazio na página. */}
+    <div class="photo-lightbox" id="photo-lightbox" hidden role="dialog" aria-modal="true" aria-label="Foto da avaliação ampliada">
+        <button class="photo-lightbox-close" type="button" aria-label="Fechar a foto">&times;</button>
+        <img class="photo-lightbox-img" src="" alt="" />
+    </div>
+
+    <script is:inline src="/js/photo-lightbox.js"></script>
 
     <QuoteForm />
 

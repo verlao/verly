@@ -613,6 +613,82 @@
             padding: 0;
         }
 
+        /* A miniatura virou botão para o clique ampliar. O botão não pode introduzir
+           caixa nem fundo próprios, senão muda a grade que já existe: ele é só a
+           superfície clicável da imagem. `zoom-in` é o que sinaliza que dá para abrir —
+           antes não havia nenhuma affordance e o clique não fazia nada. */
+        .testimonial-photos .photo-zoom {
+            display: block;
+            width: 100%;
+            padding: 0;
+            border: 0;
+            background: none;
+            cursor: zoom-in;
+            border-radius: 8px;
+        }
+
+        .testimonial-photos .photo-zoom:focus-visible {
+            outline: 3px solid var(--primary-blue);
+            outline-offset: 2px;
+        }
+
+        /* Fundo escuro sobre a página inteira. `rgba` do preto em vez de um token novo:
+           é véu sobre conteúdo arbitrário, não uma cor do tema — e par de cor novo passaria
+           pelo gate de contraste sem ser testado. */
+        .photo-lightbox {
+            position: fixed;
+            inset: 0;
+            /* 10001 porque o site já tem 999 (cabeçalho e CTA flutuante de WhatsApp),
+               1000 (vários) e 10000 (ui-improvements.css). Com 1000 o fundo escuro ficava
+               ATRÁS do cabeçalho e da barra de WhatsApp: a foto abria e aqueles dois
+               continuavam iluminados e clicáveis em cima do véu. */
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.85);
+        }
+
+        /* Explícito porque o `display: flex` acima venceria o `hidden` do atributo. */
+        .photo-lightbox[hidden] {
+            display: none;
+        }
+
+        /* `contain`, não `cover`: a miniatura recorta de propósito para manter a grade,
+           mas o ponto de ampliar é justamente ver a foto inteira. */
+        .photo-lightbox-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .photo-lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 44px;
+            height: 44px;
+            font-size: 2rem;
+            line-height: 1;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .photo-lightbox-close:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
+
+        /* Trava o scroll do documento enquanto a foto está aberta. */
+        body.has-lightbox-open {
+            overflow: hidden;
+        }
+
         .testimonial-photos img {
             width: 100%;
             aspect-ratio: 4 / 3;

@@ -36,6 +36,23 @@ export interface ProvaSocialGoogle {
   depoimentos: DepoimentoGoogle[];
 }
 
+/**
+ * A URL que o Google entrega vem com o tamanho da MINIATURA no próprio endereço, num
+ * sufixo `=w300-h450-p-k-no`. Ampliar aquela imagem é ampliar 300x450, que fica borrada
+ * na tela cheia — e foi o que motivou isto: a foto é a prova do serviço.
+ *
+ * O sufixo é SUBSTITUÍDO, não acrescentado: anexar um segundo devolve HTTP 400 (testado).
+ * `=s1600` devolve 1200x1600 e ~450 KB; `=s0` devolve o original, 3024x4032 e ~1,9 MB —
+ * peso demais para dado de celular só para abrir uma foto.
+ *
+ * Foto que não vem do Google (as do Garage, enviadas pelo cliente pelo link) não tem esse
+ * sufixo e volta inalterada.
+ */
+export function urlAmpliada(url: string): string {
+  if (!url.includes('googleusercontent.com')) return url;
+  return url.replace(/=[^=/]*$/, '=s1600');
+}
+
 /** Dias antes de o dado lido do perfil ser considerado parado. Não invalida nada: só grita. */
 const DIAS_ATE_RECLAMAR = 3;
 

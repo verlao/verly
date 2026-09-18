@@ -421,7 +421,16 @@ const WhatsAppCTA = {
         });
 
         /**
-         * Denominador dos cliques: uma impressão por origem + serviço por pageview.
+         * Denominador dos cliques, mas agora UMA vez por SESSÃO, não uma por
+         * exposição.
+         *
+         * O guard anterior (`impressedCtas`, por origem + serviço) resetava a cada
+         * carregamento de página — e a sessão real atravessa várias páginas (home,
+         * bairro, seções). Resultado medido: 1.001 disparos de whatsapp_impression em
+         * 28 dias, 41% de TODOS os eventos da propriedade, 14,3 por usuário — sem
+         * dedupe, o evento inflava qualquer razão que usasse o total de eventos como
+         * denominador. `sessionStorage` sobrevive à troca de página dentro da mesma
+         * aba/sessão e é o que falta para o guard valer pelo que a sessão realmente é.
          *
          * IntersectionObserver mantém o custo fora do scroll handler. A checagem de
          * estilo evita contar a sticky enquanto está recolhida e o flutuante enquanto
@@ -429,10 +438,21 @@ const WhatsAppCTA = {
          * interseção geométrica: mudança de visibilidade por classe e o handoff do
          * formulário, que é criado depois do carregamento.
          */
+        const WA_IMPRESSION_SESSION_KEY = 'verly_wa_impression_sent';
+
         if ('IntersectionObserver' in window) {
-            const impressedCtas = new Set();
             const intersectingLinks = new WeakSet();
             const observedLinks = new WeakSet();
+
+            // sessionStorage lança em navegação restrita/iframe de terceiro, igual ao
+            // localStorage do debug acima. Sem ele o guard cai para "uma vez por
+            // pageview" — pior que o alvo, mas nunca pior que o estado anterior.
+            let impressionSent = false;
+            try {
+                impressionSent = sessionStorage.getItem(WA_IMPRESSION_SESSION_KEY) === '1';
+            } catch (error) {
+                impressionSent = false;
+            }
 
             const clickSourceFor = target => target.classList.contains('whatsapp-float')
                 ? 'floating_button'
@@ -451,13 +471,19 @@ const WhatsAppCTA = {
             };
 
             const trackImpression = target => {
+                if (impressionSent) return;
                 if (!intersectingLinks.has(target) || !isRendered(target)) return;
+
+                impressionSent = true;
+                try {
+                    sessionStorage.setItem(WA_IMPRESSION_SESSION_KEY, '1');
+                } catch (error) {
+                    // Sem persistência: o guard local (`impressionSent`) ainda cobre o
+                    // resto desta pageview.
+                }
 
                 const context = target.dataset.context || 'unknown';
                 const service = target.dataset.service || '';
-                const ctaIdentity = `${context}:${service}`;
-                if (impressedCtas.has(ctaIdentity)) return;
-                impressedCtas.add(ctaIdentity);
 
                 ctaTrack('whatsapp_impression', {
                     context,
@@ -465,7 +491,7 @@ const WhatsAppCTA = {
                     button_text: target.textContent.trim(),
                     ...(service ? { service } : {})
                 });
-                ctaLog(`📊 WhatsApp impression tracked: ${context} (${service || 'sem serviço'})`);
+                ctaLog(`📊 WhatsApp impression tracked (1x/sessão): ${context} (${service || 'sem serviço'})`);
             };
 
             const impressionObserver = new IntersectionObserver((entries) => {

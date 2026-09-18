@@ -144,7 +144,8 @@ O build falha quando:
 - `service-card` ou `service-gallery` não traz `data-service`.
 
 O guard descobre todas as páginas `*.html` recursivamente; não mantém uma lista de nomes.
-Em máquina sem Chrome no caminho padrão, defina `CHROME_PATH`.
+O navegador é o Chromium do playwright (`npx playwright install chromium`), e a leitura do
+DOM espera o evento `load` — não um orçamento de tempo.
 
 ## Corte histórico
 

@@ -1636,8 +1636,9 @@
     line-height: 1.5;
 }
 
-/* Página de obrigado. Não tinha estilo nenhum: o <div class="thanks-box"> caía
-   colado na esquerda, com um único link de volta. */
+/* Caixa central de página curta: a de obrigado e a de /avaliar.html, que encaminha
+   para o Google e mostra este bloco a quem o refresh não levar. Nenhuma das duas tinha
+   estilo: o <div class="thanks-box"> caía colado na esquerda, com um único link. */
 .thanks-box {
     max-width: 560px;
     margin: 2.5rem auto 4rem;

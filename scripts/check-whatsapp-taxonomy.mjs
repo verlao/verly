@@ -97,7 +97,22 @@ const dumpDom = (page) => new Promise((resolveDump, rejectDump) => {
 });
 
 const attr = (tag, name) => tag.match(new RegExp(`\\b${name}="([^"]*)"`, 'i'))?.[1];
-const pages = walkHtml(DIST).sort();
+
+/**
+ * Página que ENCAMINHA não tem taxonomia para conferir — e, pior, não tem DOM final:
+ * `/avaliar.html` traz `<meta http-equiv="refresh" content="0; …">` para o perfil do
+ * Google, então o navegador sai dela antes de qualquer amostra e o que sobra é um
+ * documento sem `<body data-…>`. Antes desta exceção o gate acusava "registro ausente"
+ * numa página que está CORRETA.
+ *
+ * A checagem é no ARQUIVO, não no DOM renderizado, justamente porque o DOM já é o da
+ * outra URL. E é anunciada na saída: exceção que não aparece é exceção que cresce.
+ */
+const forwards = (page) => /<meta[^>]+http-equiv="refresh"/i.test(readFileSync(page, 'utf8'));
+
+const allPages = walkHtml(DIST).sort();
+const forwarded = allPages.filter(forwards);
+const pages = allPages.filter((page) => !forwarded.includes(page));
 const failures = [];
 let checkedLinks = 0;
 
@@ -164,3 +179,10 @@ if (failures.length) {
 }
 
 console.log(`✓ Taxonomia de WhatsApp: ${checkedLinks} links em ${pages.length} páginas renderizadas`);
+if (forwarded.length) {
+  console.log(
+    `  (${forwarded.length} encaminhada${forwarded.length > 1 ? 's' : ''}, sem DOM próprio para conferir: ${forwarded
+      .map((page) => relative(DIST, page))
+      .join(', ')})`
+  );
+}

@@ -94,6 +94,20 @@ export const GOOGLE_REVIEWS = {
    * endereço, cai no mapa e não no perfil, então não serve aqui.
    */
   profileUrl: 'https://maps.google.com/?cid=4827813671680371489',
+  /**
+   * Destino de QUEM VAI ESCREVER uma avaliação: é para cá que /avaliar.html manda.
+   *
+   * Separado de `profileUrl` de propósito, mesmo com o MESMO valor hoje. Aquele aparece
+   * em seis lugares como PROVA (ir ver as avaliações que existem); este é CONVITE
+   * (escrever uma). Prova e convite não são o mesmo ato, e o dia em que o destino do
+   * convite melhorar, os seis usos de prova não podem ir junto por acidente.
+   *
+   * O melhor destino é o link de "escrever avaliação" que o painel do Google gera
+   * (formato `g.page/r/…/review`), que abre o formulário direto em vez de largar o
+   * cliente no perfil procurando o botão. Enquanto ele não estiver em mãos, o perfil
+   * funciona e é conferível — e a troca depois é ESTA linha, só ela.
+   */
+  reviewUrl: 'https://maps.google.com/?cid=4827813671680371489',
   /** Data em que a nota e o total foram lidos no perfil. Os "há N semanas" NÃO dependem
       mais dela: cada depoimento carrega a própria data. Ela continua visível na seção
       porque a NOTA é que continua sendo um snapshot. */
@@ -195,7 +209,6 @@ export const WHATSAPP_CONTEXTS = [
   'service-gallery',
   'cta-band',
   'thank-you-page',
-  'avaliar-link-invalido',
   'form-fallback',
   'form-error',
 ] as const;

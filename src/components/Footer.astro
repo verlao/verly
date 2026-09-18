@@ -87,9 +87,12 @@ const year = new Date().getFullYear();
             {CONTACT.address.line2}
           </a>
         </p>
+        {/* De CONTACT, como o telefone e o endereço ao lado: o horário estava digitado à
+            mão aqui e no formulário, então eram três grafias do mesmo fato e as duas
+            escritas ficaram para trás quando ele mudou. */}
         <p style="margin-top: 1rem;">
           <strong>Horário:</strong><br />
-          Seg a Sáb: 8h às 18h
+          {CONTACT.hoursDisplay}
         </p>
       </div>
     </div>

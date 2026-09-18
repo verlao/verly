@@ -21,8 +21,20 @@ export const CONTACT = {
   landline: '+552134216066',
   landlineDisplay: '(21) 3421-6066',
   email: 'contato@verlyvidracaria.com',
-  /** Mesmo horário que o rodapé e o LocalBusiness já publicam — 8h às 18h, Seg-Sáb. */
-  hoursDisplay: 'Seg a Sáb, 8h às 18h',
+  /**
+   * O MESMO horário que o Perfil da Empresa no Google publica, conferido no painel em
+   * 18/09/2026: seg–sex 09:00–18:00, sábado 09:00–12:00, domingo fechado.
+   *
+   * Antes daqui saía "Seg a Sáb, 8h às 18h", que prometia uma hora a mais todo dia e
+   * SEIS horas a mais no sábado. Quem lê o site e aparece na loja às 8h, ou no sábado à
+   * tarde, encontra a porta fechada — e a versão do Google é a que decide o "aberto
+   * agora" do resultado de busca, então divergir aqui não muda o que o cliente vê na
+   * Pesquisa, só cria a viagem perdida.
+   *
+   * Este texto é a fonte única: o rodapé da home e a página de obrigado leem daqui, e o
+   * `LocalBusinessSchema` publica as mesmas faixas em ld+json.
+   */
+  hoursDisplay: 'Seg a Sex, 9h às 18h · Sáb, 9h às 12h',
   // Todo link de WhatsApp passa por wa.me. É ele que escolhe entre o app instalado,
   // o WhatsApp Web e a loja de aplicativos; apontar direto para web.whatsapp.com/send
   // manda quem não tem sessão ativa no navegador para uma tela de QR code, o que

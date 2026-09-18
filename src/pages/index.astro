@@ -108,7 +108,7 @@ const initials = (name: string): string =>
                             5,0 que ficou cinco semanas no ar. A contagem (19) não vai para a
                             tela e não vai mais para schema nenhum — ver GOOGLE_REVIEWS. */}
                         <div class="trust-badge-text">
-                            <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">
+                            <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer" data-review-intent="proof" data-review-location="nota-da-secao">
                                 {google.notaExibida}★ no Google
                             </a>
                         </div>
@@ -188,13 +188,13 @@ const initials = (name: string): string =>
                     <>
                         Avaliações de clientes atendidos pela loja, enviadas por eles e
                         reproduzidas na íntegra. As do Google vêm
-                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">do perfil da loja</a>,
+                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer" data-review-intent="proof" data-review-location="rodape-da-prova">do perfil da loja</a>,
                         como estavam em {lidasEm}
                     </>
                 ) : (
                     <>
                         Avaliações publicadas por clientes
-                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer">no perfil do Google da loja</a>,
+                        <a href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer" data-review-intent="proof" data-review-location="nota-de-transparencia">no perfil do Google da loja</a>,
                         reproduzidas aqui na íntegra — como estavam em {lidasEm}
                     </>
                 )}

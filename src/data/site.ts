@@ -114,12 +114,23 @@ export const GOOGLE_REVIEWS = {
    * (escrever uma). Prova e convite não são o mesmo ato, e o dia em que o destino do
    * convite melhorar, os seis usos de prova não podem ir junto por acidente.
    *
-   * O melhor destino é o link de "escrever avaliação" que o painel do Google gera
-   * (formato `g.page/r/…/review`), que abre o formulário direto em vez de largar o
-   * cliente no perfil procurando o botão. Enquanto ele não estiver em mãos, o perfil
-   * funciona e é conferível — e a troca depois é ESTA linha, só ela.
+   * Abre o FORMULÁRIO direto, em vez de largar o cliente no perfil procurando o botão —
+   * que é o que o CID (`maps.google.com/?cid=…`) fazia até 21/09/2026.
+   *
+   * O `placeid` não veio do painel do Google: foi derivado do CID que já estava aqui, e
+   * a derivação é conferível. A URL canônica do perfil carrega o ftid
+   * `0x9bdf66871be8a1:0x42ffd6f49e486b21`, cuja segunda metade é o próprio CID em hex
+   * (4827813671680371489 = 0x42ffd6f49e486b21). Um place id `ChIJ…` é só esse par
+   * empacotado: `ChIJ` decodifica para os bytes `0A 12 09`, ou seja um campo de 18 bytes
+   * com dois fixed64 little-endian (`09` + a, `11` + b), em base64url sem padding.
+   *
+   * Verificado em 21/09/2026 abrindo a URL: resolve para "Verly Vidraçaria", com
+   * `ludocid=4827813671680371489` (o mesmo CID) e o fragmento `#lrd=…,3`, que é o painel
+   * de avaliação. Visitante deslogado vê o pedido de login do Google antes do formulário.
+   *
+   * Continua valendo: a troca de destino é ESTA linha, só ela.
    */
-  reviewUrl: 'https://maps.google.com/?cid=4827813671680371489',
+  reviewUrl: 'https://search.google.com/local/writereview?placeid=ChIJoegbh2bfmwARIWtInvTW_0I',
   /** Data em que a nota e o total foram lidos no perfil. Os "há N semanas" NÃO dependem
       mais dela: cada depoimento carrega a própria data. Ela continua visível na seção
       porque a NOTA é que continua sendo um snapshot. */

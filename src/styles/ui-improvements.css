@@ -353,7 +353,7 @@
 
 .searchable-select-option.selected {
     background-color: #e7f9f5;
-    color: #1abc9c;
+    color: var(--dark);
     font-weight: 500;
 }
 

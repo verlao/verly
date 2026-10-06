@@ -10,7 +10,7 @@
     "check:analytics": "node scripts/check-whatsapp-taxonomy.mjs"
   },
   "dependencies": {
-    "astro": "^5.18.2"
+    "astro": "^7.2.8"
   },
   "devDependencies": {
     "playwright": "^1.63.0"

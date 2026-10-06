@@ -14,7 +14,7 @@ const { home = false, hasServices = false } = Astro.props;
 // fazendo — e a lista de serviços é justamente onde ele clica depois de ler a
 // página. Tirar alguém de uma landing page que já respondia à pergunta dele é
 // perder o lead no último passo.
-const servicesHref = `${home || hasServices ? '' : '/index.html'}#servicos`;
+const servicesHref = `${home || hasServices ? '' : '/'}#servicos`;
 
 // O site é estático: o ano sai do build, não do relógio do visitante. Fixo em 2024,
 // o rodapé anunciava um site abandonado há dois anos — em página de orçamento isso
@@ -53,7 +53,7 @@ const year = new Date().getFullYear();
         <h2>Bairros Atendidos</h2>
         <ul>
           {FOOTER_NEIGHBORHOODS.map((n) => (
-            <li><a href={`/${n.slug}.html`}>{n.name}</a></li>
+            <li><a href={`/${n.slug}`}>{n.name}</a></li>
           ))}
         </ul>
       </div>

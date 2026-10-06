@@ -204,7 +204,7 @@ principais por sessão", que só existe depois de §3.
   leads acumulados **e** for ≥2x o último. Bairro com tráfego e zero lead em 90 dias é o
   alvo de reescrita — conclusão mais segura que qualquer comparação de taxa, porque
   ausência de evento precisa de menos volume. A tabela C mostra demanda fora do conjunto de
-  páginas: quem está em `/realengo.html` e declara bairro sem página é pauta de página nova.
+  páginas: quem está em `/realengo` e declara bairro sem página é pauta de página nova.
 - **Decide:** distribuição de orçamento do Ads por bairro; qual página de bairro reescrever.
 
 ### 5.2 Qual serviço puxa lead

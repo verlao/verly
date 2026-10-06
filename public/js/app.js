@@ -583,8 +583,21 @@ function isRetryableStatus(status) {
 }
 
 /**
+ * Por que o envio não foi aceito, em poucos valores — é o que vira dimensão no GA4
+ * (`failure_type`). O código exato fica em `http_status`, que só o BigQuery enxerga.
+ */
+function leadFailureType(httpStatus, timedOut) {
+    if (timedOut) return 'timeout';
+    if (!httpStatus) return 'network';
+    if (httpStatus === 429) return 'http_429';
+    return httpStatus >= 500 ? 'http_5xx' : 'http_4xx';
+}
+
+/**
  * UMA tentativa de POST. Nunca lança.
- * @returns {'success'|'error'|'retryable_error'|'fetch_error'}
+ * `httpStatus` é 0 quando a requisição nem chegou; `timedOut` separa o abort por
+ * LEAD_ATTEMPT_TIMEOUT_MS de uma rede caída — são correções diferentes.
+ * @returns {{outcome: 'success'|'error'|'retryable_error'|'fetch_error', httpStatus: number, timedOut: boolean}}
  */
 async function postLead(payload) {
     const controller = new AbortController();
@@ -608,15 +621,19 @@ async function postLead(payload) {
             // log de depuração, e um corpo malformado não pode transformar um lead
             // gravado em "erro de rede".
             response.text().then(text => debugLog('Lead saved successfully:', text)).catch(() => {});
-            return 'success';
+            return { outcome: 'success', httpStatus: response.status, timedOut: false };
         }
 
         console.error('API error:', response.status);
-        return isRetryableStatus(response.status) ? 'retryable_error' : 'error';
+        return {
+            outcome: isRetryableStatus(response.status) ? 'retryable_error' : 'error',
+            httpStatus: response.status,
+            timedOut: false
+        };
     } catch (error) {
         // fetch lança em offline, DNS, CORS, timeout e servidor inalcançável.
         console.error('Error submitting form:', error);
-        return 'fetch_error';
+        return { outcome: 'fetch_error', httpStatus: 0, timedOut: !!(error && error.name === 'AbortError') };
     } finally {
         clearTimeout(timeoutId);
     }
@@ -625,18 +642,28 @@ async function postLead(payload) {
 /**
  * Tentativas com backoff. Nunca lança.
  *
- * @returns {{status: 'success'|'error'|'fetch_error', attempts: number, permanent: boolean}}
+ * @returns {{status: 'success'|'error'|'fetch_error', attempts: number, permanent: boolean, httpStatus: number, failureType: string|null}}
  *   `permanent` diz se insistir depois ainda faz sentido: `false` é o caso de
  *   enfileirar (rede caída ou 5xx), `true` é resposta definitiva do servidor.
+ *   `failureType` é a versão de baixa cardinalidade da falha (ver leadFailureType).
  */
 async function deliverLead(payload, maxAttempts) {
     let status = 'fetch_error';
+    let httpStatus = 0;
+    let timedOut = false;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        const outcome = await postLead(payload);
+        const attemptResult = await postLead(payload);
+        const outcome = attemptResult.outcome;
+        httpStatus = attemptResult.httpStatus;
+        timedOut = attemptResult.timedOut;
 
-        if (outcome === 'success') return { status: 'success', attempts: attempt, permanent: true };
-        if (outcome === 'error') return { status: 'error', attempts: attempt, permanent: true };
+        if (outcome === 'success') {
+            return { status: 'success', attempts: attempt, permanent: true, httpStatus, failureType: null };
+        }
+        if (outcome === 'error') {
+            return { status: 'error', attempts: attempt, permanent: true, httpStatus, failureType: leadFailureType(httpStatus, timedOut) };
+        }
 
         // `retryable_error` é o servidor respondendo mal (5xx/429): api_status = error.
         // `fetch_error` é a requisição nem chegar: api_status = fetch_error.
@@ -647,7 +674,7 @@ async function deliverLead(payload, maxAttempts) {
         }
     }
 
-    return { status, attempts: maxAttempts, permanent: false };
+    return { status, attempts: maxAttempts, permanent: false, httpStatus, failureType: leadFailureType(httpStatus, timedOut) };
 }
 
 function readLeadQueue() {
@@ -889,6 +916,17 @@ async function handleFormSubmit(event) {
                 ...leadEventParams,
                 api_status: 'success',
                 delivery_attempts: result.attempts
+            });
+        } else {
+            // O desfecho que faltava: sem ele a diferença entre lead_submit_attempt e
+            // generate_lead era um buraco sem causa. `queued` diz se o lead ficou
+            // guardado para reenvio (e ainda pode virar lead_recovered).
+            trackGA4Event('lead_submit_failed', {
+                ...leadEventParams,
+                failure_type: result.failureType,
+                http_status: result.httpStatus,
+                delivery_attempts: result.attempts,
+                queued: !!queued
             });
         }
 

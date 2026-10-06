@@ -20,7 +20,7 @@ const { home = false, hasForm = false, hasServices = false, hasDifferentials = f
 // formulário próprios — mandar o visitante para o index era tirá-lo de uma landing
 // page que já respondia à pergunta dele. Depoimentos só existem no index, então esse
 // continua saltando.
-const anchor = (id: string, isLocal: boolean) => `${home || isLocal ? '' : '/index.html'}#${id}`;
+const anchor = (id: string, isLocal: boolean) => `${home || isLocal ? '' : '/'}#${id}`;
 
 const links = [
   { href: anchor('servicos', hasServices), label: 'Serviços' },
@@ -38,7 +38,7 @@ const quoteHref = anchor('contato', hasForm);
       og:image. O peso 800 do Inter já está carregado, então isso não custa bytes.
       Quando existir o SVG do letreiro redesenhado, troca-se este bloco por uma
       <img> e mais nada muda. */}
-  <a href={home ? '#' : '/index.html'} class="logo" aria-label="Verly Vidraçaria — página inicial">
+  <a href={home ? '#' : '/'} class="logo" aria-label="Verly Vidraçaria — página inicial">
     <span class="brand">
       <span class="brand-name">Verly</span>
       <span class="brand-sub">Vidraçaria</span>

@@ -12,13 +12,13 @@ Allow: /
 # PÁGINAS PRIORITÁRIAS (SEO Local)
 # ============================================================================
 # Realengo - MÁXIMA PRIORIDADE
-Allow: /realengo.html
+Allow: /realengo
 
 # Outros bairros importantes
-Allow: /campo-grande.html
-Allow: /barra-da-tijuca.html
-Allow: /jacarepagua.html
-Allow: /recreio-dos-bandeirantes.html
+Allow: /campo-grande
+Allow: /barra-da-tijuca
+Allow: /jacarepagua
+Allow: /recreio-dos-bandeirantes
 
 # ============================================================================
 # LLMs - INDEXAÇÃO TOTAL (Para aparecer no ChatGPT, Claude, etc.)

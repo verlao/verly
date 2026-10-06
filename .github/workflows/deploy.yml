@@ -38,6 +38,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # src/pages/sitemap.xml.ts lê o lastmod de `git log`; num checkout raso (o
+          # padrão, depth 1) todas as páginas ficariam sem lastmod.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:

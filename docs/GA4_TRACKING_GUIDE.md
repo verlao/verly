@@ -27,6 +27,7 @@ dimensões, montar explorações e respeitar os cortes históricos, use também
 | `form_interaction` | foco, blur, validação e submit | `form_action`, `field_name`, comprimentos/erro quando existem |
 | `lead_submit_attempt` | payload válido antes da entrega | serviços canônicos, contagem e booleanos; sem PII |
 | `generate_lead` | API aceitou o lead (`2xx`) | mesmos dados da tentativa + resultado técnico |
+| `lead_submit_failed` | API não aceitou o lead (4xx, 5xx, 429, timeout ou rede) | dados da tentativa + `failure_type`, `http_status`, tentativas e se ficou na fila |
 | `lead_recovered` | fila local foi aceita depois | motivo, tentativas e idade da fila |
 | `engagement_milestone` | 30, 60 e 120 segundos | marco e valor |
 | `review_link_click` | clique em `[data-review-intent]`, saída para o Google | `review_intent` (`proof` ver \| `invite` escrever), `click_location` |
@@ -105,7 +106,8 @@ por WhatsApp. Portas de vidro e janelas de alumínio pertencem à família
 `portas-janelas`; marcar as duas opções não repete o slug. O texto enviado à API e ao
 WhatsApp continua usando os rótulos visíveis.
 
-`generate_lead` só significa aceite `2xx`. Falha HTTP ou de rede pode exibir um link de
+`generate_lead` só significa aceite `2xx`. O desfecho oposto é `lead_submit_failed`, com
+`failure_type` (registre como dimensão). Falha HTTP ou de rede pode exibir um link de
 handoff; `whatsapp_click` só sai se a pessoa clicar nesse link. Os contextos desses
 handoffs são `form-fallback` e `form-error`.
 

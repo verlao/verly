@@ -10,7 +10,7 @@ sem `timestamp`), não o estado atual em produção.
 `GA4_TRACKING_GUIDE.md` é o contrato operacional resumido; este plano detalha registro e
 leitura. **Parâmetro não registrado é invisível em relatório**.
 
-**Execute nesta ordem:** registrar as 14 dimensões (§2, ~15 min) → retenção 14 meses (§2)
+**Execute nesta ordem:** registrar as 15 dimensões (§2, ~15 min) → retenção 14 meses (§2)
 → marcar `generate_lead` como evento-chave (§3) → esperar dados → montar funil (§4) e as
 4 explorações (§5) → religar o Ads por importação (§7). Antes de concluir qualquer coisa,
 ler §6.
@@ -41,6 +41,7 @@ log aparece, e não há evento que escape da segmentação.
 | `engagement_milestone` | `app.js:158` ← `:696` | 30s / 60s / 120s após `DOMContentLoaded` | `milestone_name: "time_60s"`, `milestone_value: 60` | baixa (3) |
 | `lead_submit_attempt` | `app.js` | payload válido está prestes a ser enviado à API | `lead_source: "contact_form"`, `services: "box,espelhos"`, `services_count: 2`, `neighborhood: "Realengo"`, `has_email`, `has_message` | denominador de entrega; nenhum parâmetro contém PII |
 | `generate_lead` | `app.js` | API confirmou aceitação (`2xx`) no envio em primeiro plano | os parâmetros de `lead_submit_attempt` + `api_status: "success"`, `delivery_attempts` | conversão confirmada; nunca sai para erro HTTP ou de rede |
+| `lead_submit_failed` | `app.js` | o envio em primeiro plano **não** foi aceito (4xx, 5xx, 429, timeout ou rede) | os parâmetros de `lead_submit_attempt` + `failure_type`, `http_status`, `delivery_attempts`, `queued` | `failure_type` baixa (`http_4xx`, `http_5xx`, `http_429`, `timeout`, `network`); `http_status` numérica (só BigQuery). Fecha o buraco entre `lead_submit_attempt` e `generate_lead` |
 | `lead_recovered` | `app.js` | fila local foi aceita pela API em `online` ou novo page load | `lead_source`, `recovery_reason`, `delivery_attempts`, `queued_seconds` | desfecho distinto porque não foi confirmado no submit original |
 | `conversion` (Ads) | `app.js:520` | **nunca hoje**: `ADS_CONVERSION_LABEL` é `''` (`app.js:17`) | `send_to`, `value: 1.0`, `currency: "BRL"` | — |
 | `review_started` | `avaliar.astro` | primeira estrela escolhida, 1x por acesso | `rating: 5` | baixa (5) |
@@ -109,6 +110,7 @@ de evento; a lista usa 15.
 | `button_location` | Evento | onde estava o botão do `cta_click` | §4, §5.4 |
 | `button_text` | Evento | desambigua dois CTAs no mesmo `button_location` | §5.4 |
 | `rating` | Evento | nota da avaliação (1-5); é o que separa elogio de reclamação | §1, eventos `review_*` |
+| `failure_type` | Evento | por que um envio do formulário não foi aceito (`lead_submit_failed`); separa API fora do ar (`http_5xx`), recusa (`http_4xx`), lentidão (`timeout`) e rede do visitante (`network`) | §4 (entre as etapas 4 e 5) |
 
 **Zero dimensões de escopo de usuário.** Nada na instrumentação descreve atributo
 persistente da pessoa. `neighborhood` é candidato, mas só existe no momento da conversão —

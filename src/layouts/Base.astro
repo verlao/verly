@@ -120,10 +120,21 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
          ícones viraram SVG inline (src/components/Icon.astro). -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* A folha do Google Fonts carrega sem bloquear a pintura (media=print + onload):
+        o texto aparece em fonte do sistema e troca para Inter quando chega (display=swap
+        já estava na URL). O <noscript> mantém a fonte para quem desliga JS. */}
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <!-- Google Analytics 4 + Google Ads (carregado verbatim do site atual) -->
     <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS.ga4}`}></script>

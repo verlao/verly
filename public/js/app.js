@@ -384,36 +384,82 @@ function smoothScrollTo(target) {
 // ============================================================================
 
 /**
+ * Detect an explicit international dialing prefix ("+<country code>") typed
+ * by the user, read from the raw value BEFORE digits are stripped. Returns
+ * the country code digits (e.g. "55", "1"), or null when there's no "+".
+ */
+function extractCountryCode(rawValue) {
+    const match = String(rawValue).trim().match(/^\+(\d{1,3})/);
+    return match ? match[1] : null;
+}
+
+/**
+ * Normalize a phone number typed with or without the Brazilian "+55"/"55"
+ * country code, spaces, parentheses or dashes into the 10 or 11 digit
+ * national number (DDD + phone number).
+ *
+ * A leading "55" is only stripped when it is unambiguously a country code:
+ * either the user typed it explicitly as "+55", or there are more digits
+ * than a national number can hold (>11) and it starts with "55". A bare
+ * 10-11 digit value that happens to start with "55" is left alone, since
+ * DDD 55 (Rio Grande do Sul) is a real Brazilian area code.
+ *
+ * Returns { digits, valid, reason }. `reason` is 'not-br' (explicit non-55
+ * country code), 'length' (not 10-11 digits after stripping) or 'ddd'
+ * (DDD outside the 11-99 range) when `valid` is false.
+ */
+function normalizePhone(rawValue) {
+    const explicitCountryCode = extractCountryCode(rawValue);
+
+    if (explicitCountryCode && explicitCountryCode !== '55') {
+        return { digits: rawValue.replace(/\D/g, ''), valid: false, reason: 'not-br' };
+    }
+
+    let digits = rawValue.replace(/\D/g, '');
+
+    if (explicitCountryCode === '55') {
+        digits = digits.replace(/^55/, '');
+    } else if (digits.length > 11 && digits.startsWith('55')) {
+        digits = digits.slice(2);
+    }
+
+    if (digits.length !== 10 && digits.length !== 11) {
+        return { digits, valid: false, reason: 'length' };
+    }
+
+    const ddd = parseInt(digits.substring(0, 2), 10);
+    if (ddd < 11 || ddd > 99) {
+        return { digits, valid: false, reason: 'ddd' };
+    }
+
+    return { digits, valid: true, reason: null };
+}
+
+/**
  * Phone number mask (Brazilian format)
  */
 function applyPhoneMask(value) {
-    value = value.replace(/\D/g, '');
-    
-    if (value.length <= 10) {
-        value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-    } else {
-        value = value.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
+    const explicitCountryCode = extractCountryCode(value);
+    if (explicitCountryCode && explicitCountryCode !== '55') {
+        // Not a Brazilian number: leave the raw text as typed instead of
+        // reformatting it as if it were a national number. validateField()
+        // rejects it with a visible message before the form can submit.
+        return value;
     }
-    
-    return value;
+
+    const national = normalizePhone(value).digits.slice(0, 11);
+
+    if (national.length <= 10) {
+        return national.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+    }
+    return national.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
 }
 
 /**
  * Validate phone number (Brazilian format)
  */
 function validatePhone(phone) {
-    const digitsOnly = phone.replace(/\D/g, '');
-    
-    if (digitsOnly.length < 10 || digitsOnly.length > 11) {
-        return false;
-    }
-    
-    const ddd = parseInt(digitsOnly.substring(0, 2));
-    if (ddd < 11 || ddd > 99) {
-        return false;
-    }
-    
-    return true;
+    return normalizePhone(phone).valid;
 }
 
 /**
@@ -1298,6 +1344,7 @@ if (typeof module !== 'undefined' && module.exports) {
         validatePhone,
         validateEmail,
         applyPhoneMask,
+        normalizePhone,
         validateField,
         trackGA4Event
     };

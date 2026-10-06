@@ -32,6 +32,14 @@ const tokens = Object.fromEntries(
   [...CSS.matchAll(/--([a-z-]+):\s*(#[0-9a-fA-F]{6})/g)].map((m) => [m[1], m[2]])
 );
 
+// .searchable-select-option.selected keeps a literal background (the fix only turns
+// `color` into a token, per the audit) — read it from the actual rule instead of
+// hardcoding a second copy of the hex here, or this checker could go stale exactly
+// the way the bug it is meant to catch did.
+tokens['selected-option-bg'] = CSS.match(
+  /\.searchable-select-option\.selected\s*\{[^}]*background-color:\s*(#[0-9a-fA-F]{6})/
+)?.[1];
+
 const srgb = (c) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4);
 const lum = (hex) => {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
@@ -64,6 +72,9 @@ const PAIRS = [
   ['Barra sticky — texto de apoio', 'gray', 'white', false],
   ['Card de serviço — botão em repouso', 'dark', 'white', false],
   ['Card de serviço — botão em hover', 'whatsapp-text', 'whatsapp', false],
+  // 2.21:1 recomputed — real, currently-shipping defect (ui-improvements.css), not a
+  // hypothetical. `selected-option-bg` is read from the rule itself, see above.
+  ['Select de bairro — opção selecionada', 'dark', 'selected-option-bg', false],
 ];
 
 const MIN = { normal: 4.5, large: 3.0 };
@@ -121,6 +132,43 @@ if (violations.length) {
   failed++;
 } else {
   console.log('\n✓ Nenhum verde de marca em hex nos stylesheets');
+}
+
+// The PAIRS list above only enumerates combinations someone already thought to name —
+// that is precisely how the selected-option bug above went unnoticed even though its
+// file is scanned. `color: var(--white)` on `background: var(--whatsapp)` reproduces
+// the old 1.98:1 defect using only allowed tokens (no banned literal, see guard above),
+// so neither existing guard sees it. This scans every rule block for that specific
+// dangerous PAIR of declarations, regardless of whether it is on today's PAIRS list.
+const DANGEROUS_TOKEN_PAIRS = [
+  {
+    label: 'var(--white) sobre var(--whatsapp)',
+    fg: /color\s*:\s*var\(--white\)/,
+    bg: /background(?:-color)?\s*:\s*var\(--whatsapp\)/,
+  },
+];
+const pairViolations = STYLESHEETS.flatMap(({ path, content }) => {
+  const withoutComments = content.replace(/\/\*[\s\S]*?\*\//g, '');
+  const blocks = [...withoutComments.matchAll(/\{([^{}]*)\}/g)].map((m) => m[1]);
+  const hits = new Set();
+  for (const block of blocks) {
+    for (const { label, fg, bg } of DANGEROUS_TOKEN_PAIRS) {
+      if (fg.test(block) && bg.test(block)) hits.add(label);
+    }
+  }
+  return hits.size ? [{ path, hits: [...hits] }] : [];
+});
+if (pairViolations.length) {
+  const details = pairViolations
+    .map(({ path, hits }) => `  ${path}: ${hits.join(', ')}`)
+    .join('\n');
+  console.error(
+    `\n✗ Stylesheet combina tokens permitidos num par texto/fundo proibido:\n${details}` +
+      `\n  Essa combinação específica de tokens não atinge 4.5:1, mesmo sem hex bruto.`
+  );
+  failed++;
+} else {
+  console.log('✓ Nenhuma combinação de tokens conhecida como proibida (ex.: white sobre whatsapp)');
 }
 
 if (failed) {

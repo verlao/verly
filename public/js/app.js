@@ -75,9 +75,11 @@ function trackGA4Event(eventName, eventParams = {}) {
     // parâmetro não respondia nenhuma pergunta e gastava cota de dimensão
     // personalizada em TODO evento.
     // PAGE_CONTEXT por último: nenhum chamador sobrescreve o tipo da página.
+    // page_location pela mesma função do config (Base.astro): evento e page_view
+    // precisam cair na mesma linha da página no GA4, sem a variante `.html`.
     const enrichedParams = {
         ...eventParams,
-        page_location: window.location.href,
+        page_location: window.verlyPageLocation ? window.verlyPageLocation() : window.location.href,
         page_title: document.title,
         ...PAGE_CONTEXT
     };

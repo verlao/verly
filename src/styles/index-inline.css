@@ -1180,6 +1180,26 @@
                 margin: 0 -1rem 0.75rem;
             }
 
+            /* Faixa livre para o flutuante na home. Desde que a grade de serviços virou
+               cartão com foto na largura inteira (18/09), o canto inferior direito da
+               tela tem sempre uma foto-link, um "Pedir Orçamento" ou o subtítulo
+               embaixo — e o watchContentUnderFloat (whatsapp-cta.js), corretamente,
+               esconde o botão: na home do celular ele passou a NUNCA aparecer.
+               Afrouxar aquela regra cobriria a ponta do CTA do cartão; aqui o
+               conteúdo abre a coluna do botão, e a rede de segurança continua valendo
+               para o resto da página. Só a grade abre mão da direita: os cartões
+               ficam alinhados à esquerda. O subtítulo, centralizado, estreita dos dois
+               lados para não sair do eixo do título. O 20px é o padding do .container,
+               que já é folga; o 4px é respiro entre o botão e a borda do cartão. Só a
+               home: nas páginas de bairro o botão já aparece onde aparecia antes. */
+            body[data-page-type="home"] #servicos .services-grid {
+                padding-right: calc(var(--float-size) + var(--float-inset) + 4px - 20px);
+            }
+
+            body[data-page-type="home"] #servicos .section-subtitle {
+                padding-inline: calc(var(--float-size) + var(--float-inset) + 4px - 20px);
+            }
+
             .services-note {
                 margin-top: 1rem;
             }

@@ -148,7 +148,12 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
         2. page_type/neighborhood_page no config, além do trackGA4Event: quem manda o
            page_view é a biblioteca (send_page_view), e parâmetro de config é o único
            jeito de ele sair com o contexto da página. Esse evento é o denominador de
-           toda taxa de conversão, então é o que mais precisa da segmentação. */}
+           toda taxa de conversão, então é o que mais precisa da segmentação.
+        3. `verlyPageLocation`: o Google ainda tem indexadas as URLs antigas com `.html`
+           e o GitHub Pages serve as duas formas com 200, sem 301. Sem normalizar, o GA4
+           partia a mesma página em duas linhas (/realengo.html e /realengo). A função
+           fica em `window` porque o trackGA4Event do app.js precisa mandar o MESMO
+           page_location, senão os eventos voltariam a cair na URL com `.html`. */}
     <script
       is:inline
       define:vars={{
@@ -162,9 +167,16 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
       window.gtag = function gtag() {
         window.dataLayer.push(arguments);
       };
+      // Mesma forma do canonical: sem `.html`, e /index.html vira /. Query e hash
+      // ficam — utm_* sai de page_location.
+      window.verlyPageLocation = function verlyPageLocation() {
+        const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+        return location.origin + path + location.search + location.hash;
+      };
       gtag('js', new Date());
       gtag('config', ga4, {
         send_page_view: true,
+        page_location: window.verlyPageLocation(),
         cookie_flags: 'SameSite=None;Secure',
         page_type: pageType,
         ...(neighborhoodPage ? { neighborhood_page: neighborhoodPage } : {}),

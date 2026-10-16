@@ -213,6 +213,12 @@ export const SERVICE_TAXONOMY = {
     slug: 'vidro-temperado',
     whatsappMessage: '✨ Olá! Gostaria de um orçamento para Vidros temperados sob medida.',
   },
+  // LP-6: obra real fotografada (p_49873, p_52362). Slug próprio para o relatório do
+  // GA4 separar quem pede fechamento de armário/pia de quem pede tampo de mesa.
+  armarioVidro: {
+    slug: 'armario-vidro',
+    whatsappMessage: '🗄️ Olá! Gostaria de um orçamento para Armário/tampo de vidro.',
+  },
   tampoMesa: {
     slug: 'tampo-mesa',
     whatsappMessage: '✨ Olá! Gostaria de um orçamento para Tampos de Mesa.',

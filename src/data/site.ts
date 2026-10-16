@@ -84,17 +84,17 @@ export const CONTACT = {
  * cinco estrelas do histograma é a armadilha, porque o número dela é grande e a nota
  * dela é redonda.
  *
- * A CONTAGEM não vai para a tela, por decisão do dono: dezenove é número pequeno
- * demais para vender, a nota é que vende. Ela não sobrevive em `reviewCount` porque o
+ * A CONTAGEM não vai para a tela, por decisão do dono: dezenove (hoje 28) é número
+ * pequeno demais para vender, a nota é que vende. Ela não sobrevive em `reviewCount` porque o
  * `aggregateRating` saiu do schema — ver LocalBusinessSchema.astro.
  */
 export const GOOGLE_REVIEWS = {
   /** Formato pt-BR, para a tela. É o único formato usado: o schema.org não recebe mais
       a nota, então não existe mais uma segunda grafia para divergir desta. */
-  ratingDisplay: '4,6',
+  ratingDisplay: '4,7',
   /** Total de avaliações do perfil. Fora da tela por decisão do dono; fica aqui para
       quem reler o perfil poder comparar e ver se mudou. */
-  ratingCount: 19,
+  ratingCount: 28,
   /**
    * Perfil da loja no Google, por CID — a única forma de link que veio do próprio
    * Google (o link curto do perfil resolve para o feature ID 0x9bdf66871be8a1:
@@ -134,7 +134,7 @@ export const GOOGLE_REVIEWS = {
   /** Data em que a nota e o total foram lidos no perfil. Os "há N semanas" NÃO dependem
       mais dela: cada depoimento carrega a própria data. Ela continua visível na seção
       porque a NOTA é que continua sendo um snapshot. */
-  snapshotDate: '17/09/2026',
+  snapshotDate: '16/10/2026',
   /**
    * Os três depoimentos exibidos na home, escolhidos para cobrir promessas
    * DIFERENTES do site (rapidez, canal de WhatsApp e preço, box blindex) em vez de

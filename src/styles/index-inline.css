@@ -781,6 +781,33 @@
             height: fit-content;
         }
 
+        .contact-map {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            color: var(--white);
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .contact-store .contact-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .contact-store-photo {
+            display: block;
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            max-height: 240px;
+            object-fit: cover;
+            object-position: center 70%;
+            border-radius: 12px;
+            margin-top: 0.5rem;
+        }
+
         .contact-info h3 {
             font-size: 1.75rem;
             margin-bottom: 2rem;

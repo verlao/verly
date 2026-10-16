@@ -108,7 +108,7 @@ const initials = (name: string): string =>
                  quatro são recorte de detalhe (guarda-corpo), ambiente específico
                  (espelho em hall), vista que domina o assunto (sacada) ou lêem como
                  divisória (portas e janelas).
-                 A fachada não foi descartada: passou para "Por Que Escolher a Verly?",
+                 A fachada não foi descartada: está no cartão de contato (QuoteForm, mostrarFachada),
                  onde faz o trabalho que realmente é dela — provar endereço e loja
                  física.
                  Fora de astro:assets porque o arquivo mora em public/ e já é .webp;
@@ -142,7 +142,7 @@ const initials = (name: string): string =>
          (Cialdini, "Influence", 1984), então tem de chegar antes do pedido, não como
          justificação a posteriori. A ordem agora é reconhecimento + prova visual na
          MESMA seção (serviços com foto) → prova de terceiros (depoimentos) → razões
-         para escolher a loja, com a foto da fachada → pedido (faixa de CTA), com o
+         para escolher a loja → pedido (faixa de CTA), com o
          bloco de prova inteiro alimentando o primeiro CTA do meio da página.
 
          Não sobe para logo depois do hero de propósito: acima dos serviços o
@@ -277,9 +277,10 @@ const initials = (name: string): string =>
 
     <Compromissos />
 
+
     <!-- Ponto de conversão no meio da página, agora fechando o bloco de prova: o
          visitante acabou de ver o serviço instalado (fotos), o que outros clientes
-         disseram (depoimentos) e por que a loja (diferenciais + fachada). Continua
+         disseram (depoimentos) e por que a loja (como funciona e compromissos). Continua
          muito acima do formulário, que só aparece depois de ~5.000px de rolagem no
          celular. Faixa com âncora, não um segundo <QuoteForm /> — ver o comentário de
          .cta-band no CSS. -->
@@ -310,7 +311,7 @@ const initials = (name: string): string =>
 
     <script is:inline src="/js/photo-lightbox.js"></script>
 
-    <QuoteForm />
+    <QuoteForm mostrarFachada />
 
     <!-- Footer -->
 </Base>

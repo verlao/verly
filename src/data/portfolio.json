@@ -1,7 +1,200 @@
 {
   "versao": 1,
-  "gerado_em": "2026-10-15T00:00:00-03:00",
+  "gerado_em": "2026-10-16T00:00:00-03:00",
   "fotos": [
+    {
+      "id": "p_67052",
+      "produto": "sacada",
+      "ambiente": "interno",
+      "legenda": "Fechamento de varanda em vidro transparente com perfis pretos",
+      "alt": "Varanda com fechamento de vidro transparente, perfis pretos e guarda-corpo, com piso limpo e vista para prédios.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67052-1086.webp",
+        "largura": 1086,
+        "altura": 1448,
+        "variantes": {
+          "480": "/obras/67052-480.webp",
+          "960": "/obras/67052-960.webp",
+          "1086": "/obras/67052-1086.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67052"
+    },
+    {
+      "id": "p_67053",
+      "produto": "sacada",
+      "ambiente": "externo",
+      "legenda": "Envidraçamento de varanda com vidro transparente e perfis pretos",
+      "alt": "Varanda limpa com fechamento de vidro transparente, perfis pretos e vista para montanhas e prédios.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67053-1086.webp",
+        "largura": 1086,
+        "altura": 1448,
+        "variantes": {
+          "480": "/obras/67053-480.webp",
+          "960": "/obras/67053-960.webp",
+          "1086": "/obras/67053-1086.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67052"
+    },
+    {
+      "id": "p_67058",
+      "produto": "sacada",
+      "ambiente": "externo",
+      "legenda": "Fechamento de varanda em vidro transparente com perfis escuros",
+      "alt": "Varanda com fechamento de vidro transparente, perfis escuros e guarda-corpo, com vista para prédios e montanhas.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67058-1086.webp",
+        "largura": 1086,
+        "altura": 1448,
+        "variantes": {
+          "480": "/obras/67058-480.webp",
+          "960": "/obras/67058-960.webp",
+          "1086": "/obras/67058-1086.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67052"
+    },
+    {
+      "id": "p_67061",
+      "produto": "sacada",
+      "ambiente": "interno",
+      "legenda": "Fechamento de varanda em vidro com perfis de alumínio",
+      "alt": "Fechamento de varanda com folhas de vidro transparente e perfis de alumínio, com vista para árvores e rua.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67061-941.webp",
+        "largura": 941,
+        "altura": 1672,
+        "variantes": {
+          "480": "/obras/67061-480.webp",
+          "941": "/obras/67061-941.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67061"
+    },
+    {
+      "id": "p_67062",
+      "produto": "sacada",
+      "ambiente": "externo",
+      "legenda": "Fechamento de varanda em vidro com guarda-corpo",
+      "alt": "Varanda com fechamento de vidro transparente, guarda-corpo, piso claro e teto de madeira.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67062-941.webp",
+        "largura": 941,
+        "altura": 1672,
+        "variantes": {
+          "480": "/obras/67062-480.webp",
+          "941": "/obras/67062-941.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67061"
+    },
+    {
+      "id": "p_67071",
+      "produto": "sacada",
+      "ambiente": "externo",
+      "legenda": "Fechamento de sacada em vidro com perfis escuros",
+      "alt": "Sacada com fechamento de vidro transparente e guarda-corpo com perfis escuros, vista para prédios e palmeiras.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67071-1086.webp",
+        "largura": 1086,
+        "altura": 1448,
+        "variantes": {
+          "480": "/obras/67071-480.webp",
+          "960": "/obras/67071-960.webp",
+          "1086": "/obras/67071-1086.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67071"
+    },
+    {
+      "id": "p_67064",
+      "produto": "sacada",
+      "ambiente": "externo",
+      "legenda": "Fechamento de varanda em vidro com perfis pretos",
+      "alt": "Varanda com fechamento de vidro transparente, perfis pretos e guarda-corpo envidraçado, com vista para prédios.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67064-852.webp",
+        "largura": 852,
+        "altura": 1847,
+        "variantes": {
+          "480": "/obras/67064-480.webp",
+          "852": "/obras/67064-852.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67064"
+    },
+    {
+      "id": "p_67068",
+      "produto": "sacada",
+      "ambiente": "externo",
+      "legenda": "Fechamento de varanda em vidro com trilhos escuros",
+      "alt": "Varanda com fechamento em folhas de vidro, trilhos escuros, guarda-corpo branco e rede de proteção externa.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67068-852.webp",
+        "largura": 852,
+        "altura": 1847,
+        "variantes": {
+          "480": "/obras/67068-480.webp",
+          "852": "/obras/67068-852.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67068"
+    },
+    {
+      "id": "p_67070",
+      "produto": "sacada",
+      "ambiente": "externo",
+      "legenda": "Envidraçamento de varanda curva com perfis brancos",
+      "alt": "Varanda curva com fechamento de vidro e guarda-corpo branco, com vista para prédios e jardins.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/67070-852.webp",
+        "largura": 852,
+        "altura": 1847,
+        "variantes": {
+          "480": "/obras/67070-480.webp",
+          "852": "/obras/67070-852.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": null,
+      "obra": "67070"
+    },
     {
       "id": "p_65906",
       "produto": "janela_correr",

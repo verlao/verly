@@ -376,7 +376,7 @@ function smoothScrollTo(target) {
         const offsetTop = element.offsetTop - 80; // Account for fixed header
         window.scrollTo({
             top: offsetTop,
-            behavior: 'smooth'
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
         });
     }
 }
@@ -430,7 +430,7 @@ function validateEmail(email) {
 /**
  * Validate field and show/hide error message
  */
-function validateField(field) {
+function validateField(field, announce = true) {
     const fieldId = field.id;
     const errorElement = document.getElementById(fieldId + 'Error');
     const value = field.value.trim();
@@ -459,6 +459,12 @@ function validateField(field) {
         }
     }
     
+    field.setAttribute('aria-invalid', String(!isValid));
+    if (errorElement) {
+        if (!isValid) field.setAttribute('aria-describedby', errorElement.id);
+        else field.removeAttribute('aria-describedby');
+    }
+
     // Update UI based on validation
     if (!isValid) {
         field.classList.add('is-invalid');
@@ -467,6 +473,11 @@ function validateField(field) {
             errorElement.textContent = errorMessage;
         }
         
+        if (announce && typeof AccessibilityEnhancer !== 'undefined') {
+            const label = document.querySelector(`label[for="${fieldId}"]`);
+            AccessibilityEnhancer.announce(`${label ? label.textContent.replace('*', '').trim() : fieldId}: ${errorMessage}`);
+        }
+
         // Track validation error
         trackFormInteraction('validation_error', fieldId, value, errorMessage);
     } else if (value || field.value) {
@@ -481,10 +492,6 @@ function validateField(field) {
             trackFormInteraction('field_complete', fieldId, value);
         }
         
-        // Announce to screen readers
-        if (typeof AccessibilityEnhancer !== 'undefined' && !isValid) {
-            AccessibilityEnhancer.announce(`Erro no campo ${fieldId}: ${errorMessage}`);
-        }
     } else {
         field.classList.remove('is-invalid', 'is-valid');
         if (errorElement) {
@@ -812,19 +819,31 @@ async function handleFormSubmit(event) {
     // Validate all fields
     let isValid = true;
     
-    if (!validateField(nameField)) isValid = false;
-    if (!validateField(phoneField)) isValid = false;
-    if (!validateField(emailField)) isValid = false;
-    if (!validateField(neighborhoodField)) isValid = false;
+    if (!validateField(nameField, false)) isValid = false;
+    if (!validateField(phoneField, false)) isValid = false;
+    if (!validateField(emailField, false)) isValid = false;
+    if (!validateField(neighborhoodField, false)) isValid = false;
     
     if (!isValid) {
-        showAlert('Por favor, corrija os campos destacados em vermelho.', 'error');
+        const message = 'Por favor, corrija os campos indicados no formulário.';
+        const alert = document.createElement('p');
+        alert.className = 'form-alert error';
+        alert.textContent = message;
+        const alertDiv = document.getElementById('formAlert');
+        alertDiv.replaceChildren(alert);
+        alertDiv.style.display = 'block';
+        if (typeof AccessibilityEnhancer !== 'undefined') AccessibilityEnhancer.announce(message);
         
         // Focus on first invalid field
-        const firstInvalid = document.querySelector('.is-invalid');
+        const firstInvalid = event.currentTarget.querySelector('.is-invalid');
         if (firstInvalid) {
-            firstInvalid.focus();
-            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            let ancestor = firstInvalid.parentElement;
+            while (ancestor) {
+                if (ancestor.tagName === 'DETAILS') ancestor.open = true;
+                ancestor = ancestor.parentElement;
+            }
+            firstInvalid.focus({ preventScroll: true });
+            firstInvalid.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
         }
         
         trackFormInteraction('validation_failed', 'all_fields');
@@ -1262,7 +1281,7 @@ function initSmoothScroll() {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             
-            if (href === '#' || !href) return;
+            if (href === '#' || !href || this.classList.contains('skip-link')) return;
             
             e.preventDefault();
             smoothScrollTo(href);
@@ -1314,6 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Form submission
         contactForm.addEventListener('submit', handleFormSubmit);
+        document.getElementById('contactFields').disabled = false;
     }
     
     // Initialize all features

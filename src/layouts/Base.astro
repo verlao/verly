@@ -210,13 +210,16 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
     data-service-slugs={SERVICE_SLUGS.join(',')}
     data-whatsapp-contexts={WHATSAPP_CONTEXTS.join(',')}
   >
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <header class="header">
       <div class="container">
         <Nav home={home} hasForm={hasForm} hasServices={hasServices} hasDifferentials={hasDifferentials} />
       </div>
     </header>
 
-    <slot />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
 
     <Footer home={home} hasServices={hasServices} />
 

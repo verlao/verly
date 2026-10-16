@@ -38,8 +38,8 @@ const initials = (name: string): string =>
 ---
 
 <Base
-  title={'Vidraçaria Zona Oeste RJ | Orçamento em 2h | Box, Sacadas e Mais | Verly'}
-  description={'Verly Vidraçaria - Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Orçamento em até 2 horas!'}
+  title={'Vidraçaria em Realengo | Box, Sacadas e Mais | Verly'}
+  description={'Verly Vidraçaria - Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Orçamento em até 2 horas úteis!'}
   keywords={'vidraçaria zona oeste, vidros temperados, box blindex, cortina de vidro, vidros Rio de Janeiro, Barra da Tijuca, Recreio, Jacarepaguá'}
   canonicalPath="/"
   ogTitle={'Verly Vidraçaria | Vidros Temperados e Box Blindex na Zona Oeste RJ'}
@@ -52,29 +52,22 @@ const initials = (name: string): string =>
 
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero hero-principal">
         <div class="container">
             <div class="hero-grid">
             <div class="hero-content">
                 <div class="hero-badge">
                     <Icon name="map-marker-alt" /> Atendemos toda Zona Oeste RJ
                 </div>
-                {/* Promessa e métrica em blocos separados, não um <br> no meio de uma
-                    linha de 3.5rem: naquele tamanho "Vidraçaria na Zona Oeste" já
-                    quebrava sozinha e o <br> somava a QUARTA linha. As páginas de
-                    bairro usam a mesma estrutura. */}
                 <h1 class="hero-h1">
-                    <span class="hero-h1-lead">Vidraçaria na Zona Oeste</span>
-                    <span class="hero-h1-metric">Orçamento em até 2 Horas</span>
+                    <span class="hero-h1-lead">Vidraçaria em Realengo</span>
                 </h1>
+                <p class="hero-response">Orçamento em até 2 horas úteis</p>
                 <p class="hero-subtitle">
                     Especialistas em Box para Banheiro, Sacadas Envidraçadas, Guarda-corpos e mais. 
-                    Atendimento rápido, qualidade garantida e instalação profissional.
+                    Atendimento na Zona Oeste do Rio de Janeiro, qualidade garantida e instalação profissional.
                 </p>
                 <div class="hero-cta">
-                    <a href="#contato" class="btn btn-success btn-lg">
-                        <Icon name="clipboard-check" /> Solicitar Orçamento Grátis
-                    </a>
                     {/* data-context nomeia a origem do clique no whatsapp_click. Sem ele o
                         evento saía como context="unknown", e este é o CTA mais exposto da
                         página. O mesmo valor vale no hero das páginas de bairro: quem separa
@@ -82,11 +75,15 @@ const initials = (name: string): string =>
                     <a href="https://wa.me/5521987926578?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento!" target="_blank" class="btn btn-whatsapp btn-lg" data-context="hero-whatsapp">
                         <Icon name="whatsapp" /> WhatsApp Direto
                     </a>
+                    <a href={`tel:${CONTACT.landline}`} class="btn hero-call">
+                        <Icon name="phone" /> Ligar
+                    </a>
+                    <a href="#contato" class="hero-callback">Prefere que a gente ligue? Deixe seu número</a>
                 </div>
                 <div class="trust-badges">
                     <div class="trust-badge">
                         <div class="trust-badge-icon"><Icon name="clock" /></div>
-                        <div class="trust-badge-text">Resposta em 2h</div>
+                        <div class="trust-badge-text">Resposta em 2h úteis</div>
                     </div>
                     <div class="trust-badge">
                         <div class="trust-badge-icon"><Icon name="credit-card" /></div>
@@ -132,7 +129,7 @@ const initials = (name: string): string =>
             <figure class="hero-photo">
                 <img
                     src="/img/servicos/box-banheiro.webp"
-                    alt="Box de banheiro em vidro temperado com perfil e puxador pretos, instalado pela Verly"
+                    alt="Box de banheiro em vidro temperado com perfil e puxador pretos"
                     width="800"
                     height="600"
                     loading="eager"
@@ -305,7 +302,7 @@ const initials = (name: string): string =>
                     </div>
                     <div class="feature-content">
                         <h3>Atendimento Local Rápido</h3>
-                        <p>Estamos na Zona Oeste. Orçamento em até 2 horas e atendimento no mesmo dia quando possível.</p>
+                        <p>Estamos na Zona Oeste. Orçamento em até 2 horas úteis e atendimento no mesmo dia quando possível.</p>
                     </div>
                 </div>
                 <div class="feature-item">

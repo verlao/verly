@@ -3,10 +3,10 @@ import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
 import {
   CONTACT,
-  SITE_URL,
   GOOGLE_REVIEWS,
   serviceForLocalLabel,
 } from '../data/site';
+import PortfolioGallery from '../components/PortfolioGallery.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import { provaSocialGoogle } from '../data/google-reviews';
 import { idadeRelativa } from '../data/published-reviews';
@@ -21,6 +21,10 @@ export function getStaticPaths() {
 }
 
 const { n } = Astro.props;
+// Só bairros com dados de entrada da loja recebem a composição local. Os demais
+// preservam o template; endereço, horário e mapa continuam na fonte única CONTACT.
+const entrance = n.storeEntrance;
+const nearby = entrance?.nearby.map(slug => neighborhoods.find(bairro => bairro.slug === slug)!);
 const google = n.slug === 'realengo' ? provaSocialGoogle(idadeRelativa, new Date()) : null;
 
 // O texto local é copy; o slug canônico vem da taxonomia única de site.ts.
@@ -61,6 +65,7 @@ const faqSchema =
   hasForm={true}
   hasServices={true}
   hasDifferentials={true}
+  hasTestimonials={Boolean(entrance)}
 >
   {faqSchema && (
     <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
@@ -70,7 +75,7 @@ const faqSchema =
     <div class="container hero-grid">
       <div class="hero-content">
         <div class="hero-badge">
-          <Icon name="map-marker-alt" /> Atendemos {n.name} e toda a Zona Oeste
+          <Icon name="map-marker-alt" /> {entrance ? "Loja física em Realengo" : `Atendemos ${n.name} e toda a Zona Oeste`}
         </div>
         {/* palavra-chave primeiro, métrica depois — o index já usa essa fórmula.
             O travessão era um separador que só o olho enxergava: em blocos, a
@@ -79,6 +84,11 @@ const faqSchema =
           <span class="hero-h1-lead">{n.h1}</span>
           <span class="hero-h1-metric">Orçamento em até 2 horas úteis</span>
         </h1>
+        {entrance && <div class="store-location">
+          <p class="store-address">A loja fica aqui, na {CONTACT.address.street}</p>
+          <p>{CONTACT.hoursDisplay}</p>
+          <a href={CONTACT.mapsUrl} target="_blank" rel="noopener noreferrer">Abrir mapa ↗</a>
+        </div>}
         {n.heroSubtitle && <p class="hero-subtitle">{n.heroSubtitle}</p>}
         <div class="hero-cta">
           {n.slug !== 'realengo' && (
@@ -147,13 +157,40 @@ const faqSchema =
     </div>
   </section>
 
+  {entrance && google && (
+    <>
+      <section id="depoimentos" class="section local-reviews" aria-labelledby="local-reviews-title">
+        <div class="container">
+          <h2 id="local-reviews-title" class="section-title">Quem já chamou a Verly</h2>
+          {/* Nota, total e textos vêm da MESMA fonte da home (provaSocialGoogle: perfil
+              lido no build, ou o snapshot de site.ts). Uma nota própria desta página
+              faria a /realengo e a home mostrarem números diferentes. A contagem fica
+              fora da tela por decisão do dono (ver GOOGLE_REVIEWS em site.ts). */}
+          <p class="section-subtitle">{google.notaExibida}★ no Google</p>
+          <div class="local-reviews-grid">
+            {google.depoimentos.slice(0, 2).map(review => (
+              <figure class="local-review">
+                <div class="testimonial-stars" aria-label={`${review.nota} de 5 estrelas`}>{'★'.repeat(review.nota)}</div>
+                <blockquote><p>{review.texto}</p></blockquote>
+                <figcaption><strong>{review.autor}</strong><br />Google · {review.quando}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <a class="local-review-source" href={GOOGLE_REVIEWS.profileUrl} target="_blank" rel="noopener noreferrer" data-review-intent="proof" data-review-location="depoimentos-realengo">Ver avaliações no perfil do Google ↗</a>
+        </div>
+      </section>
+      <PortfolioGallery />
+    </>
+  )}
+
   {/* id local: o nav ancorava "Serviços" em /index.html#servicos mesmo aqui, onde a
       seção existe — 3 dos 4 itens do menu levavam o visitante embora da página de
       bairro em que ele acabou de chegar por busca local. */}
-  <section id="servicos" class="section">
+  <section id="servicos" class:list={["section", { "local-services": entrance }]}>
     <div class="container">
       <h2 class="section-title">{n.sectionTitle}</h2>
-      {n.intro.map((p) => <p class="section-subtitle">{p}</p>)}
+      {!entrance && n.intro.map((p) => <p class="section-subtitle">{p}</p>)}
+      {nearby && <p class="section-subtitle">Atendemos também {nearby.map((bairro, index) => <>{index > 0 && (index === nearby.length - 1 ? ' e ' : ', ')}<a href={`/${bairro.slug}`}>{bairro.name}</a></>)}.</p>}
 
       <div class="services-grid">
         {localServices.map(({ label, service }) => (
@@ -200,4 +237,40 @@ const faqSchema =
       </div>
     </section>
   )}
+  {entrance && (
+    <section class="section local-history">
+      <div class="container">
+        <details class="faq-item">
+          <summary>Saiba mais sobre nosso atendimento em {n.name}</summary>
+          {n.intro.map(p => <p>{p}</p>)}
+        </details>
+      </div>
+    </section>
+  )}
 </Base>
+
+<style>
+  .store-location { grid-column: 1 / -1; margin: 0 0 20px; line-height: 1.6; }
+  .store-location p { margin: 0 0 8px; }
+  .store-address { font-size: 1.15rem; font-weight: 600; }
+  .store-location a { display: inline-flex; align-items: center; min-height: 44px; color: white; text-decoration: underline; }
+  .local-reviews { background: #f5f7f8; }
+  .local-reviews-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .local-review { margin: 0; padding: 24px; border: 1px solid #d5dfe2; border-radius: 12px; background: white; color: #173e4a; }
+  .local-review blockquote { margin: 12px 0 20px; line-height: 1.7; }
+  .local-review figcaption { color: #485b62; line-height: 1.6; }
+  .local-review-source { display: inline-flex; align-items: center; min-height: 44px; margin-top: 20px; color: #173e4a; text-decoration: underline; }
+  .local-services .section-subtitle a { display: inline-flex; align-items: center; min-height: 44px; }
+  .local-services .services-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .local-services .service-card { display: flex; align-items: center; gap: 12px; padding: 20px; text-align: left; }
+  .local-services .service-icon { flex-shrink: 0; width: 32px; height: 32px; margin: 0; font-size: 1rem; }
+  .local-services .service-card h3 { margin: 0; font-size: 1rem; }
+  .local-history { padding-top: 0; }
+  .local-history summary { min-height: 44px; }
+  @media (max-width: 767px) {
+    .local-reviews-grid { grid-template-columns: minmax(0, 1fr); }
+    .local-services .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .local-services .service-card { display: block; padding: 16px; }
+    .local-services .service-icon { margin-bottom: 12px; }
+  }
+</style>

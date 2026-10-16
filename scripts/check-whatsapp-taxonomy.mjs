@@ -8,6 +8,7 @@ import { chromium } from 'playwright';
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const DIST = join(ROOT, 'dist');
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+// Galeria inclui produto=outro, sem slug canônico; não inventar serviço.
 const SERVICE_CONTEXTS = new Set(['service-card', 'service-gallery']);
 
 const walkHtml = (directory) =>
@@ -165,6 +166,11 @@ try {
         .filter((tag) => /(?:wa\.me|whatsapp)/i.test(attr(tag, 'href') || ''));
       checkedLinks += links.length;
 
+      // CTAs da galeria de obras (#obras). Sem contagem fixa: a galeria cresce a cada
+      // obra aprovada, e um número cravado aqui quebraria o build na primeira obra nova.
+      const gallery = html.match(/<section\b[^>]*id="obras"[\s\S]*?<\/section>/i)?.[0] || '';
+      const galleryLinks = [...gallery.matchAll(/<a\b[^>]*data-context="service-gallery"[^>]*>/gi)].map(([tag]) => tag);
+
       links.forEach((tag, linkIndex) => {
         const location = `${pageName} link WhatsApp #${linkIndex + 1}`;
         const context = attr(tag, 'data-context');
@@ -186,7 +192,10 @@ try {
           }
         }
 
-        if (SERVICE_CONTEXTS.has(context) && !service) {
+        // Só a obra da galeria pode omitir o slug: produto `outro` (fechamento de
+        // armário/pia) não tem serviço canônico, e inventar um mentiria no relatório.
+        const unclassifiedWork = context === 'service-gallery' && galleryLinks.includes(tag);
+        if (SERVICE_CONTEXTS.has(context) && !service && !unclassifiedWork) {
           failures.push(`${location}: context "${context}" exige data-service`);
         }
       });

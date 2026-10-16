@@ -229,7 +229,7 @@ export const WHATSAPP_CONTEXTS = [
   'hero-whatsapp',
   'contact-whatsapp',
   'service-card',
-  'service-gallery',
+  'service-gallery', // Obras reais; produto sem slug canônico omite data-service.
   'cta-band',
   'thank-you-page',
   'form-fallback',

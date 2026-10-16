@@ -108,7 +108,14 @@ const {
                 <!-- Contact Form -->
                 <div class="contact-form">
                     <div id="formAlert"></div>
+                    <div id="form-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+                    <noscript>
+                        <p>Para usar o formulário, ative o JavaScript. Você também pode
+                            <a href={CONTACT.whatsappContact} target="_blank" rel="noopener noreferrer" data-context="contact-whatsapp">pedir orçamento pelo WhatsApp</a>.
+                        </p>
+                    </noscript>
                     <form id="contactForm" novalidate>
+                        <fieldset id="contactFields" class="contact-fields" disabled>
                         <div class="form-group">
                             <label class="form-label" for="name">
                                 Nome Completo <span class="required">*</span>
@@ -258,6 +265,7 @@ const {
                             <Icon name="shield-alt" /> Usamos o que você preencher apenas para
                             responder este pedido de orçamento.
                         </p>
+                        </fieldset>
                     </form>
                 </div>
             </div>

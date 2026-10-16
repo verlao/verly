@@ -30,7 +30,7 @@
             --success: #10b981;        /* estados de validação do formulário */
             --star: #b45309;           /* estrelas: âmbar escuro, legível no branco */
             --warning: #f59e0b;
-            --danger: #ef4444;
+            --danger: #b91c1c;
             --dark: #1f2937;
             --gray: #6b7280;
             --light-gray: #f3f4f6;
@@ -1772,6 +1772,27 @@
     font-weight: 600;
 }
 
+/* LP-2: acesso direto ao conteúdo e formulário seguro até o JS inicializar. */
+.skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 10000;
+    padding: 12px 20px;
+    color: var(--white);
+    background: var(--primary);
+    transform: translateY(-150%);
+}
+.skip-link:focus {
+    transform: none;
+    outline: 3px solid var(--cta);
+}
+#conteudo { scroll-margin-top: 90px; }
+.contact-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.contact-fields:disabled { opacity: 0.6; }
+@media (prefers-reduced-motion: reduce) {
+    .hero, .hero * { animation: none !important; }
+}
 /* LP-1: WhatsApp primeiro, ligação ao lado e retorno por formulário como link. */
 .hero-principal .hero-cta .btn-whatsapp {
     flex: 1 1 auto;

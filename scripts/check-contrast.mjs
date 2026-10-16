@@ -61,6 +61,7 @@ const PAIRS = [
   ['Hero: texto sobre o início do gradiente', 'white', 'primary', true],
   ['Hero: subtítulo sobre o fim do gradiente', 'white', 'secondary', false],
   ['Corpo de texto', 'gray', 'white', false],
+  ['Formulário — texto de erro', 'danger', 'white', false],
   ['Títulos', 'dark', 'white', false],
   ['Estrelas de avaliação', 'star', 'white', false],
   ['Marca — nome no cabeçalho', 'primary', 'white', false],

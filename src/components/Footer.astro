@@ -1,4 +1,5 @@
 ---
+import { compromissos } from '../data/compromissos';
 import Icon from '../components/Icon.astro';
 import { CONTACT, SERVICES, FOOTER_NEIGHBORHOODS, GOOGLE_REVIEWS } from '../data/site';
 
@@ -98,6 +99,7 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="footer-bottom">
+      {compromissos.cnpj && <p>CNPJ: {compromissos.cnpj}</p>}
       <p>&copy; {year} Verly Vidraçaria. Todos os direitos reservados.</p>
     </div>
   </div>

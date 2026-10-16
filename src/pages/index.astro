@@ -1,8 +1,8 @@
 ---
+import Compromissos from '../components/Compromissos.astro';
+import { compromissos } from '../data/compromissos';
 import Icon from '../components/Icon.astro';
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import lojaFrente from '../assets/loja-verly-realengo.png';
 import QuoteForm from '../components/QuoteForm.astro';
 import ServicesSection from '../components/ServicesSection.astro';
 import { CONTACT, GOOGLE_REVIEWS, SERVICE_TAXONOMY } from '../data/site';
@@ -39,7 +39,7 @@ const initials = (name: string): string =>
 
 <Base
   title={'Vidraçaria em Realengo | Box, Sacadas e Mais | Verly'}
-  description={'Verly Vidraçaria - Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Orçamento em até 2 horas úteis!'}
+  description={'Verly Vidraçaria - Especialista em vidros temperados, box blindex, cortinas de vidro e soluções em alumínio na Zona Oeste do Rio de Janeiro. Orçamento grátis pelo WhatsApp.'}
   keywords={'vidraçaria zona oeste, vidros temperados, box blindex, cortina de vidro, vidros Rio de Janeiro, Barra da Tijuca, Recreio, Jacarepaguá'}
   canonicalPath="/"
   ogTitle={'Verly Vidraçaria | Vidros Temperados e Box Blindex na Zona Oeste RJ'}
@@ -62,10 +62,10 @@ const initials = (name: string): string =>
                 <h1 class="hero-h1">
                     <span class="hero-h1-lead">Vidraçaria em Realengo</span>
                 </h1>
-                <p class="hero-response">Orçamento em até 2 horas úteis</p>
+                <p class="hero-response">Orçamento grátis pelo WhatsApp</p>
                 <p class="hero-subtitle">
                     Especialistas em Box para Banheiro, Sacadas Envidraçadas, Guarda-corpos e mais. 
-                    Atendimento na Zona Oeste do Rio de Janeiro, qualidade garantida e instalação profissional.
+                    Atendimento na Zona Oeste do Rio de Janeiro, loja física em Realengo.
                 </p>
                 <div class="hero-cta">
                     {/* data-context nomeia a origem do clique no whatsapp_click. Sem ele o
@@ -81,22 +81,9 @@ const initials = (name: string): string =>
                     <a href="#contato" class="hero-callback">Prefere que a gente ligue? Deixe seu número</a>
                 </div>
                 <div class="trust-badges">
-                    <div class="trust-badge">
-                        <div class="trust-badge-icon"><Icon name="clock" /></div>
-                        <div class="trust-badge-text">Resposta em 2h úteis</div>
-                    </div>
-                    <div class="trust-badge">
-                        <div class="trust-badge-icon"><Icon name="credit-card" /></div>
-                        <div class="trust-badge-text">Parcelamos em até 12x</div>
-                    </div>
-                    <div class="trust-badge">
-                        <div class="trust-badge-icon"><Icon name="tools" /></div>
-                        <div class="trust-badge-text">Instalação Profissional</div>
-                    </div>
-                    <div class="trust-badge">
-                        <div class="trust-badge-icon"><Icon name="shield-alt" /></div>
-                        <div class="trust-badge-text">Garantia de Qualidade</div>
-                    </div>
+                    <div class="trust-badge"><div class="trust-badge-text">Loja física em Realengo</div></div>
+                    <div class="trust-badge"><div class="trust-badge-text">Orçamento grátis</div></div>
+                    {compromissos.prazoRespostaHorasUteis != null && <div class="trust-badge"><div class="trust-badge-text">Resposta em até {compromissos.prazoRespostaHorasUteis} horas úteis</div></div>}
                     <div class="trust-badge">
                         <div class="trust-badge-icon"><Icon name="star" /></div>
                         {/* Nota sem contagem, e com a fonte clicável: a diferença entre uma
@@ -288,99 +275,7 @@ const initials = (name: string): string =>
         </div>
     </section>
 
-    <!-- Why Choose Us -->
-    <section id="diferenciais" class="section why-choose">
-        <div class="container">
-            <h2 class="section-title">Por Que Escolher a Verly?</h2>
-            <p class="section-subtitle">
-                Somos referência em vidraçaria na Zona Oeste do Rio de Janeiro
-            </p>
-            <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <Icon name="rocket" />
-                    </div>
-                    <div class="feature-content">
-                        <h3>Atendimento Local Rápido</h3>
-                        <p>Estamos na Zona Oeste. Orçamento em até 2 horas úteis e atendimento no mesmo dia quando possível.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <Icon name="user-tie" />
-                    </div>
-                    <div class="feature-content">
-                        <h3>Equipe Especializada</h3>
-                        <p>Profissionais experientes e certificados para instalações seguras e de qualidade.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <Icon name="certificate" />
-                    </div>
-                    <div class="feature-content">
-                        <h3>Garantia Total</h3>
-                        <p>Todos os nossos serviços possuem garantia. Trabalhamos apenas com materiais de primeira.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <Icon name="dollar-sign" />
-                    </div>
-                    <div class="feature-content">
-                        <h3>Orçamento Gratuito</h3>
-                        <p>Fazemos orçamento sem compromisso. Medição e consultoria incluídas.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <Icon name="map-marked-alt" />
-                    </div>
-                    <div class="feature-content">
-                        <h3>Cobertura Completa</h3>
-                        <p>Atendemos Barra, Recreio, Jacarepaguá, Campo Grande, Realengo e toda Zona Oeste.</p>
-                    </div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <Icon name="crown" />
-                    </div>
-                    <div class="feature-content">
-                        <h3>Materiais Premium</h3>
-                        <p>Vidros temperados de alta qualidade e perfis de alumínio com acabamento superior.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- A fachada saiu do hero e veio para cá. No hero ela ocupava o lugar da
-                 prova de serviço para quem buscou um serviço; aqui ela faz o que
-                 realmente sabe fazer, que é sustentar as razões desta seção: existe
-                 endereço, existe loja de rua, existe para onde ir reclamar. É o mesmo
-                 arquivo do repo, então continua passando por astro:assets — o que muda
-                 é a posição e o `loading`, que virou lazy porque agora está bem abaixo
-                 da dobra e não é mais candidata a LCP. -->
-            <figure class="why-choose-photo">
-                <Image
-                    src={lojaFrente}
-                    alt="Fachada da Verly Vidraçaria na Rua General Azeredo, 218 - Loja C, em Realengo"
-                    widths={[420, 700, 980]}
-                    width={980}
-                    sizes="(max-width: 768px) 92vw, 400px"
-                    format="webp"
-                    quality={80}
-                    loading="lazy"
-                    decoding="async"
-                />
-                {/* Endereço e horário saem de CONTACT, a mesma fonte do rodapé e do
-                    LocalBusiness: uma legenda digitada à mão seria a quarta grafia do
-                    mesmo endereço, e a primeira a desencontrar quando a loja mudar. */}
-                <figcaption>
-                    Nossa loja na {CONTACT.address.street}, {CONTACT.address.locality} —
-                    atendimento presencial {CONTACT.hoursDisplay}.
-                </figcaption>
-            </figure>
-        </div>
-    </section>
+    <Compromissos />
 
     <!-- Ponto de conversão no meio da página, agora fechando o bloco de prova: o
          visitante acabou de ver o serviço instalado (fotos), o que outros clientes
@@ -392,7 +287,7 @@ const initials = (name: string): string =>
         <div class="container cta-band-inner">
             <div>
                 <h2>Achou o serviço que precisa?</h2>
-                <p>Orçamento gratuito, sem compromisso, com resposta em até 2 horas úteis.</p>
+                <p>Orçamento gratuito, sem compromisso. Fale com a loja pelo WhatsApp.</p>
             </div>
             <div class="cta-band-actions">
                 <a href="#contato" class="btn btn-success">

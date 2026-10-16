@@ -961,7 +961,7 @@ async function handleFormSubmit(event) {
             // A página de agradecimento é o destino de conversão — sem uma URL própria
             // não existe onde o Google Ads/GA4 marcarem "lead concluído", que era o
             // caso antes: o alerta inline deixava o visitante na mesma URL.
-            showAlert('✅ <strong>Orçamento solicitado com sucesso!</strong><br>Entraremos em contato em até 2 horas úteis. Obrigado!', 'success');
+            showAlert('✅ <strong>Orçamento solicitado com sucesso!</strong><br>Você pode falar com a loja pelo WhatsApp. Obrigado!', 'success');
 
             // Pequena espera antes de navegar: dá tempo de a pessoa ler a confirmação
             // e de os beacons de analytics saírem antes da troca de página.

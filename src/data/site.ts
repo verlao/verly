@@ -70,13 +70,13 @@ export const CONTACT = {
 };
 
 /**
- * Avaliações do Google Business Profile da loja. Snapshot de 10/08/2026:
- * 4,6 com 19 avaliações, lidas no perfil em 17/09/2026.
+ * Avaliações do Google Business Profile da loja. Nota e total confirmados no briefing de 15/10/2026: 4,7 com 28 avaliações.
+ * Os depoimentos mantêm a data do snapshot em que foram coletados.
  *
  * Antes daqui saíam 4,8★ e 127 avaliações — números herdados do site antigo, sem
  * nenhuma fonte. Depois saíram 5,0★ e 15, que pareciam conferidos e NÃO eram: 15 é a
  * LINHA DE 5 ESTRELAS DO HISTOGRAMA, não o total, e 5,0 era a média só desse
- * subconjunto. O histograma real é 15×5★, 2×4★, 1×3★, 0×2★, 1×1★ = 19 avaliações,
+ * subconjunto. O histograma anterior era 15×5★, 2×4★, 1×3★, 0×2★, 1×1★ = 19 avaliações,
  * média 4,6. O site afirmou 5,0 por cinco semanas com o link do perfil ao lado
  * desmentindo em um clique — o oposto do que este arquivo existe para fazer.
  *
@@ -91,10 +91,10 @@ export const CONTACT = {
 export const GOOGLE_REVIEWS = {
   /** Formato pt-BR, para a tela. É o único formato usado: o schema.org não recebe mais
       a nota, então não existe mais uma segunda grafia para divergir desta. */
-  ratingDisplay: '4,6',
+  ratingDisplay: '4,7',
   /** Total de avaliações do perfil. Fora da tela por decisão do dono; fica aqui para
       quem reler o perfil poder comparar e ver se mudou. */
-  ratingCount: 19,
+  ratingCount: 28,
   /**
    * Perfil da loja no Google, por CID — a única forma de link que veio do próprio
    * Google (o link curto do perfil resolve para o feature ID 0x9bdf66871be8a1:

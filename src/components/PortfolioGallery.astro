@@ -1,0 +1,134 @@
+---
+import portfolio from '../data/portfolio.json';
+import { CONTACT, SERVICE_TAXONOMY } from '../data/site';
+const works = [...new Set(portfolio.fotos.map(photo => photo.obra))].map(obra => ({
+  obra, photos: portfolio.fotos.filter(photo => photo.obra === obra),
+}));
+const labels: Record<string, string> = { janela_correr: 'Janela de correr', outro: 'Fechamento de armário / pia' };
+const note = 'Foto real da obra; ambiente tratado.';
+---
+<section id="obras" class="section portfolio" aria-labelledby="portfolio-title">
+  <div class="container">
+    <h2 id="portfolio-title" class="section-title">Obras reais da Verly</h2>
+    <p class="section-subtitle">Veja nossas instalações e amplie as fotos para conferir os detalhes.</p>
+    <div class="portfolio-filters" role="group" aria-label="Filtrar obras por produto">
+      <button type="button" data-product-filter="todas" aria-pressed="true" disabled>Todas</button>
+      <button type="button" data-product-filter="janela_correr" aria-pressed="false" disabled>Janelas</button>
+      <button type="button" data-product-filter="outro" aria-pressed="false" disabled>Armário / pia</button>
+    </div>
+    <p class="portfolio-status" role="status" aria-live="polite" aria-atomic="true">4 obras exibidas.</p>
+    <noscript><p>Todas as obras estão abaixo. Os links das fotos abrem a imagem ampliada.</p></noscript>
+    <div class="portfolio-grid">
+      {works.map(({ obra, photos }, index) => (
+        <article id={`obra-${obra}`} class="portfolio-work" data-product={photos[0].produto} tabindex="-1">
+          <figure id={photos[0].id}>
+            <a href={photos[0].imagem.url} data-portfolio-photo data-alt={photos[0].alt} data-caption={photos[0].legenda} aria-label={`Ampliar foto: ${photos[0].legenda}`}>
+              <img src={photos[0].imagem.variantes['480']} srcset={Object.entries(photos[0].imagem.variantes).map(([w,url]) => `${url} ${w}w`).join(', ')} sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1199px) calc((100vw - 72px) / 2), 564px" width={photos[0].imagem.largura} height={photos[0].imagem.altura} alt={photos[0].alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+              <span class="portfolio-zoom" aria-hidden="true">Ampliar ↗</span>
+            </a>
+            <figcaption>{note}</figcaption>
+          </figure>
+          <div class="portfolio-copy">
+            <h3>{labels[photos[0].produto]}</h3>
+            <p>{photos[0].legenda}</p>
+            {photos.length > 1 && <details>
+              <summary>Ver outro ângulo da mesma obra</summary>
+              {photos.slice(1).map(photo => <figure id={photo.id}>
+                <a href={photo.imagem.url} data-portfolio-photo data-alt={photo.alt} data-caption={photo.legenda} aria-label={`Ampliar outro ângulo: ${photo.legenda}`}>
+                  <img src={photo.imagem.variantes['480']} srcset={Object.entries(photo.imagem.variantes).map(([w,url]) => `${url} ${w}w`).join(', ')} sizes="(max-width: 767px) calc(100vw - 80px), (max-width: 1199px) calc((100vw - 152px) / 2), 524px" width={photo.imagem.largura} height={photo.imagem.altura} alt={photo.alt} loading="lazy" decoding="async" />
+                  <span class="portfolio-zoom" aria-hidden="true">Ampliar ↗</span>
+                </a>
+                <figcaption>{photo.legenda}<br />{note}</figcaption>
+              </figure>)}
+            </details>}
+            <a class="portfolio-quote" href={`https://wa.me/${CONTACT.mobile}?text=${encodeURIComponent(`Olá! Vi a obra ${obra} no site (${photos[0].legenda}) e gostaria de um orçamento. Posso enviar fotos e medidas?`)}`} target="_blank" rel="noopener noreferrer" data-context="service-gallery" data-service={photos[0].produto === 'janela_correr' ? SERVICE_TAXONOMY.portasJanelas.slug : undefined}>Pedir orçamento para {photos[0].produto === 'janela_correr' ? 'janela' : 'fechamento'} ↗</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+  <dialog id="portfolio-dialog" aria-labelledby="portfolio-dialog-title">
+    <div class="portfolio-dialog-bar"><h2 id="portfolio-dialog-title">Foto da obra</h2><button type="button" autofocus>Fechar ×</button></div>
+    <figure><img width="1600" height="900" alt="" /><figcaption>{note}</figcaption></figure>
+  </dialog>
+</section>
+<script>
+  const gallery = document.querySelector<HTMLElement>('.portfolio');
+  if (gallery) {
+    const filters = [...gallery.querySelectorAll<HTMLButtonElement>('[data-product-filter]')];
+    const works = [...gallery.querySelectorAll<HTMLElement>('.portfolio-work')];
+    const status = gallery.querySelector<HTMLElement>('.portfolio-status')!;
+    function filter(product: string) {
+      filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.productFilter === product)));
+      works.forEach(work => { work.hidden = product !== 'todas' && work.dataset.product !== product; });
+      status.textContent = `${works.filter(work => !work.hidden).length} obras exibidas.`;
+    }
+    filters.forEach(button => { button.addEventListener('click', () => filter(button.dataset.productFilter!)); button.disabled = false; });
+    // Um link de serviço deve alcançar a obra mesmo após filtrar outro produto.
+    function revealAnchor() {
+      const work = works.find(work => `#${work.id}` === location.hash);
+      if (work?.hidden) { filter('todas'); work.scrollIntoView(); }
+    }
+    document.addEventListener('click', event => {
+      const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#obra-"]');
+      if (!link) return;
+      const work = works.find(work => `#${work.id}` === link.getAttribute('href'));
+      if (work?.hidden) filter('todas');
+    }, true);
+    window.addEventListener('hashchange', revealAnchor);
+    revealAnchor();
+    const dialog = gallery.querySelector<HTMLDialogElement>('dialog')!;
+    const image = dialog.querySelector('img')!;
+    const close = dialog.querySelector('button')!;
+    let opener: HTMLAnchorElement | null = null;
+    let previousOverflow = '';
+    gallery.querySelectorAll<HTMLAnchorElement>('[data-portfolio-photo]').forEach(link => {
+      link.addEventListener('click', event => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+        event.preventDefault();
+        opener = link;
+        image.src = link.href;
+        image.alt = link.dataset.alt!;
+        gallery.querySelector('#portfolio-dialog-title')!.textContent = link.dataset.caption!;
+        previousOverflow = document.body.style.overflow;
+        dialog.showModal();
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    close.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('keydown', event => {
+      // O único controle do modal é Fechar; Tab e Shift+Tab permanecem nele.
+      if (event.key === 'Tab') { event.preventDefault(); close.focus(); }
+    });
+    dialog.addEventListener('close', () => { document.body.style.overflow = previousOverflow; opener?.focus(); });
+  }
+</script>
+<style>
+  .portfolio { background: #f5f7f8; }
+  .portfolio-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .portfolio-filters button, .portfolio-dialog-bar button { min-height: 44px; padding: 8px 16px; border: 1px solid #48616a; border-radius: 8px; background: white; color: #173e4a; font: inherit; cursor: pointer; }
+  .portfolio-filters button[aria-pressed="true"] { background: #173e4a; color: white; }
+  .portfolio-status { text-align: center; margin: 16px 0 24px; color: #485b62; }
+  .portfolio-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .portfolio-work { background: white; border: 1px solid #d5dfe2; border-radius: 12px; scroll-margin-top: 110px; }
+  .portfolio-work[hidden] { display: none; }
+  figure { margin: 0; }
+  .portfolio-work > figure img { border-radius: 11px 11px 0 0; }
+  [data-portfolio-photo] { display: block; position: relative; color: white; }
+  img { display: block; width: 100%; height: auto; }
+  .portfolio-zoom { position: absolute; bottom: 12px; right: 12px; padding: 8px 12px; border-radius: 6px; background: #173e4a; }
+  figcaption { color: #485b62; font-size: .8rem; padding: 10px 16px; }
+  .portfolio-copy { padding: 8px 20px 20px; }
+  h3 { font-size: 1.2rem; color: #173e4a; margin: 0 0 8px; }
+  .portfolio-copy p { color: #485b62; margin: 0 0 12px; }
+  summary { min-height: 44px; padding: 10px 0; cursor: pointer; color: #173e4a; }
+  .portfolio-quote { display: inline-flex; align-items: center; min-height: 44px; color: #173e4a; text-decoration: underline; font-weight: 700; }
+  :is(a,button,summary):focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
+  dialog { width: min(1060px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 16px; margin: auto; border: 0; border-radius: 12px; overflow: auto; background: white; }
+  dialog::backdrop { background: rgb(0 0 0 / .8); }
+  .portfolio-dialog-bar { display: flex; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 12px; }
+  .portfolio-dialog-bar h2 { font-size: 1rem; color: #173e4a; margin: 0; }
+  .portfolio-dialog-bar button { flex-shrink: 0; }
+  dialog img { max-height: calc(100dvh - 180px); object-fit: contain; }
+  @media (max-width: 767px) { .portfolio-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+</style>

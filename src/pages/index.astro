@@ -5,6 +5,9 @@ import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import ServicesSection from '../components/ServicesSection.astro';
+import PortfolioGallery from '../components/PortfolioGallery.astro';
+import portfolio from '../data/portfolio.json';
+const heroPhoto = portfolio.fotos.find(photo => photo.id === 'p_65906')!;
 import { CONTACT, GOOGLE_REVIEWS, SERVICE_TAXONOMY } from '../data/site';
 import { fetchPublishedReviews, idadeRelativa } from '../data/published-reviews';
 import { provaSocialGoogle, urlAmpliada } from '../data/google-reviews';
@@ -100,39 +103,38 @@ const initials = (name: string): string =>
                 </div>
             </div>
 
-            <!-- Foto de INSTALAÇÃO no hero, não a fachada. Quem chega aqui vem de
-                 "box em <bairro>" na busca orgânica (79 das 126 sessões) e quer ver o
-                 serviço, não a porta da loja. Box é o serviço que o H1 e o subtítulo
-                 nomeiam primeiro, é a busca que mais traz gente e é a foto mais legível
-                 das cinco: frontal, iluminada e reconhecível em um piscar — as outras
-                 quatro são recorte de detalhe (guarda-corpo), ambiente específico
-                 (espelho em hall), vista que domina o assunto (sacada) ou lêem como
-                 divisória (portas e janelas).
-                 A fachada não foi descartada: está no cartão de contato (QuoteForm, mostrarFachada),
-                 onde faz o trabalho que realmente é dela — provar endereço e loja
-                 física.
-                 Fora de astro:assets porque o arquivo mora em public/ e já é .webp;
+            <!-- Foto de INSTALAÇÃO no hero, não a fachada: quem chega da busca orgânica quer
+                 ver o serviço. Desde a LP-3 é uma obra REAL da Verly (p_65906, janela de
+                 correr), não mais a ilustração de box: foto de banco de imagem no topo de
+                 uma vidraçaria de bairro prometia uma obra que não era nossa. A foto foi
+                 tratada (paredes pintadas, itens pessoais fora), e a legenda diz isso.
+                 A fachada não foi descartada: está no cartão de contato (QuoteForm,
+                 mostrarFachada), onde faz o trabalho que realmente é dela — provar
+                 endereço e loja física.
                  eager + fetchpriority porque está acima da dobra e é candidata a LCP. -->
             <figure class="hero-photo">
                 <img
-                    src="/img/servicos/box-banheiro.webp"
-                    alt="Box de banheiro em vidro temperado com perfil e puxador pretos"
-                    width="800"
-                    height="600"
+                    src={heroPhoto.imagem.variantes['480']}
+                    srcset={Object.entries(heroPhoto.imagem.variantes).map(([w, url]) => `${url} ${w}w`).join(', ')}
+                    sizes="(max-width: 480px) 42vw, (max-width: 1023px) 46vw, 560px"
+                    alt={heroPhoto.alt}
+                    width={heroPhoto.imagem.largura}
+                    height={heroPhoto.imagem.altura}
                     loading="eager"
                     fetchpriority="high"
                     decoding="async"
                 />
+                <figcaption>Foto real da obra; ambiente tratado.</figcaption>
             </figure>
             </div>
         </div>
     </section>
 
+    <PortfolioGallery />
     <ServicesSection />
 
     <!-- Testimonials. Subiu de 6ª para 4ª seção: estava atrás de serviços, galeria,
-         faixa de CTA e diferenciais (a galeria não existe mais como seção — fundiu
-         com os serviços), e a visita média é de 28 SEGUNDOS com 96% de
+         faixa de CTA e diferenciais, e a visita média é de 28 SEGUNDOS com 96% de
          visitantes novos — ou seja, a prova social praticamente não era lida por quem
          ainda não conhece a loja e é exatamente quem precisa dela. NN/g, "F-Shaped
          Pattern for Reading Web Content" (Nielsen, 2006, eye-tracking com 232
@@ -148,7 +150,8 @@ const initials = (name: string): string =>
          Não sobe para logo depois do hero de propósito: acima dos serviços o
          visitante ainda não sabe o que a loja vende, os depoimentos citam serviços
          que ele não viu, e empurrar a lista de serviços para baixo enterraria
-         justamente o que ele buscou. -->
+         justamente o que ele buscou. LP-3: a galeria de obras reais voltou como seção própria, logo depois do hero,
+         porque agora é foto NOSSA e é a prova mais forte da página. -->
     <section id="depoimentos" class="section">
         <div class="container">
             <h2 class="section-title">O Que Nossos Clientes Dizem</h2>

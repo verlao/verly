@@ -29,9 +29,15 @@ permissions:
   pages: write
   id-token: write
 
+# Deploy e build de PR em grupos SEPARADOS. Com um grupo só (`pages`) para tudo, o
+# GitHub guarda no máximo um run pendente por grupo: cada push no main cancelava o
+# build do PR que estava na fila, e o PR ficava sem CI (aconteceu com #121 e #122 em
+# 16/10/2026). O deploy continua serializado e sem cancelamento (push, cron e
+# dispatch); o build de PR ganha um grupo por PR e cancela só o run anterior do
+# mesmo PR quando chega um push novo nele.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pr-build-{0}', github.event.pull_request.number) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:

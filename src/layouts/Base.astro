@@ -48,6 +48,8 @@ interface Props {
   hasServices?: boolean;
   /** a página traz seção de diferenciais própria? idem para #diferenciais */
   hasDifferentials?: boolean;
+  /** true quando a página tem depoimentos próprios */
+  hasTestimonials?: boolean;
   bodyClass?: string;
   /** paridade: blog/obrigado/404/500 não carregam LocalBusiness hoje */
   schema?: boolean;
@@ -70,6 +72,7 @@ const {
   hasForm = false,
   hasServices = false,
   hasDifferentials = false,
+  hasTestimonials = false,
   bodyClass,
   schema = true,
   ogUrl,
@@ -210,13 +213,16 @@ const ogImageUrl = ogImage ?? `${SITE_URL}${ogFallback.src}`;
     data-service-slugs={SERVICE_SLUGS.join(',')}
     data-whatsapp-contexts={WHATSAPP_CONTEXTS.join(',')}
   >
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <header class="header">
       <div class="container">
-        <Nav home={home} hasForm={hasForm} hasServices={hasServices} hasDifferentials={hasDifferentials} />
+        <Nav home={home} hasForm={hasForm} hasServices={hasServices} hasDifferentials={hasDifferentials} hasTestimonials={hasTestimonials} />
       </div>
     </header>
 
-    <slot />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
 
     <Footer home={home} hasServices={hasServices} />
 

@@ -234,211 +234,6 @@ const Tooltips = {
 };
 
 // ============================================================================
-// SEARCHABLE SELECT (BAIRRO)
-// ============================================================================
-
-const SearchableSelect = {
-    instances: [],
-    
-    /**
-     * Initialize searchable select for neighborhood field
-     */
-    init() {
-        const neighborhoodSelect = document.getElementById('neighborhood');
-        if (neighborhoodSelect) {
-            this.create(neighborhoodSelect);
-        }
-    },
-    
-    /**
-     * Create searchable select from native select
-     */
-    create(selectElement) {
-        // Get options
-        const options = Array.from(selectElement.options).filter(opt => opt.value);
-        
-        // Create container
-        const container = document.createElement('div');
-        container.className = 'searchable-select';
-        
-        // Create input
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'form-control searchable-select-input';
-        input.placeholder = 'Selecione seu bairro';
-        input.setAttribute('role', 'combobox');
-        input.setAttribute('aria-expanded', 'false');
-        input.setAttribute('aria-autocomplete', 'list');
-        input.setAttribute('autocomplete', 'off');
-        const selectedOption = options.find(option => option.value === selectElement.value);
-        input.value = selectedOption ? selectedOption.text : '';
-        
-        // Create dropdown
-        const dropdown = document.createElement('div');
-        dropdown.className = 'searchable-select-dropdown';
-        dropdown.setAttribute('role', 'listbox');
-        
-        // Create search box inside dropdown
-        const searchBox = document.createElement('div');
-        searchBox.className = 'searchable-select-search';
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.placeholder = 'Buscar bairro...';
-        searchInput.setAttribute('aria-label', 'Buscar bairro');
-        searchBox.appendChild(searchInput);
-        dropdown.appendChild(searchBox);
-        
-        // Create options list
-        const optionsList = document.createElement('ul');
-        optionsList.className = 'searchable-select-options';
-        
-        options.forEach((option, index) => {
-            const li = document.createElement('li');
-            li.className = 'searchable-select-option';
-            li.textContent = option.text;
-            li.dataset.value = option.value;
-            li.setAttribute('role', 'option');
-            li.setAttribute('tabindex', '0');
-            
-            // Click handler
-            li.addEventListener('click', () => {
-                this.selectOption(selectElement, input, dropdown, li);
-            });
-            
-            // Keyboard handler
-            li.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.selectOption(selectElement, input, dropdown, li);
-                }
-            });
-            
-            optionsList.appendChild(li);
-        });
-        
-        dropdown.appendChild(optionsList);
-        
-        // Build structure
-        container.appendChild(input);
-        container.appendChild(dropdown);
-        
-        // Replace original select
-        selectElement.style.display = 'none';
-        selectElement.parentNode.insertBefore(container, selectElement);
-        
-        // Event handlers
-        input.addEventListener('click', () => {
-            this.toggleDropdown(dropdown, input);
-        });
-        
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                e.preventDefault();
-                this.toggleDropdown(dropdown, input);
-                if (dropdown.classList.contains('active')) {
-                    searchInput.focus();
-                }
-            }
-        });
-        
-        // Search functionality
-        searchInput.addEventListener('input', (e) => {
-            this.filterOptions(e.target.value, optionsList);
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!container.contains(e.target)) {
-                dropdown.classList.remove('active');
-                input.setAttribute('aria-expanded', 'false');
-            }
-        });
-        
-        // Store instance
-        this.instances.push({
-            select: selectElement,
-            input: input,
-            dropdown: dropdown
-        });
-    },
-    
-    /**
-     * Toggle dropdown visibility
-     */
-    toggleDropdown(dropdown, input) {
-        const isActive = dropdown.classList.toggle('active');
-        input.setAttribute('aria-expanded', isActive.toString());
-    },
-    
-    /**
-     * Select an option
-     */
-    selectOption(selectElement, input, dropdown, optionElement) {
-        // Update native select
-        selectElement.value = optionElement.dataset.value;
-        
-        // Update input
-        input.value = optionElement.textContent;
-        
-        // Update selected state
-        dropdown.querySelectorAll('.searchable-select-option').forEach(opt => {
-            opt.classList.remove('selected');
-        });
-        optionElement.classList.add('selected');
-        
-        // Close dropdown
-        dropdown.classList.remove('active');
-        input.setAttribute('aria-expanded', 'false');
-        
-        // Trigger change event
-        const event = new Event('change', { bubbles: true });
-        selectElement.dispatchEvent(event);
-        
-        // Validate field if validation exists
-        if (typeof validateField === 'function') {
-            validateField(selectElement);
-        }
-    },
-    
-    /**
-     * Filter options based on search
-     */
-    filterOptions(searchTerm, optionsList) {
-        const options = optionsList.querySelectorAll('.searchable-select-option');
-        const normalizedSearch = searchTerm.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        
-        let visibleCount = 0;
-        
-        options.forEach(option => {
-            const text = option.textContent.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            const matches = text.includes(normalizedSearch);
-            
-            if (matches) {
-                option.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                option.classList.add('hidden');
-            }
-        });
-        
-        // Show/hide no results message
-        let noResults = optionsList.parentElement.querySelector('.searchable-select-no-results');
-        
-        if (visibleCount === 0) {
-            if (!noResults) {
-                noResults = document.createElement('div');
-                noResults.className = 'searchable-select-no-results';
-                noResults.textContent = 'Nenhum bairro encontrado';
-                optionsList.parentElement.appendChild(noResults);
-            }
-            noResults.style.display = 'block';
-        } else if (noResults) {
-            noResults.style.display = 'none';
-        }
-    }
-};
-
-// ============================================================================
 // ENHANCED BUTTON LOADING STATE
 // ============================================================================
 
@@ -474,44 +269,7 @@ const AccessibilityEnhancer = {
      * Initialize accessibility improvements
      */
     init() {
-        this.enhanceFormLabels();
         this.enhanceCheckboxes();
-        this.addKeyboardNavigation();
-        this.announceFormErrors();
-    },
-    
-    /**
-     * Enhance form labels with proper ARIA
-     */
-    enhanceFormLabels() {
-        const requiredFields = document.querySelectorAll('input[required], select[required]');
-        
-        requiredFields.forEach(field => {
-            field.setAttribute('aria-required', 'true');
-            
-            // Add aria-invalid when field has error
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.attributeName === 'class') {
-                        if (field.classList.contains('is-invalid')) {
-                            field.setAttribute('aria-invalid', 'true');
-                            
-                            // Link to error message
-                            const errorId = field.id + 'Error';
-                            const errorElement = document.getElementById(errorId);
-                            if (errorElement) {
-                                field.setAttribute('aria-describedby', errorId);
-                            }
-                        } else {
-                            field.setAttribute('aria-invalid', 'false');
-                            field.removeAttribute('aria-describedby');
-                        }
-                    }
-                });
-            });
-            
-            observer.observe(field, { attributes: true });
-        });
     },
     
     /**
@@ -531,53 +289,15 @@ const AccessibilityEnhancer = {
         }
     },
     
-    /**
-     * Add keyboard navigation enhancements
-     */
-    addKeyboardNavigation() {
-        // Escape key closes dropdowns
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const activeDropdowns = document.querySelectorAll('.searchable-select-dropdown.active');
-                activeDropdowns.forEach(dropdown => {
-                    dropdown.classList.remove('active');
-                    const input = dropdown.previousElementSibling;
-                    if (input) {
-                        input.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-        });
-    },
-    
-    /**
-     * Announce form errors to screen readers
-     */
-    announceFormErrors() {
-        // Create live region for announcements
-        if (!document.getElementById('aria-live-region')) {
-            const liveRegion = document.createElement('div');
-            liveRegion.id = 'aria-live-region';
-            liveRegion.className = 'sr-only';
-            liveRegion.setAttribute('aria-live', 'polite');
-            liveRegion.setAttribute('aria-atomic', 'true');
-            document.body.appendChild(liveRegion);
-        }
-    },
-    
-    /**
-     * Announce message to screen readers
-     */
+    /** Atualiza a região estável; cada validação anuncia uma única mensagem. */
     announce(message) {
-        const liveRegion = document.getElementById('aria-live-region');
-        if (liveRegion) {
+        const liveRegion = document.getElementById('form-status');
+        if (!liveRegion) return;
+        clearTimeout(this.announcementTimer);
+        liveRegion.textContent = '';
+        this.announcementTimer = setTimeout(() => {
             liveRegion.textContent = message;
-            
-            // Clear after announcement
-            setTimeout(() => {
-                liveRegion.textContent = '';
-            }, 1000);
-        }
+        }, 100);
     }
 };
 
@@ -601,7 +321,6 @@ function initUIImprovements() {
     ToastManager.init();
     ValidationIcons.init();
     Tooltips.init();
-    SearchableSelect.init();
     AccessibilityEnhancer.init();
     
     uiDebugLog('✅ UI/UX improvements loaded');

@@ -1,0 +1,138 @@
+{
+  "versao": 1,
+  "gerado_em": "2026-10-15T00:00:00-03:00",
+  "fotos": [
+    {
+      "id": "p_65906",
+      "produto": "janela_correr",
+      "ambiente": "externo",
+      "legenda": "Janela de correr com quatro folhas em vidro verde e perfis brancos",
+      "alt": "Janela de correr com quatro folhas de vidro verde, perfis brancos e puxadores centrais em parede bege clara.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/65906-1600.webp",
+        "largura": 1600,
+        "altura": 900,
+        "variantes": {
+          "480": "/obras/65906-480.webp",
+          "960": "/obras/65906-960.webp",
+          "1600": "/obras/65906-1600.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": "2026-10-15",
+      "obra": "65906"
+    },
+    {
+      "id": "p_65907",
+      "produto": "janela_correr",
+      "ambiente": "externo",
+      "legenda": "Janela de correr em vidro verde com perfis claros",
+      "alt": "Janela de correr em vidro verde, parcialmente aberta, com perfis claros e peitoril de pedra em parede bege.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/65907-1600.webp",
+        "largura": 1600,
+        "altura": 900,
+        "variantes": {
+          "480": "/obras/65907-480.webp",
+          "960": "/obras/65907-960.webp",
+          "1600": "/obras/65907-1600.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": "2026-10-15",
+      "obra": "65907"
+    },
+    {
+      "id": "p_65908",
+      "produto": "janela_correr",
+      "ambiente": "externo",
+      "legenda": "Janela de correr em vidro verde com perfis claros",
+      "alt": "Janela de correr em vidro verde, com puxadores brancos e peitoril de pedra, em parede bege clara.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/65908-1600.webp",
+        "largura": 1600,
+        "altura": 900,
+        "variantes": {
+          "480": "/obras/65908-480.webp",
+          "960": "/obras/65908-960.webp",
+          "1600": "/obras/65908-1600.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": "2026-10-15",
+      "obra": "65907"
+    },
+    {
+      "id": "p_65909",
+      "produto": "janela_correr",
+      "ambiente": "externo",
+      "legenda": "Janela de correr com quatro folhas em vidro verde",
+      "alt": "Janela de correr com quatro folhas de vidro verde, perfis prateados e peitoril de pedra em parede bege clara.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/65909-1600.webp",
+        "largura": 1600,
+        "altura": 900,
+        "variantes": {
+          "480": "/obras/65909-480.webp",
+          "960": "/obras/65909-960.webp",
+          "1600": "/obras/65909-1600.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": "2026-10-15",
+      "obra": "65906"
+    },
+    {
+      "id": "p_49873",
+      "produto": "outro",
+      "ambiente": "interno",
+      "legenda": "Fechamento de armário em vidro fumê com perfis brancos",
+      "alt": "Armário sob bancada de pedra com folhas de correr em vidro fumê, perfis brancos e puxadores embutidos.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/49873-1600.webp",
+        "largura": 1600,
+        "altura": 900,
+        "variantes": {
+          "480": "/obras/49873-480.webp",
+          "960": "/obras/49873-960.webp",
+          "1600": "/obras/49873-1600.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": "2026-10-15",
+      "obra": "49873"
+    },
+    {
+      "id": "p_52362",
+      "produto": "outro",
+      "ambiente": "interno",
+      "legenda": "Fechamento de pia em vidro escuro com perfis brancos",
+      "alt": "Fechamento sob a pia com vidros escuros e perfis brancos em cozinha com bancada limpa e piso xadrez.",
+      "bairro": null,
+      "data_servico": null,
+      "imagem": {
+        "url": "/obras/52362-1600.webp",
+        "largura": 1600,
+        "altura": 900,
+        "variantes": {
+          "480": "/obras/52362-480.webp",
+          "960": "/obras/52362-960.webp",
+          "1600": "/obras/52362-1600.webp"
+        }
+      },
+      "retocada": true,
+      "aprovada_em": "2026-10-15",
+      "obra": "52362"
+    }
+  ]
+}

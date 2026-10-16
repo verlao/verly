@@ -84,8 +84,8 @@ export const CONTACT = {
  * cinco estrelas do histograma é a armadilha, porque o número dela é grande e a nota
  * dela é redonda.
  *
- * A CONTAGEM não vai para a tela, por decisão do dono: dezenove é número pequeno
- * demais para vender, a nota é que vende. Ela não sobrevive em `reviewCount` porque o
+ * A CONTAGEM não vai para a tela, por decisão do dono: dezenove (hoje 28) é número
+ * pequeno demais para vender, a nota é que vende. Ela não sobrevive em `reviewCount` porque o
  * `aggregateRating` saiu do schema — ver LocalBusinessSchema.astro.
  */
 export const GOOGLE_REVIEWS = {
@@ -134,7 +134,7 @@ export const GOOGLE_REVIEWS = {
   /** Data em que a nota e o total foram lidos no perfil. Os "há N semanas" NÃO dependem
       mais dela: cada depoimento carrega a própria data. Ela continua visível na seção
       porque a NOTA é que continua sendo um snapshot. */
-  snapshotDate: '17/09/2026',
+  snapshotDate: '16/10/2026',
   /**
    * Os três depoimentos exibidos na home, escolhidos para cobrir promessas
    * DIFERENTES do site (rapidez, canal de WhatsApp e preço, box blindex) em vez de
@@ -213,6 +213,12 @@ export const SERVICE_TAXONOMY = {
     slug: 'vidro-temperado',
     whatsappMessage: '✨ Olá! Gostaria de um orçamento para Vidros temperados sob medida.',
   },
+  // LP-6: obra real fotografada (p_49873, p_52362). Slug próprio para o relatório do
+  // GA4 separar quem pede fechamento de armário/pia de quem pede tampo de mesa.
+  armarioVidro: {
+    slug: 'armario-vidro',
+    whatsappMessage: '🗄️ Olá! Gostaria de um orçamento para Armário/tampo de vidro.',
+  },
   tampoMesa: {
     slug: 'tampo-mesa',
     whatsappMessage: '✨ Olá! Gostaria de um orçamento para Tampos de Mesa.',
@@ -229,7 +235,7 @@ export const WHATSAPP_CONTEXTS = [
   'hero-whatsapp',
   'contact-whatsapp',
   'service-card',
-  'service-gallery',
+  'service-gallery', // Obras reais; produto sem slug canônico omite data-service.
   'cta-band',
   'thank-you-page',
   'form-fallback',

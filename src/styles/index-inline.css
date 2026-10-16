@@ -30,7 +30,7 @@
             --success: #10b981;        /* estados de validação do formulário */
             --star: #b45309;           /* estrelas: âmbar escuro, legível no branco */
             --warning: #f59e0b;
-            --danger: #ef4444;
+            --danger: #b91c1c;
             --dark: #1f2937;
             --gray: #6b7280;
             --light-gray: #f3f4f6;
@@ -1799,6 +1799,27 @@
     font-weight: 600;
 }
 
+/* LP-2: acesso direto ao conteúdo e formulário seguro até o JS inicializar. */
+.skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 10000;
+    padding: 12px 20px;
+    color: var(--white);
+    background: var(--primary);
+    transform: translateY(-150%);
+}
+.skip-link:focus {
+    transform: none;
+    outline: 3px solid var(--cta);
+}
+#conteudo { scroll-margin-top: 90px; }
+.contact-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.contact-fields:disabled { opacity: 0.6; }
+@media (prefers-reduced-motion: reduce) {
+    .hero, .hero * { animation: none !important; }
+}
 /* LP-1: WhatsApp primeiro, ligação ao lado e retorno por formulário como link. */
 .hero-principal .hero-cta .btn-whatsapp {
     flex: 1 1 auto;
@@ -1845,4 +1866,65 @@
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 3px;
+}
+
+.hero-photo figcaption { color: #fff; font-size: .8rem; line-height: 1.5; margin-top: 10px; }
+.service-work-link { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 1rem; color: var(--primary); text-decoration: underline; }
+
+/* LP-6: a grade da home ocupa a largura disponível, sem a antiga faixa lateral
+   para o flutuante. A proteção de sobreposição do WhatsApp continua no emissor.
+   Fotos ficam na galeria; estes cartões compactos têm ações reais mesmo sem JS. */
+body[data-page-type="home"] #servicos.services-compact .services-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin-top: 1.25rem;
+}
+body[data-page-type="home"] #servicos.services-compact .section-subtitle { padding-inline: 0; }
+#servicos.services-compact .service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+    text-align: left;
+    scroll-margin-top: 110px;
+}
+#servicos.services-compact .service-card:hover { transform: none; }
+#servicos.services-compact .service-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+    margin: 0 0 .75rem;
+}
+#servicos.services-compact .service-card h3 { font-size: 1.05rem; margin: 0 0 .35rem; }
+#servicos.services-compact .service-card p { font-size: .875rem; margin: 0 0 .5rem; }
+#servicos.services-compact .service-links { display: flex; flex-wrap: wrap; gap: 0 1rem; margin-top: auto; }
+#servicos.services-compact .service-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--primary);
+    font-size: .9rem;
+    font-weight: 700;
+    text-decoration: underline;
+    transform: none;
+}
+.services-compact .other-services { margin-top: 1.25rem; }
+.services-compact summary { min-height: 44px; padding: .75rem 0; color: var(--primary); font-weight: 700; cursor: pointer; }
+.services-compact .services-pending { color: var(--gray); margin: .5rem 0; }
+.services-compact :is(a, summary, article):focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+body[data-page-type="home"] .footer-section li a { display: inline-flex; align-items: center; min-height: 44px; }
+@media (max-width: 768px) {
+    body[data-page-type="home"] #servicos.services-compact .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+    #servicos.services-compact .service-card { padding: .875rem .75rem; }
+    #servicos.services-compact .service-card h3 { font-size: .95rem; }
+    #servicos.services-compact .service-links { gap: 0 .75rem; }
 }

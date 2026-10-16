@@ -1771,3 +1771,51 @@
     color: var(--primary);
     font-weight: 600;
 }
+
+/* LP-1: WhatsApp primeiro, ligação ao lado e retorno por formulário como link. */
+.hero-principal .hero-cta .btn-whatsapp {
+    flex: 1 1 auto;
+    width: auto;
+    min-height: 56px;
+    padding: 16px 24px;
+    font-size: 1.0625rem;
+    box-shadow: var(--shadow-lg);
+}
+.hero-principal .hero-call {
+    width: auto;
+    min-width: 88px;
+    min-height: 56px;
+    padding: 16px;
+    color: var(--white);
+    border: 1px solid currentColor;
+    background: transparent;
+}
+.hero-principal .hero-callback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-basis: 100%;
+    min-height: 44px;
+    color: var(--white);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: 0.9375rem;
+}
+.hero-principal .hero-h1-lead {
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+.hero-response {
+    grid-column: 1 / -1;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+}
+.contact-phone {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}

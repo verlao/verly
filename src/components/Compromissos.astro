@@ -1,0 +1,81 @@
+---
+import { compromissos as c } from '../data/compromissos';
+import { CONTACT } from '../data/site';
+const prazos = c.prazoInstalacaoPorServico?.map(p => `${p.servico}: ${p.dias} dias.`).join(' ');
+const garantia = [
+  c.garantia?.meses != null && `Garantia de ${c.garantia.meses} meses.`,
+  c.garantia?.cobertura,
+  c.garantia?.porEscrito != null && (c.garantia.porEscrito ? 'Entregamos a garantia por escrito.' : 'A garantia não tem termo escrito.'),
+].filter(Boolean).join(' ');
+const pagamento = [
+  c.pagamento?.pix != null && (c.pagamento.pix ? 'Aceitamos Pix.' : 'Não aceitamos Pix.'),
+  c.pagamento?.cartao != null && (c.pagamento.cartao ? 'Aceitamos cartão.' : 'Não aceitamos cartão.'),
+  c.pagamento?.parcelas != null && `Parcelamento em até ${c.pagamento.parcelas} vezes.`,
+  c.pagamento?.sinalPercentual != null && `Sinal de ${c.pagamento.sinalPercentual}%.`,
+].filter(Boolean).join(' ');
+---
+<section id="como-funciona" class="section operation">
+  <div class="container">
+    <h2 class="section-title">Como funciona</h2>
+    <p class="section-subtitle">Do primeiro contato ao serviço, fale com a Verly pelo WhatsApp.</p>
+    <ol class="operation-steps">
+      <li><h3>Você manda uma foto</h3><p>Recebemos seu pedido pelo WhatsApp.</p>{c.prazoRespostaHorasUteis != null && <p>Damos retorno em até {c.prazoRespostaHorasUteis} horas úteis.</p>}</li>
+      <li><h3>Medição</h3><p>Os detalhes da medição podem ser conversados com a loja.</p>{c.medicao?.gratis != null && <p>{c.medicao.gratis ? 'A medição é gratuita.' : 'A medição é cobrada à parte.'}</p>}{c.medicao?.prazoDias != null && <p>Medição em até {c.medicao.prazoDias} dias.</p>}</li>
+      <li><h3>Orçamento</h3><p>Nosso orçamento é grátis, sem compromisso.</p>{c.orcamentoEscrito?.detalhes === true && <p>Enviamos os detalhes e o valor por escrito antes da aprovação.</p>}{c.orcamentoEscrito?.validadeDias != null && <p>O orçamento vale por {c.orcamentoEscrito.validadeDias} dias.</p>}</li>
+      <li><h3>Instalação</h3><p>Estamos no WhatsApp para conversar sobre seu serviço.</p>{prazos && <p>{prazos}</p>}{garantia && <p>{garantia}</p>}</li>
+    </ol>
+  </div>
+</section>
+<section id="diferenciais" class="section operation operation-soft">
+  <div class="container">
+    <h2 class="section-title">O que está no seu orçamento por escrito</h2>
+    {c.orcamentoEscrito?.detalhes !== true && <p class="section-subtitle">Orçamento grátis. Fale com a loja pelo WhatsApp sobre os detalhes do seu pedido.</p>}
+    <div class="operation-facts">
+      {c.orcamentoEscrito?.vidro && <article><h3>Vidro</h3><p>{c.orcamentoEscrito.vidro}</p></article>}
+      {c.orcamentoEscrito?.ferragem && <article><h3>Ferragem</h3><p>{c.orcamentoEscrito.ferragem}</p></article>}
+      {prazos && <article><h3>Prazo</h3><p>{prazos}</p></article>}
+      {garantia && <article><h3>Garantia</h3><p>{garantia}</p></article>}
+      {pagamento && <article><h3>Pagamento</h3><p>{pagamento}</p></article>}
+    </div>
+    {c.emiteNotaFiscal != null && <p>{c.emiteNotaFiscal ? 'Emitimos nota fiscal.' : 'Não emitimos nota fiscal.'}</p>}
+  </div>
+</section>
+<section id="compromisso" class="section operation">
+  <div class="container">
+    <h2 class="section-title">Nosso compromisso com você</h2>
+    <div class="operation-facts">
+      <article><h3>Resposta sobre o orçamento</h3><p>Nosso canal de contato é o WhatsApp da loja.</p>{c.rotinaRetorno && <p>{c.rotinaRetorno}</p>}{c.prazoRespostaHorasUteis != null && <p>Damos retorno em até {c.prazoRespostaHorasUteis} horas úteis.</p>}</article>
+      <article><h3>Prazo de instalação</h3><p>Estamos na {CONTACT.address.street}, em {CONTACT.address.locality}, para conversar sobre seu serviço.</p>{c.avisoAtraso && <p>{c.avisoAtraso}</p>}{prazos && <p>{prazos}</p>}</article>
+      <article><h3>Depois da instalação</h3><p>O WhatsApp da Verly também é o canal para falar sobre um serviço realizado.</p>{garantia && <p>{garantia}</p>}{c.garantia?.prazoAtendimentoDias != null && <p>Atendemos solicitações de garantia em até {c.garantia.prazoAtendimentoDias} dias.</p>}</article>
+    </div>
+  </div>
+</section>
+<section id="equipe" class="section operation operation-soft">
+  <div class="container operation-team">
+    {c.fotoEquipe && <img src={c.fotoEquipe.src} alt={c.fotoEquipe.alt} width={c.fotoEquipe.largura} height={c.fotoEquipe.altura} loading="lazy" decoding="async" />}
+    <div><h2 class="section-title">Quem atende e instala</h2><p>Verly Vidraçaria: loja física em Realengo.</p><p>{CONTACT.address.street} — {CONTACT.address.line2}</p>{c.nomesEquipe && <ul>{c.nomesEquipe.map(p => <li>{p.nome} · {p.funcao}</li>)}</ul>}<p>Fale com a loja pelo WhatsApp: {CONTACT.mobileDisplay}.</p></div>
+  </div>
+</section>
+<style>
+.operation { color: var(--dark); }
+.operation-soft { background: var(--light-gray); }
+.operation .section-title { margin-bottom: 1rem; }
+.operation p { line-height: 1.65; margin: .5rem 0; }
+.operation h3 { font-size: 1.1rem; margin-bottom: .5rem; }
+.operation-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; list-style: none; counter-reset: steps; padding: 0; margin: 1.5rem 0 0; }
+.operation-steps li { counter-increment: steps; border-top: 2px solid var(--primary); padding-top: 1rem; }
+.operation-steps li::before { content: counter(steps, decimal-leading-zero); display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: .5rem; }
+.operation-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.operation-facts:empty { display: none; }
+.operation-facts article { border-left: 3px solid var(--primary); padding-left: 1rem; }
+.operation-team { display: flex; align-items: center; gap: 2rem; }
+.operation-team .section-title { text-align: left; }
+.operation-team img { width: min(40%, 320px); height: auto; border-radius: 1rem; }
+@media (max-width: 768px) {
+  .operation { padding: 2rem 0; }
+  .operation-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .operation-facts { grid-template-columns: 1fr; gap: 1rem; }
+  .operation-team { flex-direction: column; align-items: stretch; }
+  .operation-team img { width: 100%; max-width: 320px; }
+}
+</style>

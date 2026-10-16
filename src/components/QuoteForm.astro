@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from '../components/Icon.astro';
+import lojaFrente from '../assets/loja-verly-realengo.png';
 import { CONTACT, NEIGHBORHOOD_OPTIONS, SERVICE_TAXONOMY } from '../data/site';
 
 interface Props {
@@ -8,11 +10,15 @@ interface Props {
   neighborhood?: string;
   title?: string;
   subtitle?: string;
+  /** Mostra a fachada pequena junto do endereço. A home liga; as páginas de bairro
+      já abrem com a fachada no hero e não repetem. */
+  mostrarFachada?: boolean;
 }
 const {
   neighborhood,
   title = 'Solicite Seu Orçamento Gratuito',
-  subtitle = 'Preencha o formulário e entraremos em contato em até 2 horas úteis',
+  subtitle = 'Orçamento grátis, sem compromisso. Fale com a loja pelo WhatsApp.',
+  mostrarFachada = false,
 } = Astro.props;
 ---
 
@@ -76,6 +82,32 @@ const {
                             <p>{CONTACT.hoursDisplay}</p>
                         </div>
                     </div>
+                    {/* Endereço da loja com a fachada real: quem quer ir até a loja procura a foto
+                        onde estão o endereço e a rota. Endereço e rota saem de CONTACT. */}
+                    <div class="contact-item contact-store">
+                        <div class="contact-item-icon">
+                            <Icon name="map-marker-alt" />
+                        </div>
+                        <div class="contact-item-content">
+                            <strong>Nossa loja</strong>
+                            <p>{CONTACT.address.street}, {CONTACT.address.locality}</p>
+                            <p><a class="contact-map" href={CONTACT.mapsUrl} target="_blank" rel="noopener">Abrir mapa e traçar rota ↗</a></p>
+                            {mostrarFachada && (
+                                <Image
+                                    class="contact-store-photo"
+                                    src={lojaFrente}
+                                    alt="Fachada da Verly Vidraçaria na Rua General Azeredo, 218 - Loja C, em Realengo"
+                                    widths={[320, 560]}
+                                    width={560}
+                                    sizes="(max-width: 768px) 70vw, 280px"
+                                    format="webp"
+                                    quality={78}
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                            )}
+                        </div>
+                    </div>
                     <div class="contact-item">
                         <div class="contact-item-icon">
                             <Icon name="map-marker-alt" />
@@ -98,9 +130,11 @@ const {
                                 contagem falsa de avaliações reciclada como contagem de obras,
                                 e não existe registro que a sustente. O que sustenta a garantia
                                 é o que dá para conferir — a loja tem endereço, fachada e uma
-                                década de porta aberta. */}
-                            <strong>Garantia de Qualidade</strong>
-                            <p>Mais de 10 anos de experiência, com loja física em Realengo</p>
+                                década de porta aberta. "Garantia de Qualidade" também saiu do
+                                título: garantia é condição do orçamento (compromissos.ts), não
+                                selo. A loja física já está no item "Nossa loja". */}
+                            <strong>Experiência</strong>
+                            <p>Mais de 10 anos de porta aberta em Realengo</p>
                         </div>
                     </div>
                 </div>
@@ -255,7 +289,7 @@ const {
                         </button>
 
                         <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--gray);">
-                            <Icon name="clock" /> Responderemos em até 2 horas úteis
+                            <Icon name="clock" /> Orçamento grátis pelo WhatsApp
                         </p>
 
                         {/* Não lista mais os campos um a um: com bairro e serviços opcionais,

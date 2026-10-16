@@ -1,4 +1,6 @@
 ---
+import Compromissos from '../components/Compromissos.astro';
+import { compromissos } from '../data/compromissos';
 import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
 import {
@@ -36,13 +38,18 @@ const localServices = n.services.map((label: string) => {
   return { label, service };
 });
 
+// Condições ainda não confirmadas não entram no FAQ nem no JSON-LD.
+const faq = n.slug === 'realengo'
+  ? n.faq.filter((f) => !/prazo|pagamento/i.test(f.q))
+  : n.faq;
+
 // FAQPage só entra quando o bairro realmente tem perguntas (hoje só Realengo).
 const faqSchema =
-  n.faq.length > 0
+  faq.length > 0
     ? {
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
-        mainEntity: n.faq.map((f) => ({
+        mainEntity: faq.map((f) => ({
           '@type': 'Question',
           name: f.q,
           acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -53,7 +60,7 @@ const faqSchema =
 
 <Base
   title={n.title}
-  description={n.metaDescription}
+  description={n.slug === 'realengo' ? 'Verly Vidraçaria em Realengo. Loja física, vidros temperados e orçamento grátis pelo WhatsApp.' : n.metaDescription}
   canonicalPath={`/${n.slug}`}
   ogTitle={n.ogTitle}
   ogDescription={n.ogDescription}
@@ -82,7 +89,7 @@ const faqSchema =
             métrica ganha o peso visual e o h1 fecha em duas linhas. */}
         <h1 class="hero-h1">
           <span class="hero-h1-lead">{n.h1}</span>
-          <span class="hero-h1-metric">Orçamento em até 2 horas úteis</span>
+          <span class="hero-h1-metric">Orçamento grátis pelo WhatsApp</span>
         </h1>
         {entrance && <div class="store-location">
           <p class="store-address">A loja fica aqui, na {CONTACT.address.street}</p>
@@ -109,28 +116,9 @@ const faqSchema =
           )}
         </div>
         <div class="trust-badges">
-          <div class="trust-badge">
-            <div class="trust-badge-icon"><Icon name="clock" /></div>
-            <div class="trust-badge-text">Resposta em 2h úteis</div>
-          </div>
-          <div class="trust-badge">
-            <div class="trust-badge-icon"><Icon name="credit-card" /></div>
-            <div class="trust-badge-text">Parcelamos em até 12x</div>
-          </div>
-          <div class="trust-badge">
-            <div class="trust-badge-icon"><Icon name="tools" /></div>
-            <div class="trust-badge-text">Instalação Profissional</div>
-          </div>
-          <div class="trust-badge">
-            <div class="trust-badge-icon"><Icon name="shield-alt" /></div>
-            <div class="trust-badge-text">Garantia de Qualidade</div>
-          </div>
-          {/* Quinto filho de propósito: .trust-badges > :nth-child(5) tem order:-1, então
-              a nota assume a primeira posição sem CSS novo — mesmo arranjo da home.
-              Ela nasceu aqui porque estas páginas declaravam aggregateRating sem
-              mostrar nota nenhuma na tela. O aggregateRating saiu (ver
-              LocalBusinessSchema.astro), e a nota FICA: ela trabalha para o
-              visitante, não para o rastreador. */}
+          <div class="trust-badge"><div class="trust-badge-text">Loja física em Realengo</div></div>
+          <div class="trust-badge"><div class="trust-badge-text">Orçamento grátis</div></div>
+          {compromissos.prazoRespostaHorasUteis != null && <div class="trust-badge"><div class="trust-badge-text">Resposta em até {compromissos.prazoRespostaHorasUteis} horas úteis</div></div>}
           <div class="trust-badge">
             <div class="trust-badge-icon"><Icon name="star" /></div>
             <div class="trust-badge-text">
@@ -206,14 +194,15 @@ const faqSchema =
   <QuoteForm
     neighborhood={n.name}
     title={`Orçamento Grátis em ${n.name}`}
-    subtitle="Preencha e entraremos em contato em até 2 horas úteis. Sem compromisso."
+    subtitle="Orçamento grátis, sem compromisso. Fale com a loja pelo WhatsApp."
   />
 
+  {n.slug === 'realengo' ? <Compromissos /> : (
   <section id="diferenciais" class="section why-choose">
     <div class="container">
       <h2 class="section-title">Por que escolher a Verly em {n.name}?</h2>
       <div class="services-grid">
-        {n.reasons.map((r) => (
+        {['Loja física em Realengo', 'Orçamento grátis', 'Contato pelo WhatsApp'].map((r) => (
           <div class="service-card">
             <div class="service-icon"><Icon name="star" /></div>
             <h3>{r}</h3>
@@ -223,12 +212,14 @@ const faqSchema =
     </div>
   </section>
 
-  {n.faq.length > 0 && (
+  )}
+
+  {faq.length > 0 && (
     <section id="faq" class="section">
       <div class="container">
         <h2 class="section-title">Perguntas Frequentes sobre Vidraçaria em {n.name}</h2>
         {/* <details> nativo: o accordion antigo dependia de jQuery + Bootstrap, que saíram */}
-        {n.faq.map((f) => (
+        {faq.map((f) => (
           <details class="faq-item">
             <summary>{f.q}</summary>
             <p>{f.a}</p>

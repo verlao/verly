@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+import { CONTACT } from '../data/site';
+import type { SERVICOS_HOME } from '../data/servicos';
+interface Props { item: (typeof SERVICOS_HOME)[number] }
+const { item } = Astro.props;
+// `CONTACT.mobile` é a mesma origem dos outros links do site; wa.me escolhe entre
+// app, WhatsApp Web e loja, que é a razão de nenhum link daqui apontar para
+// web.whatsapp.com direto. A mensagem não presume que o visitante viu uma foto.
+const message = item.service?.whatsappMessage ?? `Olá! Gostaria de um orçamento para ${item.title}. Posso enviar fotos e medidas?`;
+---
+<article id={`servico-${item.id}`} class="service-card" tabindex="-1" data-service={item.service?.slug} data-whatsapp-message={message}>
+  <div class="service-icon"><Icon name={item.icon} /></div>
+  <h3>{item.title}</h3>
+  <p>{item.description}</p>
+  {item.precoReferencia !== null && <p class="service-price">A partir de {item.precoReferencia.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>}
+  <div class="service-links">
+    <a class="service-whatsapp-cta" href={`https://wa.me/${CONTACT.mobile}?text=${encodeURIComponent(message)}`} target="_blank" rel="noopener noreferrer" data-context="service-card" data-service={item.service?.slug} aria-label={`Orçar ${item.title}`}>Orçar ↗</a>
+    {item.obra && <a class="service-work-link" href={`#obra-${item.obra}`}>Ver obra ↗</a>}
+  </div>
+</article>

@@ -1,5 +1,6 @@
 ---
 import Icon from '../components/Icon.astro';
+import { SERVICOS_HOME } from '../data/servicos';
 import { CONTACT, SERVICES, FOOTER_NEIGHBORHOODS, GOOGLE_REVIEWS } from '../data/site';
 
 interface Props {
@@ -43,7 +44,9 @@ const year = new Date().getFullYear();
       <div class="footer-section">
         <h2>Nossos Serviços</h2>
         <ul>
-          {SERVICES.map((s) => (
+          {home ? SERVICOS_HOME.map(item => (
+            <li><a href={`#servico-${item.id}`}>{item.title}</a></li>
+          )) : SERVICES.map((s) => (
             <li><a href={servicesHref}>{s}</a></li>
           ))}
         </ul>
@@ -102,3 +105,30 @@ const year = new Date().getFullYear();
     </div>
   </div>
 </footer>
+
+<script>
+  // Âncoras recolhidas precisam abrir o details antes da rolagem, inclusive quando
+  // a visita já começa com hash. Sem JS, o summary continua acessível para abrir.
+  const revealService = () => {
+    const id = location.hash.slice(1);
+    if (!id.startsWith('servico-')) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    const group = target.closest('details');
+    if (group) group.open = true;
+    target.scrollIntoView({ block: 'start' });
+    target.focus({ preventScroll: true });
+  };
+  // app.js intercepta âncoras para rolagem suave sem atualizar o hash. Aqui o
+  // destino pode estar recolhido: abrir, atualizar o hash e mover o foco é necessário.
+  document.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('.footer a[href^="#servico-"]');
+    if (!link) return;
+    event.preventDefault();
+    location.hash = link.hash;
+    revealService();
+  });
+  window.addEventListener('hashchange', revealService);
+  revealService();
+</script>

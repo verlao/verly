@@ -1840,3 +1840,6 @@
     text-decoration: underline;
     text-underline-offset: 3px;
 }
+
+.hero-photo figcaption { color: #fff; font-size: .8rem; line-height: 1.5; margin-top: 10px; }
+.service-work-link { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 1rem; color: var(--primary); text-decoration: underline; }

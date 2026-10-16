@@ -30,6 +30,11 @@ import { CONTACT, SERVICE_TAXONOMY } from '../data/site';
  * Os títulos são a âncora de SEO "serviço + bairro" que traz 79 das 126 sessões, e
  * saem daqui LITERALMENTE iguais aos da grade anterior. A fusão troca ícone por foto;
  * não mexe na taxonomia de texto.
+ *
+ * LP-3 (16/10/2026): o cartão cujo produto já tem OBRA REAL fotografada (hoje, portas
+ * e janelas) troca a foto ilustrativa por um link para a obra na galeria `#obras`. A
+ * ilustração só continua onde ainda não há foto nossa, e a nota de "imagens
+ * ilustrativas" passa a dizer exatamente quais cartões são esses.
  */
 const services = [
   {
@@ -66,11 +71,8 @@ const services = [
     service: SERVICE_TAXONOMY.portasJanelas,
     title: 'Portas e Janelas',
     description: 'Portas e janelas de vidro temperado e alumínio sob medida.',
-    photo: {
-      label: 'Portas e janelas',
-      src: '/img/servicos/portas-janelas.webp',
-      alt: 'Divisória envidraçada de piso a teto com perfil escuro separando dois ambientes de uma sala.',
-    },
+    obra: '65906',
+    icon: 'door-open',
   },
   {
     service: SERVICE_TAXONOMY.espelhoSobMedida,
@@ -112,7 +114,9 @@ const waLink = (label: string) =>
           data-service={item.service.slug}
           data-whatsapp-message={item.service.whatsappMessage}
         >
-          {item.photo ? (
+          {'obra' in item ? (
+            <a class="service-work-link" href={`#obra-${item.obra}`}>Ver obra de janela ↗</a>
+          ) : item.photo ? (
             <a
               class="service-photo"
               href={waLink(item.photo.label)}
@@ -137,8 +141,8 @@ const waLink = (label: string) =>
       ))}
     </div>
     <p class="services-note">
-      Imagens ilustrativas dos serviços. Fotos das nossas obras entram aqui conforme
-      os clientes autorizam.
+      Imagens ilustrativas nos cards de box, sacadas, guarda-corpos e espelhos.
+      As fotos reais estão na galeria de obras.
     </p>
   </div>
 </section>

@@ -6,3 +6,6 @@ dist/
 # Conteúdo lido do perfil do Google no build. NÃO versionar: é dado de terceiro,
 # regenerado a cada deploy, e o repositório não é o lugar de cache dele.
 src/data/google-reviews.generated.json
+
+# Evidências locais dos PRs da landing page
+.pr-shots/

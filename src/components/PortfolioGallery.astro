@@ -4,7 +4,14 @@ import { CONTACT, SERVICE_TAXONOMY } from '../data/site';
 const works = [...new Set(portfolio.fotos.map(photo => photo.obra))].map(obra => ({
   obra, photos: portfolio.fotos.filter(photo => photo.obra === obra),
 }));
-const labels: Record<string, string> = { janela_correr: 'Janela de correr', outro: 'Fechamento de armário / pia' };
+// Um produto do portfolio.json só aparece na galeria se estiver aqui: o rótulo do card,
+// o texto do filtro, o do botão e o slug do GA4 (`data-service`) andam juntos.
+const products: Record<string, { label: string; filter: string; quote: string; service?: string }> = {
+  sacada: { label: 'Envidraçamento de sacada', filter: 'Sacadas', quote: 'sacada', service: SERVICE_TAXONOMY.sacadaEnvidracada.slug },
+  janela_correr: { label: 'Janela de correr', filter: 'Janelas', quote: 'janela', service: SERVICE_TAXONOMY.portasJanelas.slug },
+  outro: { label: 'Fechamento de armário / pia', filter: 'Armário / pia', quote: 'fechamento', service: SERVICE_TAXONOMY.armarioVidro.slug },
+};
+const filters = Object.keys(products).filter(product => works.some(({ photos }) => photos[0].produto === product));
 const note = 'Foto real da obra; ambiente tratado.';
 ---
 <section id="obras" class="section portfolio" aria-labelledby="portfolio-title">
@@ -13,35 +20,34 @@ const note = 'Foto real da obra; ambiente tratado.';
     <p class="section-subtitle">Veja nossas instalações e amplie as fotos para conferir os detalhes.</p>
     <div class="portfolio-filters" role="group" aria-label="Filtrar obras por produto">
       <button type="button" data-product-filter="todas" aria-pressed="true" disabled>Todas</button>
-      <button type="button" data-product-filter="janela_correr" aria-pressed="false" disabled>Janelas</button>
-      <button type="button" data-product-filter="outro" aria-pressed="false" disabled>Armário / pia</button>
+      {filters.map(product => <button type="button" data-product-filter={product} aria-pressed="false" disabled>{products[product].filter}</button>)}
     </div>
-    <p class="portfolio-status" role="status" aria-live="polite" aria-atomic="true">4 obras exibidas.</p>
+    <p class="portfolio-status" role="status" aria-live="polite" aria-atomic="true">{works.length} obras exibidas.</p>
     <noscript><p>Todas as obras estão abaixo. Os links das fotos abrem a imagem ampliada.</p></noscript>
-    <div class="portfolio-grid">
+    <div class="portfolio-grid" role="region" aria-label="Obras" tabindex="0">
       {works.map(({ obra, photos }, index) => (
         <article id={`obra-${obra}`} class="portfolio-work" data-product={photos[0].produto} tabindex="-1">
           <figure id={photos[0].id}>
-            <a href={photos[0].imagem.url} data-portfolio-photo data-alt={photos[0].alt} data-caption={photos[0].legenda} aria-label={`Ampliar foto: ${photos[0].legenda}`}>
-              <img src={photos[0].imagem.variantes['480']} srcset={Object.entries(photos[0].imagem.variantes).map(([w,url]) => `${url} ${w}w`).join(', ')} sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1199px) calc((100vw - 72px) / 2), 564px" width={photos[0].imagem.largura} height={photos[0].imagem.altura} alt={photos[0].alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+            <a href={photos[0].imagem.url} data-portfolio-photo data-alt={photos[0].alt} data-caption={photos[0].legenda} data-width={photos[0].imagem.largura} data-height={photos[0].imagem.altura} aria-label={`Ampliar foto: ${photos[0].legenda}`}>
+              <img src={photos[0].imagem.variantes['480']} srcset={Object.entries(photos[0].imagem.variantes).map(([w,url]) => `${url} ${w}w`).join(', ')} sizes="(max-width: 767px) 80vw, (max-width: 1099px) calc((100vw - 72px) / 2), 370px" width={photos[0].imagem.largura} height={photos[0].imagem.altura} alt={photos[0].alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
               <span class="portfolio-zoom" aria-hidden="true">Ampliar ↗</span>
             </a>
             <figcaption>{note}</figcaption>
           </figure>
           <div class="portfolio-copy">
-            <h3>{labels[photos[0].produto]}</h3>
+            <h3>{products[photos[0].produto].label}</h3>
             <p>{photos[0].legenda}</p>
             {photos.length > 1 && <details>
-              <summary>Ver outro ângulo da mesma obra</summary>
+              <summary>{photos.length > 2 ? `Ver mais ${photos.length - 1} ângulos da mesma obra` : 'Ver outro ângulo da mesma obra'}</summary>
               {photos.slice(1).map(photo => <figure id={photo.id}>
-                <a href={photo.imagem.url} data-portfolio-photo data-alt={photo.alt} data-caption={photo.legenda} aria-label={`Ampliar outro ângulo: ${photo.legenda}`}>
-                  <img src={photo.imagem.variantes['480']} srcset={Object.entries(photo.imagem.variantes).map(([w,url]) => `${url} ${w}w`).join(', ')} sizes="(max-width: 767px) calc(100vw - 80px), (max-width: 1199px) calc((100vw - 152px) / 2), 524px" width={photo.imagem.largura} height={photo.imagem.altura} alt={photo.alt} loading="lazy" decoding="async" />
+                <a href={photo.imagem.url} data-portfolio-photo data-alt={photo.alt} data-caption={photo.legenda} data-width={photo.imagem.largura} data-height={photo.imagem.altura} aria-label={`Ampliar outro ângulo: ${photo.legenda}`}>
+                  <img src={photo.imagem.variantes['480']} srcset={Object.entries(photo.imagem.variantes).map(([w,url]) => `${url} ${w}w`).join(', ')} sizes="(max-width: 767px) 80vw, (max-width: 1099px) calc((100vw - 152px) / 2), 330px" width={photo.imagem.largura} height={photo.imagem.altura} alt={photo.alt} loading="lazy" decoding="async" />
                   <span class="portfolio-zoom" aria-hidden="true">Ampliar ↗</span>
                 </a>
                 <figcaption>{photo.legenda}<br />{note}</figcaption>
               </figure>)}
             </details>}
-            <a class="portfolio-quote" href={`https://wa.me/${CONTACT.mobile}?text=${encodeURIComponent(`Olá! Vi a obra ${obra} no site (${photos[0].legenda}) e gostaria de um orçamento. Posso enviar fotos e medidas?`)}`} target="_blank" rel="noopener noreferrer" data-context="service-gallery" data-service={photos[0].produto === 'janela_correr' ? SERVICE_TAXONOMY.portasJanelas.slug : undefined}>Pedir orçamento para {photos[0].produto === 'janela_correr' ? 'janela' : 'fechamento'} ↗</a>
+            <a class="portfolio-quote" href={`https://wa.me/${CONTACT.mobile}?text=${encodeURIComponent(`Olá! Vi a obra ${obra} no site (${photos[0].legenda}) e gostaria de um orçamento. Posso enviar fotos e medidas?`)}`} target="_blank" rel="noopener noreferrer" data-context="service-gallery" data-service={products[photos[0].produto].service}>Pedir orçamento para {products[photos[0].produto].quote} ↗</a>
           </div>
         </article>
       ))}
@@ -67,7 +73,9 @@ const note = 'Foto real da obra; ambiente tratado.';
     // Um link de serviço deve alcançar a obra mesmo após filtrar outro produto.
     function revealAnchor() {
       const work = works.find(work => `#${work.id}` === location.hash);
-      if (work?.hidden) { filter('todas'); work.scrollIntoView(); }
+      if (!work) return;
+      if (work.hidden) filter('todas');
+      work.scrollIntoView();
     }
     document.addEventListener('click', event => {
       const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#obra-"]');
@@ -89,6 +97,8 @@ const note = 'Foto real da obra; ambiente tratado.';
         opener = link;
         image.src = link.href;
         image.alt = link.dataset.alt!;
+        image.width = Number(link.dataset.width);
+        image.height = Number(link.dataset.height);
         gallery.querySelector('#portfolio-dialog-title')!.textContent = link.dataset.caption!;
         previousOverflow = document.body.style.overflow;
         dialog.showModal();
@@ -109,11 +119,14 @@ const note = 'Foto real da obra; ambiente tratado.';
   .portfolio-filters button, .portfolio-dialog-bar button { min-height: 44px; padding: 8px 16px; border: 1px solid #48616a; border-radius: 8px; background: white; color: #173e4a; font: inherit; cursor: pointer; }
   .portfolio-filters button[aria-pressed="true"] { background: #173e4a; color: white; }
   .portfolio-status { text-align: center; margin: 16px 0 24px; color: #485b62; }
-  .portfolio-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .portfolio-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; align-items: start; }
+  @media (min-width: 1100px) { .portfolio-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; } }
   .portfolio-work { background: white; border: 1px solid #d5dfe2; border-radius: 12px; scroll-margin-top: 110px; }
   .portfolio-work[hidden] { display: none; }
   figure { margin: 0; }
-  .portfolio-work > figure img { border-radius: 11px 11px 0 0; }
+  /* Fotos de sacada são em pé e as de janela, deitadas: a miniatura do card tem uma
+     proporção só, e a foto inteira aparece ao ampliar. */
+  .portfolio-work > figure img { border-radius: 11px 11px 0 0; aspect-ratio: 4 / 3; object-fit: cover; }
   [data-portfolio-photo] { display: block; position: relative; color: white; }
   img { display: block; width: 100%; height: auto; }
   .portfolio-zoom { position: absolute; bottom: 12px; right: 12px; padding: 8px 12px; border-radius: 6px; background: #173e4a; }
@@ -130,5 +143,10 @@ const note = 'Foto real da obra; ambiente tratado.';
   .portfolio-dialog-bar h2 { font-size: 1rem; color: #173e4a; margin: 0; }
   .portfolio-dialog-bar button { flex-shrink: 0; }
   dialog img { max-height: calc(100dvh - 180px); object-fit: contain; }
-  @media (max-width: 767px) { .portfolio-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+  /* No celular, um card por vez num carrossel que rola de lado: com uma obra embaixo da
+     outra, cada obra nova somava ~600 px à home. */
+  @media (max-width: 767px) {
+    .portfolio-grid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 86%; gap: 16px; align-items: start; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: 12px; }
+    .portfolio-work { scroll-snap-align: start; }
+  }
 </style>

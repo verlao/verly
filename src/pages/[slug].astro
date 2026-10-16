@@ -164,8 +164,9 @@ const faqSchema =
           <h2 id="local-reviews-title" class="section-title">Quem já chamou a Verly</h2>
           {/* Nota, total e textos vêm da MESMA fonte da home (provaSocialGoogle: perfil
               lido no build, ou o snapshot de site.ts). Uma nota própria desta página
-              faria a /realengo e a home mostrarem números diferentes. */}
-          <p class="section-subtitle">{google.notaExibida}★ · {google.total} avaliações no Google</p>
+              faria a /realengo e a home mostrarem números diferentes. A contagem fica
+              fora da tela por decisão do dono (ver GOOGLE_REVIEWS em site.ts). */}
+          <p class="section-subtitle">{google.notaExibida}★ no Google</p>
           <div class="local-reviews-grid">
             {google.depoimentos.slice(0, 2).map(review => (
               <figure class="local-review">
